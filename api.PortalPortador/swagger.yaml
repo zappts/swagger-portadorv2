@@ -1,0 +1,550 @@
+  swagger: "2.0"
+  info: 
+    description: "Pré-Pago API"
+    version: "1.0.0"
+    title: "Pré-Pago Portador"
+  basePath: "/prepaid-holder/v1"
+  tags:
+  - name: "cards"
+    description: "Operações com cartões"
+    externalDocs:
+      description: "Find out more"
+      url: "http://swagger.io"
+  - name: "accounts"
+    description: "Operações com contas"
+  - name: "portador"
+    description: "Operaçoes com os dados do Portador"
+  - name: "cognito"
+    description: "Operaçoes com o AWS Cognito"
+  - name: "boleto"
+    description: "Operaçoes de boleto"
+  - name: "comprovantes"
+    description: "Operaçoes com comprovantes"
+  - name: "2FactorAuthentication"
+    description: "Operaçoes de dupla autenticação por SMS/E-mail"
+  - name: "usuario"
+    description: "Operaçoes que envolvem dados do usuário"
+    externalDocs:
+      description: "Find out more about our store"
+      url: "http://swagger.io"
+  paths: 
+    /accounts/{accountId}/cards: 
+      get: 
+        tags: 
+          - "accounts"
+        summary: "Lista cartões da conta do portador"
+        parameters: []
+        responses: 
+          200: 
+            description: "OK"
+      parameters: 
+        - 
+          name: "accountId"
+          in: "path"
+          description: "accountId"
+          required: true
+          type: "string"
+    /cpf/{cpf}: 
+      get:  
+        tags: 
+          - "usuario"
+        summary: "Valida se o CPF já existe na Conductor"
+        parameters: []
+        responses: 
+          200: 
+            description: "OK"
+        x-resource-name: "Portador"
+        x-destination: "$prepaid_portador_destination/activeAccounts/{cpf}"
+        x-timeout: "60"
+      parameters: 
+        - 
+          name: "cpf"
+          in: "path"
+          description: "cpf"
+          required: true
+          type: "string"
+    /cards/{cardId}/password: 
+      get:
+        tags: 
+        - "cards"
+        summary: "Valida a senha do cartão do portador"
+        parameters: []
+        responses: 
+          200: 
+            description: "OK"
+        x-resource-name: "Portador"
+        x-destination: "$prepaid_portador_destination/card/verify-password/{cardId}"
+        x-timeout: "60"
+        x-api-broken: false
+        x-interceptors: {}
+      post:
+        tags: 
+          - "cards"
+        summary: "Altera a senha do cartão esquecida"
+        parameters: []
+        responses: 
+          200: 
+            description: "OK"
+        x-resource-name: "Portador"
+        x-destination: "$prepaid_portador_destination/password/{cardId}"
+        x-timeout: "60"
+        x-api-broken: false
+        x-interceptors: {}
+      put: 
+        tags: 
+        - "cards"
+        summary: "Altera a senha do cartão"
+        parameters: []
+        responses: 
+          200: 
+            description: "OK"
+        x-resource-name: "Portador"
+        x-destination: "$prepaid_portador_destination/cards/password/{cardId}"
+        x-timeout: "60"
+        x-api-broken: false
+        x-interceptors: {}
+      parameters: 
+        - 
+          name: "cardId"
+          in: "path"
+          description: "cardId"
+          required: true
+          type: "string"
+    /carriers/{personId}/products/{productId}/accounts: 
+      get: 
+        tags: 
+        - "portador"
+        summary: "Lista as contas do portador"
+        parameters: []
+        responses: 
+          200: 
+            description: "OK"
+        x-resource-name: "Portador"
+        x-destination: "$prepaid_portador_destination/accounts?personId={personId}&productId={productId}"
+        x-timeout: "60"
+        x-api-broken: false
+        x-interceptors: {}
+      parameters: 
+        - 
+          name: "productId"
+          in: "path"
+          description: "productId"
+          required: true
+          type: "string"
+        - 
+          name: "personId"
+          in: "path"
+          description: "personId"
+          required: true
+          type: "string"
+    /oauth/register: 
+      post: 
+        tags: 
+        - "cognito"
+        summary: "Registra o usuário"
+        parameters: []
+        responses: 
+          200: 
+            description: "OK"
+        x-resource-name: "Portador"
+        x-destination: "$prepaid_portador_destination/register"
+        x-timeout: "60"
+    /recharge-bankslip-pdf/{ourNumber}: 
+      get: 
+        tags: 
+          - "boleto"
+        summary: "Gera o PDF do boleto registrado"
+        parameters: []
+        responses: 
+          200: 
+            description: "OK"
+        x-resource-name: "Portador"
+        x-destination: "$prepaid_portador_destination/recharge/bankslip/pdf/{ourNumber}"
+        x-timeout: "60"
+      parameters: 
+        - 
+          name: "ourNumber"
+          in: "path"
+          description: "ourNumber"
+          required: true
+          type: "string"
+    /oauth/login: 
+      post: 
+        tags: 
+        - "cognito"
+        summary: "Login do portador"
+        parameters: []
+        responses: 
+          200: 
+            description: "OK"
+        x-resource-name: "Portador"
+        x-destination: "$prepaid_portador_destination/oauth/login"
+        x-timeout: "60"
+    /temporary_endpoint_white_label: 
+      get: 
+        summary: "Temporary endpoint for white label"
+        parameters: []
+        responses: 
+          200: 
+            description: "OK"
+        x-resource-name: "Portador"
+        x-destination: null
+        x-timeout: null
+        x-api-broken: false
+        x-interceptors: 
+          27: 
+            x-interceptor-position: 1
+            x-interceptor-type: "MOCK"
+            x-interceptor-content: "{\"body\":\"[{\\n\\t\\t\\\"URI\\\": \\\"cateno.portadorcateno.com.br\\\",\\n\\t\\t\\\"cliente\\\": {\\n\\t\\t\\t\\\"idCompany\\\": \\\"1\\\",\\n\\t\\t\\t\\\"produtos\\\": [{\\n\\t\\t\\t\\t\\\"idproduto\\\": 2,\\n\\t\\t\\t\\t\\\"nomeProduto\\\": \\\"Cateno\\\",\\n\\t\\t\\t\\t\\\"credenciais\\\": [\\n\\t\\t\\t\\t\\t\\\"banking\\\", \\\"p2p\\\"\\n\\t\\t\\t\\t]\\n\\t\\t\\t}]\\n\\t\\t},\\n\\t\\t\\\"template\\\": \\\"cateno\\\"\\n\\t},\\n\\t{\\n\\t\\t\\\"URI\\\": \\\"localhost:4200\\\",\\n\\t\\t\\\"cliente\\\": {\\n\\t\\t\\t\\\"idCompany\\\": \\\"1\\\",\\n\\t\\t\\t\\\"produtos\\\": [{\\n\\t\\t\\t\\t\\\"idproduto\\\": 2,\\n\\t\\t\\t\\t\\\"nomeProduto\\\": \\\"Cateno\\\",\\n\\t\\t\\t\\t\\\"credenciais\\\": [\\n\\t\\t\\t\\t\\t\\\"banking\\\", \\\"p2p\\\"\\n\\t\\t\\t\\t]\\n\\t\\t\\t}]\\n\\t\\t},\\n\\t\\t\\\"template\\\": \\\"cateno\\\"\\n\\t},\\n\\t{\\n\\t\\t\\\"URI\\\": \\\"sindicato.portadorcateno.com.br\\\",\\n\\t\\t\\\"cliente\\\": {\\n\\t\\t\\t\\\"idCompany\\\": \\\"19\\\",\\n\\t\\t\\t\\\"produtos\\\": [{\\n\\t\\t\\t\\t\\\"idproduto\\\": 7,\\n\\t\\t\\t\\t\\\"nomeProduto\\\": \\\"Sindicato\\\",\\n\\t\\t\\t\\t\\\"credenciais\\\": [\\n\\t\\t\\t\\t\\t\\\"banking\\\", \\\"p2p\\\"\\n\\t\\t\\t\\t]\\n\\t\\t\\t}]\\n\\t\\t},\\n\\t\\t\\\"template\\\": \\\"cateno\\\"\\n\\t},\\n{\\n\\t\\t\\\"URI\\\": \\\"dev-portador.s3-website-us-east-1.amazonaws.com\\\",\\n\\t\\t\\\"cliente\\\": {\\n\\t\\t\\t\\\"idCompany\\\": \\\"1\\\",\\n\\t\\t\\t\\\"produtos\\\": [{\\n\\t\\t\\t\\t\\\"idproduto\\\": 2,\\n\\t\\t\\t\\t\\\"nomeProduto\\\": \\\"Cateno\\\",\\n\\t\\t\\t\\t\\\"credenciais\\\": [\\n\\t\\t\\t\\t\\t\\\"banking\\\", \\\"p2p\\\"\\n\\t\\t\\t\\t]\\n\\t\\t\\t}]\\n\\t\\t},\\n\\t\\t\\\"template\\\": \\\"cateno\\\"\\n\\t},\\n    {\\n\\t\\t\\\"URI\\\": \\\"prod-portador.s3-website-us-east-1.amazonaws.com\\\",\\n\\t\\t\\\"cliente\\\": {\\n\\t\\t\\t\\\"idCompany\\\": \\\"1\\\",\\n\\t\\t\\t\\\"produtos\\\": [{\\n\\t\\t\\t\\t\\\"idproduto\\\": 2,\\n\\t\\t\\t\\t\\\"nomeProduto\\\": \\\"Cateno\\\",\\n\\t\\t\\t\\t\\\"credenciais\\\": [\\n\\t\\t\\t\\t\\t\\\"banking\\\", \\\"p2p\\\"\\n\\t\\t\\t\\t]\\n\\t\\t\\t}]\\n\\t\\t},\\n\\t\\t\\\"template\\\": \\\"cateno\\\"\\n\\t}\\n]\",\"status\":\"200\",\"headers\":null}"
+            x-interceptor-execution-point: "FIRST"
+            x-interceptor-status: "REFERENCE"
+    /accounts/{accountId}/extract: 
+      get: 
+        tags: 
+          - "accounts"
+        summary: "Extrato da conta"
+        parameters: []
+        responses: 
+          200: 
+            description: "OK"
+      parameters: 
+        - 
+          name: "accountId"
+          in: "path"
+          description: "accountId"
+          required: true
+          type: "string"
+    /carriers/{carrierId}/products/{productId}/pdf: 
+      get: 
+        tags: 
+        - "portador"
+        summary: "PDF Consolidado"
+        parameters: []
+        responses: 
+          200: 
+            description: "OK"
+        x-resource-name: "Portador"
+        x-destination: "$prepaid_portador_destination/carriers/{carrierId}/products/{productId}/pdf"
+        x-timeout: "60"
+      parameters: 
+        - 
+          name: "productId"
+          in: "path"
+          description: "productId"
+          required: true
+          type: "string"
+        - 
+          name: "carrierId"
+          in: "path"
+          description: "carrierId"
+          required: true
+          type: "string"
+    /accountdetail: 
+      get: 
+        tags: 
+        - "accounts"
+        summary: "Detalhe de uma conta"
+        parameters: []
+        responses: 
+          200: 
+            description: "OK"
+    /recharge/bankslip/register: 
+      post: 
+        tags: 
+        - "boleto"
+        summary: "Registra um boleto no Banco do Brasil"
+        parameters: []
+        responses: 
+          200: 
+            description: "OK"
+    /cards/{cardId}: 
+      post: 
+        tags: 
+          - "cards"
+        summary: "Altera o status do cartão"
+        parameters: []
+        responses: 
+          200: 
+            description: "OK"
+        x-resource-name: "Portador"
+        x-destination: "$prepaid_portador_destination/card/{cardId}"
+        x-timeout: "60"
+      parameters: 
+        - 
+          name: "cardId"
+          in: "path"
+          description: "cardId"
+          required: true
+          type: "string"
+    /2fa/{username}: 
+      get: 
+        tags: 
+          - "2FactorAuthentication"
+        summary: "Valida o código validador que foi enviado"
+        parameters: []
+        responses: 
+          200: 
+            description: "OK"
+      post: 
+        tags: 
+          - "2FactorAuthentication"
+        summary: "Envia o código validador por SMS e e-mail"
+        parameters: []
+        responses: 
+          200: 
+            description: "OK"
+        x-resource-name: "Portador"
+        x-destination: "$prepaid_portador_destination/2fa/{username}"
+        x-timeout: "60"
+      parameters: 
+        - 
+          name: "username"
+          in: "path"
+          description: "username"
+          required: true
+          type: "string"
+    /code/{username}/emailsms: 
+      post: 
+        tags: 
+          - "2FactorAuthentication"
+        summary: "Enviar código validador por SMS e e-mail"
+        parameters: []
+        responses: 
+          200: 
+            description: "OK"
+        x-resource-name: "Portador"
+        x-destination: "$prepaid_portador_destination/2fa/{username}"
+        x-timeout: "60"
+      parameters: 
+        - 
+          name: "username"
+          in: "path"
+          description: "username"
+          required: true
+          type: "string"
+    /oauth/password: 
+      post: 
+        tags: 
+        - "cognito"
+        summary: "Alterar senha quando é o primeiro acesso"
+        parameters: []
+        responses: 
+          200: 
+            description: "OK"
+        x-resource-name: "Portador"
+        x-destination: "$prepaid_portador_destination/password"
+        x-timeout: "60"
+        x-api-broken: false
+        x-interceptors: {}
+      put:  
+        tags: 
+        - "cognito"
+        summary: "Altera a senha do Portal entrando com a senha anterior"
+        parameters: []
+        responses: 
+          200: 
+            description: "OK"
+        x-resource-name: "Portador"
+        x-destination: "$prepaid_portador_destination/password"
+        x-timeout: "60"
+        x-api-broken: false
+        x-interceptors: {}
+    /recharge-payments: 
+      get: 
+        tags: 
+        - "boleto"
+        summary: "Atualiza o status de pagamento e efetua a recarga na conta"
+        parameters: []
+        responses: 
+          200: 
+            description: "OK"
+    /user/{cpf}: 
+      get: 
+        tags: 
+          - "usuario"
+        summary: "Recebe os dados do usuário"
+        parameters: []
+        responses: 
+          200: 
+            description: "OK"
+        x-resource-name: "Portador"
+        x-destination: "$prepaid_portador_destination/person/{cpf}"
+        x-timeout: "60"
+        x-api-broken: false
+        x-interceptors: {}
+      parameters: 
+        - 
+          name: "cpf"
+          in: "path"
+          description: "cpf"
+          required: true
+          type: "string"
+    /password/forgot: 
+      get: 
+        tags: 
+        - "cognito"
+        summary: "Solicita código validador para alterar a senha"
+        parameters: []
+        responses: 
+          200: 
+            description: "OK"
+        x-resource-name: "Portador"
+        x-destination: "$prepaid_portador_destination/password"
+        x-timeout: "60"
+        x-api-broken: false
+        x-interceptors: 
+          12: 
+            x-interceptor-position: 1
+            x-interceptor-type: "CUSTOM"
+            x-interceptor-execution-point: "SECOND"
+            x-interceptor-status: "REMOVED"
+            x-interceptor-parent-id: 1
+            x-interceptor-custom-interceptor-id: 1
+      post: 
+        tags: 
+        - "cognito"
+        summary: "Altera a senha do portal esquecida"
+        parameters: []
+        responses: 
+          200: 
+            description: "OK"
+        x-resource-name: "Portador"
+        x-destination: "$prepaid_portador_destination/confirmation"
+        x-timeout: "60"
+        x-api-broken: false
+        x-interceptors: 
+          19: 
+            x-interceptor-position: 1
+            x-interceptor-type: "CUSTOM"
+            x-interceptor-execution-point: "SECOND"
+            x-interceptor-status: "REMOVED"
+            x-interceptor-parent-id: 1
+            x-interceptor-custom-interceptor-id: 1
+    /recharge/bankslip/pdf/{email}: 
+      post: 
+        tags: 
+        - "boleto"
+        summary: "Envia o pdf de recarga de boleto por e-mail"
+        parameters: []
+        responses: 
+          200: 
+            description: "OK"
+      parameters: 
+        - 
+          name: "email"
+          in: "path"
+          description: "email"
+          required: true
+          type: "string"
+    /cards: 
+      get:
+        tags: 
+        - "cards"
+        summary: "Lista os dados do cartão pelo número do cartão"
+        parameters: []
+        responses: 
+          200: 
+            description: "OK"
+    /cep: 
+      get: 
+        summary: "Pega os dados do endereço por CEP"
+        parameters: []
+        responses: 
+          200: 
+            description: "OK"
+    /voucher/{accountId}: 
+      get: 
+        tags: 
+          - "comprovantes"
+        summary: "Lista os comprovantes da conta"
+        parameters: []
+        responses: 
+          200: 
+            description: "OK"
+      post: 
+        tags: 
+          - "comprovantes"
+        summary: "Coloca na fila para ser salvo o comprovante no BD"
+        parameters: []
+        responses: 
+          200: 
+            description: "OK"
+      parameters: 
+        - 
+          name: "accountId"
+          in: "path"
+          description: "accountId"
+          required: true
+          type: "string"
+    /account: 
+      post: 
+        tags: 
+          - "accounts"
+        summary: "Retorna o id da conta através do número do cartão para fazer transferência"
+        parameters: []
+        responses: 
+          200: 
+            description: "OK"
+        x-resource-name: "Portador"
+        x-destination: "$prepaid_portador_destination/account"
+        x-timeout: "60"
+        x-api-broken: false
+        x-interceptors: {}
+  x-destination: null
+  x-interceptors: 
+    1: 
+      x-interceptor-position: 3
+      x-interceptor-type: "CUSTOM"
+      x-interceptor-execution-point: "SECOND"
+      x-interceptor-status: "REFERENCE"
+      x-interceptor-custom-interceptor-id: 1
+    2: 
+      x-interceptor-position: 1
+      x-interceptor-type: "LOG"
+      x-interceptor-content: "{\"encryptContent\":false,\"encryptPathAndParameters\":false}"
+      x-interceptor-execution-point: "FIRST"
+      x-interceptor-status: "REFERENCE"
+    3: 
+      x-interceptor-position: 4
+      x-interceptor-type: "LOG"
+      x-interceptor-content: "{\"encryptContent\":false,\"encryptPathAndParameters\":false}"
+      x-interceptor-execution-point: "SECOND"
+      x-interceptor-status: "REFERENCE"
+    4: 
+      x-interceptor-position: 2
+      x-interceptor-type: "CLIENT_ID_VALIDATION"
+      x-interceptor-content: "{\"responseContentType\":\"APPLICATION_JSON\",\"location\":\"HEADER\",\"name\":\"client_id\"}"
+      x-interceptor-execution-point: "FIRST"
+      x-interceptor-status: "REFERENCE"
+  x-life-cycle: "AVAILABLE"
+  x-timeout: null
+  x-access-token-expires-in: null
+  x-resources: 
+    Portador: 
+      x-resource-description: null
+      x-resource-config: {}
+      x-destination: null
+      x-interceptors: 
+        5: 
+          x-interceptor-position: 1
+          x-interceptor-type: "CLIENT_ID_VALIDATION"
+          x-interceptor-content: "{\"responseContentType\":\"APPLICATION_JSON\",\"location\":\"HEADER\",\"name\":\"client_id\"}"
+          x-interceptor-execution-point: "FIRST"
+          x-interceptor-status: "REFERENCE"
+        6: 
+          x-interceptor-position: 2
+          x-interceptor-type: "CUSTOM"
+          x-interceptor-content: 
+          x-interceptor-execution-point: "FIRST"
+          x-interceptor-status: "REFERENCE"
+          x-interceptor-custom-interceptor-id: 1
+        7: 
+          x-interceptor-position: 2
+          x-interceptor-type: "CLIENT_ID_VALIDATION"
+          x-interceptor-content: "{\"responseContentType\":\"APPLICATION_JSON\",\"location\":\"HEADER\",\"name\":\"client_id\"}"
+          x-interceptor-execution-point: "FIRST"
+          x-interceptor-status: "REMOVED"
+          x-interceptor-parent-id: 4
+      x-timeout: null
+      x-api-broken: false
+  x-api-broken: false
