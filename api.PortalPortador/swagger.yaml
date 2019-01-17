@@ -1080,14 +1080,14 @@
             type: "string"
           registro:
             type: "string"
-      RechargeEmailPdfSchema:
+    RechargeEmailPdfSchema:
          type: "object"
          properties:
           ourNumber:      
             type: "string"
           email:
             type: "string"
-      CarrierAccountsSchema:
+    CarrierAccountsSchema:
         type: "object"
         properties: 
           id:
