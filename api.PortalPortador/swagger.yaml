@@ -18,12 +18,12 @@
     description: "Operaçoes com o AWS Cognito"
   - name: "boleto"
     description: "Operaçoes de boleto"
-  - name: "comprovantes"
-    description: "Operaçoes com comprovantes"
   - name: "2FactorAuthentication"
     description: "Operaçoes de dupla autenticação por SMS/E-mail"
   - name: "usuario"
     description: "Operaçoes que envolvem dados do usuário"
+  - name: "Diversos"
+    description: "Operaçoes diversas"
     externalDocs:
       description: "Find out more about our store"
       url: "http://swagger.io"
@@ -36,7 +36,13 @@
         parameters: []
         responses: 
           200: 
-            description: "OK"
+            description: "Cartões encontrados"
+            schema:
+              $ref: '#/definitions/CardsSchema'
+          400:
+            description: "Nenhum registro encontrado para essa solicitação"
+            schema:
+              $ref: '#/definitions/MessageSchema'
       parameters: 
         - 
           name: "accountId"
@@ -49,13 +55,24 @@
         tags: 
           - "usuario"
         summary: "Valida se o CPF já existe na Conductor"
-        parameters: []
+        parameters: 
+        - name: "produtId"
+          in: "query"
+          type: "string"
+          description: "ID Produto no qual usuário se encontra"
         responses: 
           200: 
-            description: "OK"
-        x-resource-name: "Portador"
-        x-destination: "$prepaid_portador_destination/activeAccounts/{cpf}"
-        x-timeout: "60"
+            description: "Possui cartão pré-pago ativo."
+            schema:
+              $ref: "#/definitions/MessageSchema"
+          400:
+            description: "Você não possui cartão pré-pago ativo."
+            schema:
+              $ref: "#/definitions/MessageSchema"
+          404:
+            description: "Usuário não encontrado!"
+            schema:
+              $ref: "#/definitions/MessageSchema"
       parameters: 
         - 
           name: "cpf"
@@ -68,41 +85,38 @@
         tags: 
         - "cards"
         summary: "Valida a senha do cartão do portador"
-        parameters: []
+        parameters:
+          - name: "senha"
+            in: "query"                
+            type: "string"    
         responses: 
+          "400":
+            description: "Senha incorreta! você já errou a senha x vez(es)"
+            schema:
+              $ref: "#/definitions/MessageSchema"
           200: 
-            description: "OK"
-        x-resource-name: "Portador"
-        x-destination: "$prepaid_portador_destination/card/verify-password/{cardId}"
-        x-timeout: "60"
-        x-api-broken: false
-        x-interceptors: {}
-      post:
-        tags: 
-          - "cards"
-        summary: "Altera a senha do cartão esquecida"
-        parameters: []
-        responses: 
-          200: 
-            description: "OK"
-        x-resource-name: "Portador"
-        x-destination: "$prepaid_portador_destination/password/{cardId}"
-        x-timeout: "60"
-        x-api-broken: false
-        x-interceptors: {}
+            description: "Senha correta"
+            schema:
+              $ref: "#/definitions/MessageSchema"
       put: 
         tags: 
         - "cards"
         summary: "Altera a senha do cartão"
-        parameters: []
+        parameters:
+        - in: body
+          name: body
+          description: "Envio de código"
+          schema:
+            $ref: '#/definitions/ForgotPasswordSchema'
         responses: 
           200: 
-            description: "OK"
-        x-resource-name: "Portador"
-        x-destination: "$prepaid_portador_destination/cards/password/{cardId}"
-        x-timeout: "60"
-        x-api-broken: false
-        x-interceptors: {}
+            description: "Senha alterada com sucesso"
+            schema:
+              $ref: '#/definitions/MessageSchema'
+          400:
+            description: "Falha ao alterar senha do usuário, verifique se a senha atual está correta e a nova senha atende aos requisitos mínimos."
+            schema:
+              $ref: '#/definitions/MessageSchema'
       parameters: 
         - 
           name: "cardId"
@@ -115,15 +129,16 @@
         tags: 
         - "portador"
         summary: "Lista as contas do portador"
-        parameters: []
+        parameters: [] 
         responses: 
           200: 
-            description: "OK"
-        x-resource-name: "Portador"
-        x-destination: "$prepaid_portador_destination/accounts?personId={personId}&productId={productId}"
-        x-timeout: "60"
-        x-api-broken: false
-        x-interceptors: {}
+            description: "Conta encontrada"
+            schema:
+              $ref: '#/definitions/CarrierAccountsSchema'
+          400:
+            description: "Nenhum registro encontrado para essa solicitação"
+            schema:
+              $ref: '#/definitions/MessageSchema'
       parameters: 
         - 
           name: "productId"
@@ -142,13 +157,17 @@
         tags: 
         - "cognito"
         summary: "Registra o usuário"
-        parameters: []
+        parameters:
+        - in: body
+          name: body
+          description: "Parametros de registro"
+          schema:
+            $ref: '#/definitions/RegisterSchema'
         responses: 
           200: 
-            description: "OK"
-        x-resource-name: "Portador"
-        x-destination: "$prepaid_portador_destination/register"
-        x-timeout: "60"
+            description: "xxxxx cadastrado com sucesso!"
+          400:
+            description: "Usuário já cadastrado / Verifique se o CPF e o e-mail foram digitados corretamente."
     /recharge-bankslip-pdf/{ourNumber}: 
       get: 
         tags: 
@@ -157,10 +176,11 @@
         parameters: []
         responses: 
           200: 
-            description: "OK"
-        x-resource-name: "Portador"
-        x-destination: "$prepaid_portador_destination/recharge/bankslip/pdf/{ourNumber}"
-        x-timeout: "60"
+            description: "Código base64 do PDF impresso"
+            schema:
+              $ref: '#/definitions/RechargePdfSchema'
+          400:
+            description: 'Número do boleto não encontrado'
       parameters: 
         - 
           name: "ourNumber"
@@ -173,40 +193,42 @@
         tags: 
         - "cognito"
         summary: "Login do portador"
-        parameters: []
+        parameters: 
+        - in: body
+          name: LoginSchema
+          description: "Parametros de login"
+          schema:
+            $ref: '#/definitions/LoginSchema'
         responses: 
           200: 
-            description: "OK"
-        x-resource-name: "Portador"
-        x-destination: "$prepaid_portador_destination/oauth/login"
-        x-timeout: "60"
-    /temporary_endpoint_white_label: 
-      get: 
-        summary: "Temporary endpoint for white label"
-        parameters: []
-        responses: 
-          200: 
-            description: "OK"
-        x-resource-name: "Portador"
-        x-destination: null
-        x-timeout: null
-        x-api-broken: false
-        x-interceptors: 
-          27: 
-            x-interceptor-position: 1
-            x-interceptor-type: "MOCK"
-            x-interceptor-content: "{\"body\":\"[{\\n\\t\\t\\\"URI\\\": \\\"cateno.portadorcateno.com.br\\\",\\n\\t\\t\\\"cliente\\\": {\\n\\t\\t\\t\\\"idCompany\\\": \\\"1\\\",\\n\\t\\t\\t\\\"produtos\\\": [{\\n\\t\\t\\t\\t\\\"idproduto\\\": 2,\\n\\t\\t\\t\\t\\\"nomeProduto\\\": \\\"Cateno\\\",\\n\\t\\t\\t\\t\\\"credenciais\\\": [\\n\\t\\t\\t\\t\\t\\\"banking\\\", \\\"p2p\\\"\\n\\t\\t\\t\\t]\\n\\t\\t\\t}]\\n\\t\\t},\\n\\t\\t\\\"template\\\": \\\"cateno\\\"\\n\\t},\\n\\t{\\n\\t\\t\\\"URI\\\": \\\"localhost:4200\\\",\\n\\t\\t\\\"cliente\\\": {\\n\\t\\t\\t\\\"idCompany\\\": \\\"1\\\",\\n\\t\\t\\t\\\"produtos\\\": [{\\n\\t\\t\\t\\t\\\"idproduto\\\": 2,\\n\\t\\t\\t\\t\\\"nomeProduto\\\": \\\"Cateno\\\",\\n\\t\\t\\t\\t\\\"credenciais\\\": [\\n\\t\\t\\t\\t\\t\\\"banking\\\", \\\"p2p\\\"\\n\\t\\t\\t\\t]\\n\\t\\t\\t}]\\n\\t\\t},\\n\\t\\t\\\"template\\\": \\\"cateno\\\"\\n\\t},\\n\\t{\\n\\t\\t\\\"URI\\\": \\\"sindicato.portadorcateno.com.br\\\",\\n\\t\\t\\\"cliente\\\": {\\n\\t\\t\\t\\\"idCompany\\\": \\\"19\\\",\\n\\t\\t\\t\\\"produtos\\\": [{\\n\\t\\t\\t\\t\\\"idproduto\\\": 7,\\n\\t\\t\\t\\t\\\"nomeProduto\\\": \\\"Sindicato\\\",\\n\\t\\t\\t\\t\\\"credenciais\\\": [\\n\\t\\t\\t\\t\\t\\\"banking\\\", \\\"p2p\\\"\\n\\t\\t\\t\\t]\\n\\t\\t\\t}]\\n\\t\\t},\\n\\t\\t\\\"template\\\": \\\"cateno\\\"\\n\\t},\\n{\\n\\t\\t\\\"URI\\\": \\\"dev-portador.s3-website-us-east-1.amazonaws.com\\\",\\n\\t\\t\\\"cliente\\\": {\\n\\t\\t\\t\\\"idCompany\\\": \\\"1\\\",\\n\\t\\t\\t\\\"produtos\\\": [{\\n\\t\\t\\t\\t\\\"idproduto\\\": 2,\\n\\t\\t\\t\\t\\\"nomeProduto\\\": \\\"Cateno\\\",\\n\\t\\t\\t\\t\\\"credenciais\\\": [\\n\\t\\t\\t\\t\\t\\\"banking\\\", \\\"p2p\\\"\\n\\t\\t\\t\\t]\\n\\t\\t\\t}]\\n\\t\\t},\\n\\t\\t\\\"template\\\": \\\"cateno\\\"\\n\\t},\\n    {\\n\\t\\t\\\"URI\\\": \\\"prod-portador.s3-website-us-east-1.amazonaws.com\\\",\\n\\t\\t\\\"cliente\\\": {\\n\\t\\t\\t\\\"idCompany\\\": \\\"1\\\",\\n\\t\\t\\t\\\"produtos\\\": [{\\n\\t\\t\\t\\t\\\"idproduto\\\": 2,\\n\\t\\t\\t\\t\\\"nomeProduto\\\": \\\"Cateno\\\",\\n\\t\\t\\t\\t\\\"credenciais\\\": [\\n\\t\\t\\t\\t\\t\\\"banking\\\", \\\"p2p\\\"\\n\\t\\t\\t\\t]\\n\\t\\t\\t}]\\n\\t\\t},\\n\\t\\t\\\"template\\\": \\\"cateno\\\"\\n\\t}\\n]\",\"status\":\"200\",\"headers\":null}"
-            x-interceptor-execution-point: "FIRST"
-            x-interceptor-status: "REFERENCE"
+            description: "Sucesso no login"
+            schema:
+              $ref: '#/definitions/LoginResponseSchema'
+          401:
+            description: "Falha na autenticação. Verifique se os dados foram informados corretamente. / Usuário ou senha incorretos. Você possui mais x tentativas antes do bloqueio de acesso"
+          423:
+            description: "O seu usuário está bloqueado, por favor realize o processo de esqueceu a senha."
     /accounts/{accountId}/extract: 
       get: 
         tags: 
           - "accounts"
         summary: "Extrato da conta"
-        parameters: []
+        parameters: 
+        - name: "initialDate"
+          in: "query"
+          type: "string"
+        - name: "finalDate"
+          in: "query"
+          type: "string"
         responses: 
           200: 
-            description: "OK"
+            description: "Conta encontrada"
+            schema:
+              $ref: "#/definitions/ExtractSchema"
+          400:
+            description: "Nenhum registro encontrado para essa solicitação."
+            schema:
+              $ref: "#/definitions/MessageSchema"
       parameters: 
         - 
           name: "accountId"
@@ -219,13 +241,28 @@
         tags: 
         - "portador"
         summary: "PDF Consolidado"
-        parameters: []
+        parameters: 
+        - name: "finalDate"
+          in: "query"
+          type: "string"
+          required: true
+        - name: "initialDate"
+          in: "query"
+          type: "string"
+          required: true
+        - name: "type"
+          in: "query"
+          type: "string"
+          required: true
         responses: 
           200: 
-            description: "OK"
-        x-resource-name: "Portador"
-        x-destination: "$prepaid_portador_destination/carriers/{carrierId}/products/{productId}/pdf"
-        x-timeout: "60"
+            description: "Extrato encontrado"
+            schema:
+              $ref: '#/definitions/CarrierPdfSchema'
+          400:
+            description: "Nenhum registro encontrado para essa solicitação"
+            schema:
+              $ref: '#/definitions/MessageSchema'
       parameters: 
         - 
           name: "productId"
@@ -244,19 +281,35 @@
         tags: 
         - "accounts"
         summary: "Detalhe de uma conta"
-        parameters: []
+        parameters:
+        - name: "accountId"
+          in: "query"
+          type: "string"
         responses: 
           200: 
-            description: "OK"
+            description: "Conta encontrada"
+            schema:
+              $ref: "#/definitions/AccountSchema"
+          400:
+            description: "Nenhum registro encontrado para essa solicitação."
     /recharge/bankslip/register: 
       post: 
         tags: 
         - "boleto"
         summary: "Registra um boleto no Banco do Brasil"
-        parameters: []
+        parameters: 
+        - in: body
+          name: body
+          description: "Parametros para registro de boleto"
+          schema:
+            $ref: '#/definitions/RechargeRegisterSchema'
         responses: 
           200: 
-            description: "OK"
+            description: "Boleto registrado"
+            schema:
+              $ref: '#/definitions/RechargeResponseSchema'
+          400:
+            description: "Falha no registro do boleto."
     /cards/{cardId}: 
       post: 
         tags: 
@@ -265,10 +318,13 @@
         parameters: []
         responses: 
           200: 
-            description: "OK"
-        x-resource-name: "Portador"
-        x-destination: "$prepaid_portador_destination/card/{cardId}"
-        x-timeout: "60"
+            description: "Cartão desbloqueado"
+            schema:
+              $ref: '#/definitions/UnlockCardSchema'
+          400:
+            description: "Status do cartão não permite desbloqueio"
+            schema:
+              $ref: '#/definitions/MessageSchema'
       parameters: 
         - 
           name: "cardId"
@@ -281,21 +337,34 @@
         tags: 
           - "2FactorAuthentication"
         summary: "Valida o código validador que foi enviado"
-        parameters: []
+        parameters: 
+          - name: "randomCode"
+            in: "query"                
+            type: "string"   
         responses: 
           200: 
-            description: "OK"
+            description: "Código correto"
+          400:
+            description: "Código incorreto"
       post: 
         tags: 
           - "2FactorAuthentication"
+        consumes:
+         - application/json
         summary: "Envia o código validador por SMS e e-mail"
-        parameters: []
-        responses: 
+        parameters:
+        - in: body
+          name: body
+          description: Envio de código
+          schema:
+            $ref: '#/definitions/2faSchema'
+        responses:  
           200: 
-            description: "OK"
-        x-resource-name: "Portador"
-        x-destination: "$prepaid_portador_destination/2fa/{username}"
-        x-timeout: "60"
+            description: "Código de validação enviado com sucesso."
+          500:
+            description: "Internal Server Error"
+            schema:
+              $ref: '#/definitions/MessageSchema'
       parameters: 
         - 
           name: "username"
@@ -307,14 +376,22 @@
       post: 
         tags: 
           - "2FactorAuthentication"
-        summary: "Enviar código validador por SMS e e-mail"
-        parameters: []
-        responses: 
+        consumes:
+         - application/json
+        summary: "Envia o código validador por SMS e e-mail"
+        parameters:
+        - in: body
+          name: body
+          description: Envio de código
+          schema:
+            $ref: '#/definitions/2faSchema'
+        responses:  
           200: 
-            description: "OK"
-        x-resource-name: "Portador"
-        x-destination: "$prepaid_portador_destination/2fa/{username}"
-        x-timeout: "60"
+            description: "Código de validação enviado com sucesso."
+          500:
+            description: "Internal Server Error"
+            schema:
+              $ref: '#/definitions/MessageSchema'
       parameters: 
         - 
           name: "username"
@@ -327,28 +404,34 @@
         tags: 
         - "cognito"
         summary: "Alterar senha quando é o primeiro acesso"
-        parameters: []
+        parameters: 
+        - in: body
+          name: body
+          description: "Parametros para registrar nova senha"
+          schema:
+            $ref: '#/definitions/NewPasswordSchema'
         responses: 
           200: 
-            description: "OK"
-        x-resource-name: "Portador"
-        x-destination: "$prepaid_portador_destination/password"
-        x-timeout: "60"
-        x-api-broken: false
-        x-interceptors: {}
+            description: "Nova senha cadastrada com sucesso!"
+          400:
+            description: "Usuário ou senha atuais incorretos.   / Nova senha inválida. Ela deve possuir no mínimo 6 caracteres, 1 letra maiúscula, 1 número e 1 caracter especial"
       put:  
         tags: 
         - "cognito"
         summary: "Altera a senha do Portal entrando com a senha anterior"
-        parameters: []
+        parameters: 
+        - in: body
+          name: body
+          description: "Parametros de alteração de senha"
+          schema:
+            $ref: '#/definitions/AlterPasswordSchema'
         responses: 
           200: 
-            description: "OK"
-        x-resource-name: "Portador"
-        x-destination: "$prepaid_portador_destination/password"
-        x-timeout: "60"
-        x-api-broken: false
-        x-interceptors: {}
+            description: "Você alterou a senha do Portal Cateno em 23/03/2018 às 13:50. Caso tenha alguma dúvida, entrar em contato com a Central de Atendimento"
+            schema:
+              $ref: '#/definitions/MessageSchema'
+          400:
+            description: "Falha ao alterar senha do usuário, verifique se a senha atual está correta e a nova senha atende aos requisitos mínimos."
     /recharge-payments: 
       get: 
         tags: 
@@ -357,21 +440,28 @@
         parameters: []
         responses: 
           200: 
-            description: "OK"
+            description: "Boletos encontrados"
+            schema:
+              $ref: '#/definitions/RechargePaymentsSchema'
     /user/{cpf}: 
       get: 
         tags: 
           - "usuario"
         summary: "Recebe os dados do usuário"
-        parameters: []
+        produces:
+          - "application/json"
+        parameters: 
+        - name: "produtId"
+          in: "query"
+          type: "string"
+          description: "Id produto em qual o usuário se encontra"
         responses: 
           200: 
-            description: "OK"
-        x-resource-name: "Portador"
-        x-destination: "$prepaid_portador_destination/person/{cpf}"
-        x-timeout: "60"
-        x-api-broken: false
-        x-interceptors: {}
+            description: "Usuário encontrado"
+            schema:
+              $ref: "#/definitions/UserSchema"
+          400:
+            description: "Falha ao carregar dados do usuário   /  Nenhuma conta ativa para o usuário encontrada neste domínio."
       parameters: 
         - 
           name: "cpf"
@@ -384,51 +474,53 @@
         tags: 
         - "cognito"
         summary: "Solicita código validador para alterar a senha"
-        parameters: []
+        parameters:
+        - name: "username"
+          in: "query"
+          type: "string"
+        - name: "idCompany"
+          in: "query"
+          type: "string"
         responses: 
-          200: 
-            description: "OK"
-        x-resource-name: "Portador"
-        x-destination: "$prepaid_portador_destination/password"
-        x-timeout: "60"
-        x-api-broken: false
-        x-interceptors: 
-          12: 
-            x-interceptor-position: 1
-            x-interceptor-type: "CUSTOM"
-            x-interceptor-execution-point: "SECOND"
-            x-interceptor-status: "REMOVED"
-            x-interceptor-parent-id: 1
-            x-interceptor-custom-interceptor-id: 1
+          201: 
+            description: "Uma nova senha foi enviada para xxx"
+            schema:
+              $ref: '#/definitions/MessageSchema'
+          400:
+            description: "Você ainda está com senha temporária, para continuar você precisará de uma nova. Favor voltar ao início do portal e solicitar um novo cadastro de acesso para receber uma nova senha."
       post: 
         tags: 
         - "cognito"
         summary: "Altera a senha do portal esquecida"
-        parameters: []
+        parameters: 
+        - in: body
+          name: body
+          description: "parametros de confirmação de senha"
+          schema:
+            $ref: '#/definitions/ConfirmPasswordSchema'
         responses: 
           200: 
-            description: "OK"
-        x-resource-name: "Portador"
-        x-destination: "$prepaid_portador_destination/confirmation"
-        x-timeout: "60"
-        x-api-broken: false
-        x-interceptors: 
-          19: 
-            x-interceptor-position: 1
-            x-interceptor-type: "CUSTOM"
-            x-interceptor-execution-point: "SECOND"
-            x-interceptor-status: "REMOVED"
-            x-interceptor-parent-id: 1
-            x-interceptor-custom-interceptor-id: 1
+            description: "Confirmação bem sucedida"
+            schema:
+              $ref: '#/definitions/LoginResponseSchema'
+          400:
+            description: "Código de verificação inválido / Falha ao resetar a senha / A senha não atende aos requisitos mínimos. Ela deve possuir ao menos 1 letra minúscula, 1 letra maiúscula, 1 número e 1 caracter especial."
     /recharge/bankslip/pdf/{email}: 
       post: 
         tags: 
         - "boleto"
         summary: "Envia o pdf de recarga de boleto por e-mail"
-        parameters: []
+        parameters: 
+        - in: body
+          name: body
+          description: "Parametro de envio do boleto por PDF"
+          schema:
+            $ref: '#/definitions/RechargeEmailPdfSchema'
         responses: 
           200: 
-            description: "OK"
+            description: "The email was successfully sent"
+          400:
+            description: "The email could not be sent"
       parameters: 
         - 
           name: "email"
@@ -444,107 +536,767 @@
         parameters: []
         responses: 
           200: 
-            description: "OK"
+            description: "Cartão encontrado"
+            schema:
+              $ref: "#/definitions/CardSchema"
+          404:
+            description: "Nenhum registro encontrado para essa solicitação"
+            schema:
+              $ref: "#/definitions/MessageSchema"
+            
     /cep: 
       get: 
+        tags:
+        - "Diversos"
         summary: "Pega os dados do endereço por CEP"
-        parameters: []
-        responses: 
-          200: 
-            description: "OK"
-    /voucher/{accountId}: 
-      get: 
-        tags: 
-          - "comprovantes"
-        summary: "Lista os comprovantes da conta"
-        parameters: []
-        responses: 
-          200: 
-            description: "OK"
-      post: 
-        tags: 
-          - "comprovantes"
-        summary: "Coloca na fila para ser salvo o comprovante no BD"
-        parameters: []
-        responses: 
-          200: 
-            description: "OK"
-      parameters: 
-        - 
-          name: "accountId"
-          in: "path"
-          description: "accountId"
-          required: true
+        parameters: 
+        - name: "cep"
+          in: "query"
           type: "string"
+        responses: 
+          200: 
+            description: "Cep encontrado"
+            schema:
+              $ref: '#/definitions/CepSchema'
+          404:
+            description: "Cep não informado"
+            schema:
+              $ref: '#/definitions/MessageSchema'
     /account: 
       post: 
         tags: 
           - "accounts"
         summary: "Retorna o id da conta através do número do cartão para fazer transferência"
-        parameters: []
+        parameters:
+        - in: body
+          name: body
+          description: "Envio de nova senha"
+          schema:
+            $ref: '#/definitions/CryptographedCardNumber'
         responses: 
           200: 
-            description: "OK"
-        x-resource-name: "Portador"
-        x-destination: "$prepaid_portador_destination/account"
-        x-timeout: "60"
-        x-api-broken: false
-        x-interceptors: {}
-  x-destination: null
-  x-interceptors: 
-    1: 
-      x-interceptor-position: 3
-      x-interceptor-type: "CUSTOM"
-      x-interceptor-execution-point: "SECOND"
-      x-interceptor-status: "REFERENCE"
-      x-interceptor-custom-interceptor-id: 1
-    2: 
-      x-interceptor-position: 1
-      x-interceptor-type: "LOG"
-      x-interceptor-content: "{\"encryptContent\":false,\"encryptPathAndParameters\":false}"
-      x-interceptor-execution-point: "FIRST"
-      x-interceptor-status: "REFERENCE"
-    3: 
-      x-interceptor-position: 4
-      x-interceptor-type: "LOG"
-      x-interceptor-content: "{\"encryptContent\":false,\"encryptPathAndParameters\":false}"
-      x-interceptor-execution-point: "SECOND"
-      x-interceptor-status: "REFERENCE"
-    4: 
-      x-interceptor-position: 2
-      x-interceptor-type: "CLIENT_ID_VALIDATION"
-      x-interceptor-content: "{\"responseContentType\":\"APPLICATION_JSON\",\"location\":\"HEADER\",\"name\":\"client_id\"}"
-      x-interceptor-execution-point: "FIRST"
-      x-interceptor-status: "REFERENCE"
-  x-life-cycle: "AVAILABLE"
-  x-timeout: null
-  x-access-token-expires-in: null
-  x-resources: 
-    Portador: 
-      x-resource-description: null
-      x-resource-config: {}
-      x-destination: null
-      x-interceptors: 
-        5: 
-          x-interceptor-position: 1
-          x-interceptor-type: "CLIENT_ID_VALIDATION"
-          x-interceptor-content: "{\"responseContentType\":\"APPLICATION_JSON\",\"location\":\"HEADER\",\"name\":\"client_id\"}"
-          x-interceptor-execution-point: "FIRST"
-          x-interceptor-status: "REFERENCE"
-        6: 
-          x-interceptor-position: 2
-          x-interceptor-type: "CUSTOM"
-          x-interceptor-content: 
-          x-interceptor-execution-point: "FIRST"
-          x-interceptor-status: "REFERENCE"
-          x-interceptor-custom-interceptor-id: 1
-        7: 
-          x-interceptor-position: 2
-          x-interceptor-type: "CLIENT_ID_VALIDATION"
-          x-interceptor-content: "{\"responseContentType\":\"APPLICATION_JSON\",\"location\":\"HEADER\",\"name\":\"client_id\"}"
-          x-interceptor-execution-point: "FIRST"
-          x-interceptor-status: "REMOVED"
-          x-interceptor-parent-id: 4
-      x-timeout: null
-      x-api-broken: false
-  x-api-broken: false
+            description: "160030"
+          500:
+            description: "Internal Server Error"
+  definitions:
+    MessageSchema:
+      type: "object"
+      properties:
+        message:
+          type: "string"
+    CardAlterPasswordSchema:
+      type: "object"
+      properties:
+        password:
+          type: "string"
+        newPassword:
+          type: "string"
+        randomCode:
+          type: "string"
+    2faSchema:
+      type: "object"
+      properties:
+        email:
+          type: "string"
+        phoneNumber:
+          type: "string"
+    UserSchema:
+      type: "object"
+      properties:
+        id:
+          type: "number"
+        nome:
+          type: "string"
+        tipo:
+          type: "number"
+        cpf:
+          type: "string"
+        dataNascimento:
+          type: "number"
+        sexo:
+          type: "string"
+        numeroIdentidade:
+          type: "number"
+        orgaoExpedidorIdentidade:
+          type: "string"
+        unidadeFederativaIdentidade:
+          type: "string"
+        dataEmissaoIdentidade:
+          type: "number"
+        email:
+          type: "string"
+        telefone:
+          type: object
+          properties:
+            id:
+              type: "number"
+            idTipoTelefone:
+              type: "number"
+            idPessoa:
+              type: "number"
+            ddd:
+              type: "string"
+            telefone:
+              type: "string"
+            ramal:
+              type: "string"
+            status:
+              type: "number"
+    CardSchema:
+      type: "object"
+      properties:
+        id:
+          type: "number"
+        flagTitular:
+          type: "number"
+        idPessoa:
+          type: "number"
+        sequencialCartao:
+          type: "number"
+        idConta:
+          type: "number"
+        idStatus:
+          type: "number"
+        dataStatus:
+          type: "string"
+        idEstagio:
+          type: "number"
+        dataEstagio:
+          type: "string"
+        numeroBin:
+          type: "number"
+        numeroCartao:
+          type: "number"
+        numeroCartaoHash:
+          type: "string"
+        numeroCartaoCriptografado:
+          type: "string"
+        dataEmissao:
+          type: "string"
+        dataValidade:
+          type: "string"
+        cartaoVirtual:
+          type: "number"
+        impressaoAvulsa:
+          type: "string"
+        dataImpressao:
+          type: "string"
+        nomeArquivoImpressao:
+          type: "string"
+        idProduto:
+          type: "number"
+        nomeImpresso:
+          type: "string"
+        codigoDesbloqueio:
+          type: "string"
+        tipoPortador:
+          type: "string"
+        idStatusCartao:
+          type: "number"
+        dataStatusCartao:
+          type: "string"
+        idEstagioCartao:
+          type: "number"
+        dataEstagioCartao:
+          type: "string"
+        dataGeracao:
+          type: "string"
+        flagVirtual:
+          type: "boolean"
+        flagImpressaoOrigemComerial:
+          type: "string"
+        arquivoImpressao:
+          type: "string"
+    UnlockCardSchema:
+      type: "object"
+      properties:
+        id:
+          type: "number"
+        flagTitular:
+          type: "number"
+        idPessoa:
+          type: "number"
+        sequencialCartao:
+          type: "number"
+        idConta:
+          type: "number"
+        idStatus:
+          type: "number"
+        dataStatus:
+          type: "string"
+        idEstagio:
+          type: "number"
+        dataEstagio:
+          type: "string"
+        numeroBin:
+          type: "number"
+        numeroCartao:
+          type: "number"
+        numeroCartaoHash:
+          type: "string"
+        numeroCartaoCriptografado:
+          type: "string"
+        dataEmissao:
+          type: "string"
+        dataValidade:
+          type: "string"
+        cartaoVirtual:
+          type: "number"
+        impressaoAvulsa:
+          type: "string"
+        dataImpressao:
+          type: "string"
+        nomeArquivoImpressao:
+          type: "string"
+        idProduto:
+          type: "number"
+        nomeImpresso:
+          type: "string"
+    ForgotPasswordSchema:
+      type: "object"
+      properties:
+        username:
+          type: "string"
+        idCompany:
+          type: "string"
+        password:
+          type: "string"
+        newPassword:
+          type: "string"
+    ResetPasswordSchema:
+      type: "object"
+      properties:
+        username:
+          type: "string"
+        idCompany:
+          type: "string"
+    CryptographedCardNumber:
+      type: "object"
+      properties:
+        encryptedParam:
+          type: "string"
+    AccountSchema:
+      type: "object"
+      properties:
+        id:
+          type: "number"
+        idPessoa:
+          type: "number"
+        nome:
+          type: "string"
+        idProduto:
+          type: "number"
+        idOrigemComercial:
+          type: "number"
+        nomeOrigemComercial:
+          type: "string"
+        idFatasiaBasica:
+          type: "number"
+        nomeFantasiaBasica:
+          type: "string"
+        idStatusConta:
+          type: "number"
+        statusConta:
+          type: "string"
+        diaVencimento:
+          type: "number"
+        melhorDiaCompra:
+          type: "number"
+        dataStatusConta:
+          type: "string"
+        dataCadastro:
+          type: "string"
+        dataUltimaAlteracaoVencimento:
+          type: "string"
+        dataHoraUltimaCompra:
+          type: "string"
+        numeroAgencia:
+          type: "number"
+        numeroContaCorrente:
+          type: "string"
+        valorRenda:
+          type: "number"
+        formaEnvioFatura:
+          type: "string"
+        titular:
+          type: "boolean"    
+        limiteGlobal:
+          type: "number"
+        limiteSaqueGlobal:
+          type: "number"
+        saldoDisponivelGlobal:
+          type: "number"
+        saldoDisponivelSaque:
+          type: "number"
+        impedidoFinanciamento:
+          type: "boolean"
+        diasAtraso:
+          type: "number"
+        proximoVencimentoPadrao:
+          type: "string"
+        idProposta:
+          type: "number"
+        quantidadePagamentos:
+          type: "number"
+        correspondencia:
+          type: "number"
+        dataInicioAtraso:
+          type: "string"
+        rotativoPagaJuros:
+          type: "number"
+        totalPosProx:
+          type: "number"
+        saldoAtualFinal:
+          type: "number"
+        saldoExtratoAnterior:
+          type: "number"
+        aceitaNovaContaPorGrupoProduto:
+          type: "boolean"
+        funcaoAtiva:
+          type: "string"
+    ExtractSchema:
+      type: "object"
+      properties:
+        id:
+          type: "number"
+        idTipoTransacao:
+          type: "number"
+        descricaoAbreviada:
+          type: "string"
+        statusTransacao:
+          type: "string"
+        idEvento:
+          type: "number"
+        tipoEvento:
+          type: "string"
+        idConta:
+          type: "number"
+        cartaoMascarado:
+          type: "string"
+        nomePortador:
+          type: "string"
+        dataTransacao:
+          type: "string"
+        dataFaturamento:
+          type: "string"
+        dataVencimento:
+          type: "string"
+        modoEntradaTransacao:
+          type: "string"
+        valorTaxaEmbarque:
+          type: "number"
+        valorEntrada:
+          type: "number"
+        valorBRL:
+          type: "number"
+        valorUSD:
+          type: "number"
+        cotacaoUSD:
+          type: "number"
+        dataCotacaoUSD:
+          type: "string"
+        codigoMoedaOrigem:
+          type: "string"
+        codigoMoedaDestino:
+          type: "string"    
+        codigoAutorizacao:
+          type: "string"
+        codigoReferencia:
+          type: "string"
+        codigoTerminal:
+          type: "string"
+        codigoMCC:
+          type: "number"
+        grupoMCC:
+          type: "number"
+        grupoDescricaoMCC:
+          type: "string"
+        idEstabelecimento:
+          type: "number"
+        nomeEstabelecimento:
+          type: "string"
+        nomeFantasiaEstabelecimento:
+          type: "string"
+        localidadeEstabelecimento:
+          type: "string"
+        planoParcelamento:
+          type: "number"
+        numeroParcela:
+          type: "number"
+        detalhesTransacao:
+          type: "string"
+        flagCredito:
+          type: "number"
+        flagFaturado:
+          type: "number"
+        flagEstorno:
+          type: "number"
+        idTransacaoEstorno:
+          type: "number"
+    CardsSchema:
+      type: "object"
+      properties:
+        id:
+          type: "number"
+        flagTitular:
+          type: "number"
+        idPessoa:
+          type: "number"
+        sequencialCartao:
+          type: "number"
+        idConta:
+          type: "number"
+        idStatus:
+          type: "number"
+        dataStatus:
+          type: "string"
+        idEstagio:
+          type: "number"
+        dataEstagio:
+          type: "string"
+        numeroBin:
+          type: "number"
+        numeroCartao:
+          type: "string"
+        numeroCartaoHash:
+          type: "number"
+        numeroCartaoCriptografado:
+          type: "string"
+        dataEmissao:
+          type: "string"
+        dataValidade:
+          type: "string"
+        cartaoVirtual:
+          type: "number"
+        impressaoAvulsa:
+          type: "number"
+        dataImpressao:
+          type: "string"
+        nomeArquivoImpressao:
+          type: "string"
+        idProduto:
+          type: "number"
+        nomeImpresso:
+          type: "string"    
+        codigoDesbloqueio:
+          type: "string"
+    RegisterSchema:
+      type: "object"
+      properties:
+        username:
+          type: "string"
+        idCompany:
+          type: "string"
+        email:
+          type: "string"
+    LoginSchema:
+      type: "object"
+      properties:
+        username:
+          type: "string"
+        idCompany:
+          type: "string"
+        password:
+          type: "string"
+    LoginResponseSchema:
+      type: "object"
+      properties:
+        first_access:
+          type: "string"
+    ConfirmPasswordSchema:
+      type: "object"
+      properties:
+        username:
+          type: "string"
+        code:
+          type: "string"
+        idCompany:
+          type: "string"
+        password:
+          type: "string"
+    AlterPasswordSchema:
+      type: "object"
+      properties:
+        username:
+          type: "string"
+        oldpass:
+          type: "string"
+        newpass:
+          type: "string"
+        idCompany:
+          type: "string"
+    RechargePdfSchema:
+      type: "object"
+      properties:
+        pdf:
+          type: "string"
+    RechargeRegisterSchema:
+      type: "object"
+      properties:
+        account:
+          type: "string"
+        cpf:
+          type: "string"
+        value:
+          type: "string"
+        productId:
+          type: "string"
+    RechargeResponseSchema:
+      type: "object"
+      properties:
+        titleNumberBb:
+          type: "string"
+        digitableLine:
+          type: "string"
+        numericBarcode:
+          type: "string"
+        codigoCliente:
+          type: "string"
+        numeroContratoCobranca:
+          type: "string"
+        digitableLineFormatted:
+          type: "string"
+        info:
+          type: "object"
+          properties:
+            product:
+              type: "string"
+            cpf:
+              type: "string"
+            account:
+              type: "string"
+            date:
+              type: "string"
+    RechargePaymentsSchema:
+      type: "array"
+      items:
+        type: "object"
+        properties:
+          bankslip:      
+            type: "string"
+          command:
+            type: "string"
+          status:
+            type: "string"
+          registro:
+            type: "string"
+      RechargeEmailPdfSchema:
+         type: "object"
+         properties:
+          ourNumber:      
+            type: "string"
+          email:
+            type: "string"
+      CarrierAccountsSchema:
+        type: "object"
+        properties: 
+          id:
+            type: "number"
+          idProduto:
+            type: "number"
+          idOrigemComercial:
+            type: "number"
+          idPessoa:
+            type: "number"
+          idStatusConta:
+            type: "number"
+          diaVencimento:
+            type: "number"
+          melhorDiaCompra:
+            type: "number"
+          dataStatusConta:
+            type: "string"
+          dataCadastro:
+            type: "string"
+          dataUltimaAlteracaoVencimento:
+            type: "string"
+          valorRenda:
+            type: "number"
+          idProposta:
+            type: "number"
+          funcaoAtiva:
+            type: "string"
+    CarrierPdfSchema:
+      type: "object"
+      properties:
+        id:
+          type: "number"
+        idPessoa:
+          type: "number"
+        nome:
+          type: "string"
+        idProduto:
+          type: "number"
+        idOrigemComercial:
+          type: "number"
+        nomeOrigemComercial:
+          type: "string"
+        idFatasiaBasica:
+          type: "number"
+        nomeFantasiaBasica:
+          type: "string"
+        idStatusConta:
+          type: "number"
+        statusConta:
+          type: "string"
+        diaVencimento:
+          type: "number"
+        melhorDiaCompra:
+          type: "number"
+        dataStatusConta:
+          type: "string"
+        dataCadastro:
+          type: "string"
+        dataUltimaAlteracaoVencimento:
+          type: "string"
+        dataHoraUltimaCompra:
+          type: "string"
+        numeroAgencia:
+          type: "number"
+        numeroContaCorrente:
+          type: "string"
+        valorRenda:
+          type: "number"
+        formaEnvioFatura:
+          type: "string"
+        titular:
+          type: "boolean"    
+        limiteGlobal:
+          type: "number"
+        limiteSaqueGlobal:
+          type: "number"
+        saldoDisponivelGlobal:
+          type: "number"
+        saldoDisponivelSaque:
+          type: "number"
+        impedidoFinanciamento:
+          type: "boolean"
+        diasAtraso:
+          type: "number"
+        proximoVencimentoPadrao:
+          type: "string"
+        idProposta:
+          type: "number"
+        quantidadePagamentos:
+          type: "number"
+        correspondencia:
+          type: "number"
+        dataInicioAtraso:
+          type: "string"
+        rotativoPagaJuros:
+          type: "number"
+        totalPosProx:
+          type: "number"
+        saldoAtualFinal:
+          type: "number"
+        saldoExtratoAnterior:
+          type: "number"
+        aceitaNovaContaPorGrupoProduto:
+          type: "boolean"
+        funcaoAtiva:
+          type: "string"
+        extract:
+          type: "array"
+          items:
+            type: "object"
+            properties:
+              id:
+                type: "number"
+              idTipoTransacao:
+                type: "number"
+              descricaoAbreviada:
+                type: "string"
+              statusTransacao:
+                type: "string"
+              idEvento:
+                type: "number"
+              tipoEvento:
+                type: "string"
+              idConta:
+                type: "number"
+              cartaoMascarado:
+                type: "string"
+              nomePortador:
+                type: "string"
+              dataTransacao:
+                type: "string"
+              dataFaturamento:
+                type: "string"
+              dataVencimento:
+                type: "string"
+              modoEntradaTransacao:
+                type: "string"
+              valorTaxaEmbarque:
+                type: "number"
+              valorEntrada:
+                type: "number"
+              valorBRL:
+                type: "number"
+              valorUSD:
+                type: "number"
+              cotacaoUSD:
+                type: "number"
+              dataCotacaoUSD:
+                type: "string"
+              codigoMoedaOrigem:
+                type: "string"
+              codigoMoedaDestino:
+                type: "string"    
+              codigoAutorizacao:
+                type: "string"
+              codigoReferencia:
+                type: "string"
+              codigoTerminal:
+                type: "string"
+              codigoMCC:
+                type: "number"
+              grupoMCC:
+                type: "number"
+              grupoDescricaoMCC:
+                type: "string"
+              idEstabelecimento:
+                type: "number"
+              nomeEstabelecimento:
+                type: "string"
+              nomeFantasiaEstabelecimento:
+                type: "string"
+              localidadeEstabelecimento:
+                type: "string"
+              planoParcelamento:
+                type: "number"
+              numeroParcela:
+                type: "number"
+              detalhesTransacao:
+                type: "string"
+              flagCredito:
+                type: "number"
+              flagFaturado:
+                type: "number"
+              flagEstorno:
+                type: "number"
+              idTransacaoEstorno:
+                type: "number"
+    CepSchema:
+      type: "object"
+      properties:
+        cep:
+          type: "string"
+        endereco:
+          type: "string"
+        bairro: 
+          type: "string"
+        cidade:
+          type: "string"
+        uf:
+          type: "string"
+    NewPasswordSchema:
+      type: "object"
+      properties:
+        username:
+          type: "string"
+        idCompany:
+          type: "string"
+        password: 
+          type: "string"
+        newPassword:
+          type: "string"
