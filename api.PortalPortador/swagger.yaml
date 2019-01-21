@@ -588,9 +588,32 @@
         parameters:
         - in: body
           name: body
-          description: "Envio de nova senha"
+          description: "parametros para operaçao"
           schema:
             $ref: '#/definitions/P2pSchema'
+        responses: 
+          200: 
+            description: "Gerando comprovante de cliente"
+          500:
+            description: "Internal Server Error"
+      parameters: 
+        - 
+          name: "accountId"
+          in: "path"
+          description: "Id da conta"
+          required: true
+          type: "string"
+    /accounts/{accountId}/transaction/recharge-cell: 
+      post: 
+        tags: 
+          - "transactions"
+        summary: "Realiza operação de recarga de celular"
+        parameters:
+        - in: body
+          name: body
+          description: "parametros para operaçao"
+          schema:
+            $ref: '#/definitions/RechargeCellSchema'
         responses: 
           200: 
             description: "Gerando comprovante de cliente"
@@ -622,6 +645,27 @@
         conta_destinatario:
           type: "string"
         transaction_token:
+          type: "string"
+    RechargeCellSchema:
+      type: "object"
+      properties:
+        valorTotal:
+          type: "string"
+        operadora:
+          type: "string"
+        ddd:
+          type: "string"
+        countrycode:
+          type: "string"
+        numero_Cell:
+          type: "string"
+        cpf_cnpj_origem:
+          type: "string"
+        clienteNome_origem:
+          type: "string"
+        cpf_cnpj_origem:
+          type: "string"
+        tarifa:
           type: "string"
     MessageSchema:
       type: "object"
