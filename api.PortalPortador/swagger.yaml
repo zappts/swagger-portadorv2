@@ -97,12 +97,6 @@
           required: true
           type: "string"
         - 
-            name: "Authorization"
-            in: "header"
-            description: "Authorization"
-            required: true
-            type: "string"
-        - 
           name: "client_id"
           in: "header"
           description: "client_id"
@@ -281,7 +275,7 @@
           200: 
             description: "Sucesso no login"
             schema:
-              $ref: '#/definitions/LoginResponseSchema'
+              $ref: '#/definitions/LoginResponseSchema' 
           401:
             description: "Falha na autenticação. Verifique se os dados foram informados corretamente. / Usuário ou senha incorretos. Você possui mais x tentativas antes do bloqueio de acesso"
           423:
@@ -433,12 +427,6 @@
           400:
             description: "Falha no registro do boleto."
       parameters: 
-        - 
-          name: "Authorization"
-          in: "header"
-          description: "Authorization"
-          required: true
-          type: "string"
         - 
           name: "client_id"
           in: "header"
@@ -672,12 +660,6 @@
           required: true
           type: "string"
         - 
-          name: "Authorization"
-          in: "header"
-          description: "Authorization"
-          required: true
-          type: "string"
-        - 
           name: "client_id"
           in: "header"
           description: "client_id"
@@ -720,12 +702,6 @@
           400:
             description: "Código de verificação inválido / Falha ao resetar a senha / A senha não atende aos requisitos mínimos. Ela deve possuir ao menos 1 letra minúscula, 1 letra maiúscula, 1 número e 1 caracter especial."
       parameters: 
-        - 
-          name: "Authorization"
-          in: "header"
-          description: "Authorization"
-          required: true
-          type: "string"
         - 
           name: "client_id"
           in: "header"
