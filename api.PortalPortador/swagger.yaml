@@ -216,12 +216,6 @@
             description: "Usuário já cadastrado / Verifique se o CPF e o e-mail foram digitados corretamente."
       parameters: 
         - 
-          name: "Authorization"
-          in: "header"
-          description: "Authorization"
-          required: true
-          type: "string"
-        - 
           name: "client_id"
           in: "header"
           description: "client_id"
