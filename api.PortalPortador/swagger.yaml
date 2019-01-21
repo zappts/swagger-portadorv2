@@ -61,7 +61,7 @@
         - 
           name: "client_id"
           in: "header"
-          description: "Authorization"
+          description: "client_id"
           required: true
           type: "string"
         
@@ -105,7 +105,7 @@
         - 
           name: "client_id"
           in: "header"
-          description: "Authorization"
+          description: "client_id"
           required: true
           type: "string"
     /cards/{cardId}/password: 
@@ -161,7 +161,7 @@
         - 
           name: "client_id"
           in: "header"
-          description: "Authorization"
+          description: "client_id"
           required: true
           type: "string"
     /carriers/{personId}/products/{productId}/accounts: 
@@ -201,7 +201,7 @@
         - 
           name: "client_id"
           in: "header"
-          description: "Authorization"
+          description: "client_id"
           required: true
           type: "string"
     /oauth/register: 
@@ -230,7 +230,7 @@
         - 
           name: "client_id"
           in: "header"
-          description: "Authorization"
+          description: "client_id"
           required: true
           type: "string"
     
@@ -263,7 +263,7 @@
         - 
           name: "client_id"
           in: "header"
-          description: "Authorization"
+          description: "client_id"
           required: true
           type: "string"
     /oauth/login: 
@@ -296,7 +296,7 @@
         - 
           name: "client_id"
           in: "header"
-          description: "Authorization"
+          description: "client_id"
           required: true
           type: "string"
     /accounts/{accountId}/extract: 
@@ -336,7 +336,7 @@
         - 
           name: "client_id"
           in: "header"
-          description: "Authorization"
+          description: "client_id"
           required: true
           type: "string"
     /carriers/{carrierId}/products/{productId}/pdf: 
@@ -388,7 +388,7 @@
         - 
           name: "client_id"
           in: "header"
-          description: "Authorization"
+          description: "client_id"
           required: true
           type: "string"
     /accountdetail: 
@@ -417,7 +417,7 @@
         - 
           name: "client_id"
           in: "header"
-          description: "Authorization"
+          description: "client_id"
           required: true
           type: "string"
     /recharge/bankslip/register: 
@@ -448,7 +448,7 @@
         - 
           name: "client_id"
           in: "header"
-          description: "Authorization"
+          description: "client_id"
           required: true
           type: "string"
     /cards/{cardId}: 
@@ -487,7 +487,7 @@
         - 
           name: "client_id"
           in: "header"
-          description: "Authorization"
+          description: "client_id"
           required: true
           type: "string"
     /2fa/{username}: 
@@ -539,7 +539,7 @@
         - 
           name: "client_id"
           in: "header"
-          description: "Authorization"
+          description: "client_id"
           required: true
           type: "string"
     /code/{username}/emailsms: 
@@ -578,7 +578,7 @@
         - 
           name: "client_id"
           in: "header"
-          description: "Authorization"
+          description: "client_id"
           required: true
           type: "string"
     /oauth/password: 
@@ -624,7 +624,7 @@
         - 
           name: "client_id"
           in: "header"
-          description: "Authorization"
+          description: "client_id"
           required: true
           type: "string"
     /recharge-payments: 
@@ -648,7 +648,7 @@
         - 
           name: "client_id"
           in: "header"
-          description: "Authorization"
+          description: "client_id"
           required: true
           type: "string"
     /user/{cpf}: 
@@ -686,7 +686,7 @@
         - 
           name: "client_id"
           in: "header"
-          description: "Authorization"
+          description: "client_id"
           required: true
           type: "string"
     /password/forgot: 
@@ -735,7 +735,7 @@
         - 
           name: "client_id"
           in: "header"
-          description: "Authorization"
+          description: "client_id"
           required: true
           type: "string"
     /recharge/bankslip/pdf/{email}: 
@@ -770,7 +770,7 @@
         - 
           name: "client_id"
           in: "header"
-          description: "Authorization"
+          description: "client_id"
           required: true
           type: "string"
     /cards: 
@@ -798,7 +798,7 @@
         - 
           name: "client_id"
           in: "header"
-          description: "Authorization"
+          description: "client_id"
           required: true
           type: "string"
     /cep: 
@@ -829,7 +829,7 @@
         - 
           name: "client_id"
           in: "header"
-          description: "Authorization"
+          description: "client_id"
           required: true
           type: "string"
     /account: 
@@ -858,7 +858,7 @@
         - 
           name: "client_id"
           in: "header"
-          description: "Authorization"
+          description: "client_id"
           required: true
           type: "string"
     /accounts/{accountId}/transaction/p2p: 
@@ -893,7 +893,7 @@
         - 
           name: "client_id"
           in: "header"
-          description: "Authorization"
+          description: "client_id"
           required: true
           type: "string"
     /accounts/{accountId}/transaction/recharge-cell: 
@@ -928,7 +928,7 @@
         - 
           name: "client_id"
           in: "header"
-          description: "Authorization"
+          description: "client_id"
           required: true
           type: "string"
     /accounts/{accountId}/transaction/bill-payment: 
@@ -963,7 +963,7 @@
         - 
           name: "client_id"
           in: "header"
-          description: "Authorization"
+          description: "client_id"
           required: true
           type: "string"
     /accounts/{accountId}/transaction/transfer: 
@@ -998,7 +998,7 @@
         - 
           name: "client_id"
           in: "header"
-          description: "Authorization"
+          description: "client_id"
           required: true
           type: "string"
   definitions:
