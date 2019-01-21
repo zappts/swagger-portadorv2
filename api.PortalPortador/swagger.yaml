@@ -592,12 +592,6 @@
             description: "Falha ao alterar senha do usuário, verifique se a senha atual está correta e a nova senha atende aos requisitos mínimos."
       parameters: 
         - 
-          name: "Authorization"
-          in: "header"
-          description: "Authorization"
-          required: true
-          type: "string"
-        - 
           name: "client_id"
           in: "header"
           description: "client_id"
