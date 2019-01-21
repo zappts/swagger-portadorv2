@@ -317,7 +317,12 @@
         tags: 
           - "cards"
         summary: "Altera o status do cartão"
-        parameters: []
+        parameters: 
+        - in: body
+          name: body
+          description: "parametro para desbloqueio de cartão"
+          schema:
+              $ref: '#/definitions/UnlockCardRequestSchema'
         responses: 
           200: 
             description: "Cartão desbloqueado"
@@ -626,7 +631,58 @@
           description: "Id da conta"
           required: true
           type: "string"
+    /accounts/{accountId}/transaction/bill-payment: 
+      post: 
+        tags: 
+          - "transactions"
+        summary: "Realiza operação de pagamento de boleto"
+        parameters:
+        - in: body
+          name: body
+          description: "parametros para operaçao"
+          schema:
+            $ref: '#/definitions/PagamentoBoletoSchema'
+        responses: 
+          200: 
+            description: "Gerando comprovante de cliente"
+          500:
+            description: "Internal Server Error"
+      parameters: 
+        - 
+          name: "accountId"
+          in: "path"
+          description: "Id da conta"
+          required: true
+          type: "string"
+    /accounts/{accountId}/transaction/transfer: 
+      post: 
+        tags: 
+          - "transactions"
+        summary: "Realiza operação de transferência bancária"
+        parameters:
+        - in: body
+          name: body
+          description: "parametros para operaçao"
+          schema:
+            $ref: '#/definitions/TransferSchema'
+        responses: 
+          200: 
+            description: "Gerando comprovante de cliente"
+          500:
+            description: "Internal Server Error"
+      parameters: 
+        - 
+          name: "accountId"
+          in: "path"
+          description: "Id da conta"
+          required: true
+          type: "string"
   definitions:
+    UnlockCardRequestSchema:
+      type: "object"
+      properties:
+        transactionToken:
+          type: "string"
     P2pSchema:
       type: "object"
       properties:
@@ -644,7 +700,69 @@
           type: "string"
         conta_destinatario:
           type: "string"
-        transaction_token:
+        transactionToken:
+          type: "string"
+    TransferSchema:
+      type: "object"
+      properties:
+        agencia_destinatario:
+          type: "string"
+        conta_destinatario:
+          type: "string"
+        digitoConta_destinatario:
+          type: "string"
+        banco_destinatario:
+          type: "string"
+        tipoConta_destinatario:
+          type: "string"
+        favorecido:
+          type: "string"
+        valorTotal:
+          type: "string"
+        tipoTransferencia:
+          type: "string"
+        cpf_cnpj_destinatario:
+          type: "string"
+        conta_cartao_origem:
+          type: "string"
+        clienteNome_origem:
+          type: "string"
+        destinatario:
+          type: "string"
+        valorTarifa:
+          type: "string"
+        protocolId:
+          type: "string"
+        autenticacao:
+          type: "string"
+        transactionToken:
+          type: "string"
+    PagamentoBoletoSchema:
+      type: "object"
+      properties:
+        valorTotal:
+          type: "string"
+        dataVencimento:
+          type: "string"
+        serviceType:
+          type: "string"
+        statusComprovante:
+          type: "string"
+        instituicaoRecebedora:
+          type: "string"
+        protocolPaymentId:
+          type: "string"
+        protocolId:
+          type: "string"
+        cpf_cnpj_destinatario:
+          type: "string"
+        conta_cartao_origem:
+          type: "string"
+        clienteNome_origem:
+          type: "string"
+        transactionToken:
+          type: "string"
+        cod_barra:
           type: "string"
     RechargeCellSchema:
       type: "object"
@@ -664,6 +782,8 @@
         cpf_cnpj_origem:
           type: "string"
         tarifa:
+          type: "string"
+        transactionToken:
           type: "string"
     MessageSchema:
       type: "object"
@@ -1152,6 +1272,8 @@
             account:
               type: "string"
             date:
+              type: "string"
+            transactionToken:
               type: "string"
     RechargePaymentsSchema:
       type: "array"
