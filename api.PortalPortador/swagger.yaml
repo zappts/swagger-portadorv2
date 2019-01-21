@@ -288,12 +288,6 @@
             description: "O seu usuário está bloqueado, por favor realize o processo de esqueceu a senha."
       parameters: 
         - 
-          name: "Authorization"
-          in: "header"
-          description: "Authorization"
-          required: true
-          type: "string"
-        - 
           name: "client_id"
           in: "header"
           description: "client_id"
@@ -1532,6 +1526,10 @@
       type: "object"
       properties:
         first_access:
+          type: "string"
+        access_token:
+          type: "string"
+        refresh_token:
           type: "string"
     ConfirmPasswordSchema:
       type: "object"
