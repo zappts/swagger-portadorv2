@@ -621,6 +621,8 @@
           type: "string"
         conta_destinatario:
           type: "string"
+        transaction_token:
+          type: "string"
     MessageSchema:
       type: "object"
       properties:
