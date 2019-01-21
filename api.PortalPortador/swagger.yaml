@@ -659,8 +659,6 @@
           type: "string"
         numero_Cell:
           type: "string"
-        cpf_cnpj_origem:
-          type: "string"
         clienteNome_origem:
           type: "string"
         cpf_cnpj_origem:
