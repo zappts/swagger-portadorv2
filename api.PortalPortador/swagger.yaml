@@ -554,7 +554,7 @@
     /cep: 
       get: 
         tags:
-        - "Diversos"
+        - "diversos"
         summary: "Pega os dados do endereço por CEP"
         parameters: 
         - name: "cep"
