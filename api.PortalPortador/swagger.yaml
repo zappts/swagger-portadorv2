@@ -612,7 +612,7 @@
         - 
           name: "Authorization"
           in: "header"
-          description: "Authorization"
+          description: "access_token capturado no login"
           required: true
           type: "string"
         - 
@@ -722,7 +722,7 @@
         - 
           name: "Authorization"
           in: "header"
-          description: "Authorization"
+          description: "access_token capturado no login"
           required: true
           type: "string"
         - 
@@ -750,7 +750,7 @@
         - 
           name: "Authorization"
           in: "header"
-          description: "Authorization"
+          description: "access_token capturado no login"
           required: true
           type: "string"
         - 
@@ -781,7 +781,7 @@
         - 
           name: "Authorization"
           in: "header"
-          description: "Authorization"
+          description: "access_token capturado no login"
           required: true
           type: "string"
         - 
@@ -810,7 +810,7 @@
         - 
           name: "Authorization"
           in: "header"
-          description: "Authorization"
+          description: "access_token capturado no login"
           required: true
           type: "string"
         - 
@@ -845,7 +845,7 @@
         - 
           name: "Authorization"
           in: "header"
-          description: "Authorization"
+          description: "access_token capturado no login"
           required: true
           type: "string"
         - 
@@ -880,7 +880,7 @@
         - 
           name: "Authorization"
           in: "header"
-          description: "Authorization"
+          description: "access_token capturado no login"
           required: true
           type: "string"
         - 
@@ -915,7 +915,7 @@
         - 
           name: "Authorization"
           in: "header"
-          description: "Authorization"
+          description: "access_token capturado no login"
           required: true
           type: "string"
         - 
@@ -950,7 +950,7 @@
         - 
           name: "Authorization"
           in: "header"
-          description: "Authorization"
+          description: "access_token capturado no login"
           required: true
           type: "string"
         - 
