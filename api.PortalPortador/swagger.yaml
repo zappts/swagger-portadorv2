@@ -819,7 +819,7 @@
           description: "client_id"
           required: true
           type: "string"
-    /accounts/{accountId}/transaction/p2p: 
+    /accounts/{accountId}/transactions/p2p: 
       post: 
         tags: 
           - "transactions"
@@ -854,7 +854,7 @@
           description: "client_id"
           required: true
           type: "string"
-    /accounts/{accountId}/transaction/recharge-cell: 
+    /accounts/{accountId}/transactions/recharge-cell: 
       post: 
         tags: 
           - "transactions"
@@ -889,7 +889,7 @@
           description: "client_id"
           required: true
           type: "string"
-    /accounts/{accountId}/transaction/bill-payment: 
+    /accounts/{accountId}/transactions/bill-payment: 
       post: 
         tags: 
           - "transactions"
@@ -924,7 +924,7 @@
           description: "client_id"
           required: true
           type: "string"
-    /accounts/{accountId}/transaction/transfer: 
+    /accounts/{accountId}/transactions/transfer: 
       post: 
         tags: 
           - "transactions"
@@ -944,9 +944,55 @@
         - 
           name: "accountId"
           in: "path"
-          description: "Id da conta"
+          description: "accountId"
           required: true
           type: "string"
+        - 
+          name: "Authorization"
+          in: "header"
+          description: "Authorization"
+          required: true
+          type: "string"
+        - 
+          name: "client_id"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
+    /transactions/token: 
+      post: 
+        tags: 
+          - "transactions"
+        summary: "Gera token de transação"
+        parameters:
+        - in: body
+          name: body
+          description: "parametros para operaçao"
+          schema:
+            $ref: '#/definitions/TransactionPostSchema'
+        responses: 
+          200: 
+            description: "Token de transação"
+            schema:
+              $ref: '#/definitions/TransactionRequestSchema'
+          500:
+            description: "Internal Server Error"
+      get:
+        tags: 
+          - "transactions"
+        summary: "Gera token de transação"
+        parameters:
+        - name: "token"
+          in: "query"
+          type: "string"
+          description: "Token de transação"
+          required: true
+        responses: 
+          200: 
+            description: "Código correto!"
+          400:
+            description: "Código incorreto!"
+      parameters: 
         - 
           name: "Authorization"
           in: "header"
@@ -964,6 +1010,22 @@
       type: "object"
       properties:
         transactionToken:
+          type: "string"
+    TransactionRequestSchema:
+      type: "object"
+      properties:
+        token:
+          type: "string"
+    TransactionPostSchema:
+      type: "object"
+      properties:
+        username:
+          type: "string"
+        password:
+          type: "string"
+        code:
+          type: "string"
+        cardId:
           type: "string"
     P2pSchema:
       type: "object"
