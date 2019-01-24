@@ -59,19 +59,8 @@
         responses: 
           200: 
             description: "Sucesso no login"
-            headers:
-             Access-Control-Expose-Headers:
-               type: string
-               description: access_token, refresh_token
-             access_token:
-               type: string
-               description: token
-             refresh_token:
-               type: string
-               description: token
             schema:
-              $ref: '#/definitions/LoginResponseSchema'
-            
+              $ref: '#/definitions/LoginResponseSchema' 
           401:
             description: "Falha na autenticação. Verifique se os dados foram informados corretamente. / Usuário ou senha incorretos. Você possui mais x tentativas antes do bloqueio de acesso"
           423:
@@ -127,6 +116,23 @@
               $ref: '#/definitions/MessageSchema'
           400:
             description: "Você ainda está com senha temporária, para continuar você precisará de uma nova. Favor voltar ao início do portal e solicitar um novo cadastro de acesso para receber uma nova senha."
+      post: 	
+          tags: 	
+          - "cognito"	
+          summary: "Altera a senha do portal esquecida"	
+          parameters: 	
+          - in: body	
+            name: body	
+            description: "parametros de confirmação de senha"	
+            schema:	
+              $ref: '#/definitions/ConfirmPasswordSchema'	
+          responses: 	
+            200: 	
+              description: "Senha alterada com sucesso"	
+              schema:	
+                $ref: '#/definitions/MessageSchema'	
+            400:	
+              description: "Código de verificação inválido / Falha ao resetar a senha / A senha não atende aos requisitos mínimos. Ela deve possuir ao menos 1 letra minúscula, 1 letra maiúscula, 1 número e 1 caracter especial."
       parameters: 
         - 
           name: "accountId"
@@ -733,6 +739,10 @@
       type: "object"
       properties:
         first_access:
+          type: "string"
+        access_token:
+          type: "string"
+        refresh_token:
           type: "string"
     ConfirmPasswordSchema:
       type: "object"
