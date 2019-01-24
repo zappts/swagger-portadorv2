@@ -59,8 +59,19 @@
         responses: 
           200: 
             description: "Sucesso no login"
+            headers:
+             Access-Control-Expose-Headers:
+               type: string
+               description: access_token, refresh_token
+             access_token:
+               type: string
+               description: token
+             refresh_token:
+               type: string
+               description: token
             schema:
-              $ref: '#/definitions/LoginResponseSchema' 
+              $ref: '#/definitions/LoginResponseSchema'
+            
           401:
             description: "Falha na autenticação. Verifique se os dados foram informados corretamente. / Usuário ou senha incorretos. Você possui mais x tentativas antes do bloqueio de acesso"
           423:
@@ -722,10 +733,6 @@
       type: "object"
       properties:
         first_access:
-          type: "string"
-        access_token:
-          type: "string"
-        refresh_token:
           type: "string"
     ConfirmPasswordSchema:
       type: "object"
