@@ -9,7 +9,39 @@
     description: "Operações com contas"
   - name: "cognito"
     description: "Operaçoes com o AWS Cognito"
+  -name: "user"
+    desccription: "Operações com usuários"
   paths: 
+    /user/{cpf}:
+      get:
+      tags:
+        - "user"
+      sumary: "Recebe os dados do usuário"
+      parameters: 
+       - 
+          name: "client_id"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
+        - 
+          name: "accountId"
+          in: "query"
+          description: "accountId"
+          required: false
+          type: "string"
+        - 
+          name: "cpf"
+          in: "path"
+          description: "cpf"
+          required: true
+          type: "Number"
+      responses: 
+          200: 
+            description: "Você alterou a senha do Portal Cateno em 23/03/2018 às 13:50. Caso tenha alguma dúvida, entrar em contato com a Central de Atendimento"
+
+
+    
     /accounts/{accountId}/cards: 
       get: 
         tags: 
