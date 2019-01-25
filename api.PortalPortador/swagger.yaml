@@ -7,10 +7,10 @@
   tags:
   - name: "accounts"
     description: "Operações com contas"
+  - name: "user"
+    description: ""Operações com usuários"
   - name: "cognito"
     description: "Operaçoes com o AWS Cognito"
-  - name: "user"
-    desccription: "Operações com usuários"
 
   paths: 
     /user/{cpf}:
