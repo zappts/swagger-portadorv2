@@ -7,7 +7,6 @@
   tags:
   - name: "accounts"
     description: "Operações com contas"
-
   - name: "cognito"
     description: "Operaçoes com o AWS Cognito"
   paths: 
@@ -24,9 +23,9 @@
             required: true
             type: "string"
           - 
-            name: "accountId"
+            name: "productId"
             in: "query"
-            description: "accountId"
+            description: "productId"
             required: false
             type: "string"
           - 
@@ -37,7 +36,13 @@
             type: "Number"
         responses: 
             200: 
-              description: "Você alterou a senha do Portal Cateno em 23/03/2018 às 13:50. Caso tenha alguma dúvida, entrar em contato com a Central de Atendimento"  
+              description: "Dados do usuario {cpf}"  
+              schema:
+                $ref: '#/definitions/UserSchema'
+            400: 
+              description: "Nenhuma conta ativa para o usuário encontrada neste domínio."  
+              schema:
+                $ref: '#/definitions/ErrorSchema'
     /accounts/{accountId}/cards: 
       get: 
         tags: 
