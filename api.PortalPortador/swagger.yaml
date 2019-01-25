@@ -18,7 +18,7 @@
           - "user"
         summary: "Recebe os dados do usuárior"
         parameters: 
-         - 
+          - 
             name: "client_id"
             in: "header"
             description: "client_id"
