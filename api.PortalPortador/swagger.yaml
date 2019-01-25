@@ -12,7 +12,7 @@
   - name: "cognito"
     description: "Operaçoes com o AWS Cognito"
   paths: 
-  /user/{cpf}: 
+    /user/{cpf}: 
       get: 
         tags: 
           - "user"
