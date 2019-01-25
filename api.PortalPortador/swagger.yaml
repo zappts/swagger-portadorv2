@@ -38,10 +38,7 @@
             type: "Number"
         responses: 
             200: 
-              description: "Você alterou a senha do Portal Cateno em 23/03/2018 às 13:50. Caso tenha alguma dúvida, entrar em contato com a Central de Atendimento"
-
-
-    
+              description: "Você alterou a senha do Portal Cateno em 23/03/2018 às 13:50. Caso tenha alguma dúvida, entrar em contato com a Central de Atendimento"  
     /accounts/{accountId}/cards: 
       get: 
         tags: 
