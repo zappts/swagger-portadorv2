@@ -1,920 +1,1050 @@
-  swagger: "2.0"
-  info: 
-    description: "Pré-Pago API"
-    version: "1.0.0"
-    title: "Pré-Pago Portador"
-  basePath: "/prepaid-holder/v1"
-  tags:
-  - name: "accounts"
-    description: "Operações com contas"
-  - name: "cognito"
-    description: "Operaçoes com o AWS Cognito"
-  paths: 
-    /user/{cpf}: 
-      get: 
-        tags: 
-          - "user"
-        summary: "Recebe os dados do usuárior"
-        parameters: 
-          - 
-            name: "client_id"
-            in: "header"
-            description: "client_id"
-            required: true
-            type: "string"
-          - 
-            name: "productId"
-            in: "query"
-            description: "productId"
-            required: false
-            type: "string"
-          - 
-            name: "cpf"
-            in: "path"
-            description: "cpf"
-            required: true
-            type: "Number"
-        responses: 
-            200: 
-              description: "Dados do usuario {cpf}"  
-              schema:
-                $ref: '#/definitions/UserSchema'
-            400: 
-              description: "Nenhuma conta ativa para o usuário encontrada neste domínio."  
-              schema:
-                $ref: '#/definitions/ErrorSchema'
-    /accounts/{accountId}/cards: 
-      get: 
-        tags: 
-          - "accounts"
-        summary: "Lista cartões da conta do portador"
-        parameters: []
-        responses: 
-          200: 
-            description: "Cartões encontrados"
-            schema:
-              $ref: '#/definitions/CardsSchema'
-          400:
-            description: "Nenhum registro encontrado para essa solicitação"
-            schema:
-              $ref: '#/definitions/MessageSchema'
+swagger: "2.0"
+info: 
+  description: "Pré-Pago API"
+  version: "1.0.0"
+  title: "Pré-Pago Portador"
+basePath: "/prepaid-holder/v1"
+tags:
+- name: "accounts"
+  description: "Operações com contas"
+- name: "user"
+  description: "Operações com usuarios"
+- name: "transaction"
+  description: "Operações com transações"  
+- name: "cognito"
+  description: "Operaçoes com o AWS Cognito"
+paths: 
+  /user/{cpf}: 
+    get: 
+      tags: 
+        - "user"
+      summary: "Recebe os dados do usuárior"
       parameters: 
         - 
-          name: "accountId"
+          name: "client_id"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
+        - 
+          name: "productId"
+          in: "query"
+          description: "productId"
+          required: false
+          type: "string"
+        - 
+          name: "cpf"
           in: "path"
-          description: "accountId"
+          description: "cpf"
           required: true
-          type: "string"
-        - 
-          name: "Authorization"
-          in: "header"
-          description: "access_token capturado no login"
-          required: true
-          type: "string"
-        - 
-          name: "client_id"
-          in: "header"
-          description: "client_id"
-          required: true
-          type: "string"
-        
-    /oauth/login: 
-      post: 
-        tags: 
-        - "cognito"
-        summary: "Login do portador"
-        parameters: 
-        - in: body
-          name: LoginSchema
-          description: "Parametros de login"
-          schema:
-            $ref: '#/definitions/LoginSchema'
-        responses: 
+          type: "Number"
+      responses: 
           200: 
-            description: "Sucesso no login"
+            description: "Dados do usuario {cpf}"  
             schema:
-              $ref: '#/definitions/LoginResponseSchema' 
-          401:
-            description: "Falha na autenticação. Verifique se os dados foram informados corretamente. / Usuário ou senha incorretos. Você possui mais x tentativas antes do bloqueio de acesso"
-          423:
-            description: "O seu usuário está bloqueado, por favor realize o processo de esqueceu a senha."
-      parameters: 
-        - 
-          name: "client_id"
-          in: "header"
-          description: "client_id"
-          required: true
-          type: "string"
-    /oauth/password: 
-      put:  
-        tags: 
-        - "cognito"
-        summary: "Altera a senha do Portal entrando com a senha anterior"
-        parameters: 
-        - in: body
-          name: body
-          description: "Parametros de alteração de senha"
+              $ref: '#/definitions/UserSchema'
+          400: 
+            description: "Nenhuma conta ativa para o usuário encontrada neste domínio."  
+            schema:
+              $ref: '#/definitions/ErrorSchema'
+              
+  /accounts/{accountId}/transaction/p2p:
+    post:   
+      tags:
+        - "transaction"        
+      sumary: "Realiza transação entre constas de portador"
+      parameters:
+      - in: body
+        name: p2pSchema
+        description: "Parametros para transação P2P"
+        schema:
+          $ref: '#/definitions/p2pSchema'
+      responses: 
+        200: 
+          description: "Operaçao realizada com sucesso. Gerando comprovantes"
+        400:
+          description: "Token inválido"
+    parameters: 
+      - 
+        name: "accountId"
+        in: "path"
+        description: "accountId"
+        required: true
+        type: "string"
+      - 
+        name: "Authorization"
+        in: "header"
+        description: "access_token capturado no login"
+        required: true
+        type: "string"
+      - 
+        name: "client_id"
+        in: "header"
+        description: "client_id"
+        required: true
+        type: "string"
+      - 
+        name: "tokentransaction"
+        in: "header"
+        description: "Token de transação valido"
+        required: true
+        type: "string"
+  /accounts/{accountId}/transaction/transfer:
+    post:   
+      tags:
+        - "transaction"        
+      sumary: "Realiza transação entre consta portador e outro banco"
+      parameters:
+      - in: body
+        name: transferSchema
+        description: "Parametros para transação entre bancos"
+        schema:
+          $ref: '#/definitions/transferSchema'
+      responses: 
+        200: 
+          description: "Operaçao realizada com sucesso. Gerando comprovantes"
+        400:
+          description: "Token inválido"
+    parameters: 
+      - 
+        name: "accountId"
+        in: "path"
+        description: "accountId"
+        required: true
+        type: "string"
+      - 
+        name: "Authorization"
+        in: "header"
+        description: "access_token capturado no login"
+        required: true
+        type: "string"
+      - 
+        name: "client_id"
+        in: "header"
+        description: "client_id"
+        required: true
+        type: "string"
+      - 
+        name: "tokentransaction"
+        in: "header"
+        description: "Token de transação valido"
+        required: true
+        type: "string"
+  /accounts/{accountId}/transaction/recharge-cell:
+    post:   
+      tags:
+        - "transaction"        
+      sumary: "Realiza recarga de celular"
+      parameters:
+      - in: body
+        name: rechargeCellSchema
+        description: "Parametros para recarga de celular"
+        schema:
+          $ref: '#/definitions/rechargeCellSchema'
+      responses: 
+        200: 
+          description: "Operaçao realizada com sucesso. Gerando comprovantes"
+        400:
+          description: "Token inválido"
+    parameters: 
+      - 
+        name: "accountId"
+        in: "path"
+        description: "accountId"
+        required: true
+        type: "string"
+      - 
+        name: "Authorization"
+        in: "header"
+        description: "access_token capturado no login"
+        required: true
+        type: "string"
+      - 
+        name: "client_id"
+        in: "header"
+        description: "client_id"
+        required: true
+        type: "string"
+      - 
+        name: "tokentransaction"
+        in: "header"
+        description: "Token de transação valido"
+        required: true
+        type: "string"
+  /accounts/{accountId}/transaction/bill-payment:
+    post:   
+      tags:
+        - "transaction"        
+      sumary: "Realiza pagamento de boleto"
+      parameters:
+      - in: body
+        name: billPaymentSchema
+        description: "Parametros para pagamento de boleto"
+        schema:
+          $ref: '#/definitions/billPaymentSchema'
+      responses: 
+        200: 
+          description: "Operaçao realizada com sucesso. Gerando comprovantes"
+        400:
+          description: "Token inválido"
+    parameters: 
+      - 
+        name: "accountId"
+        in: "path"
+        description: "accountId"
+        required: true
+        type: "string"
+      - 
+        name: "Authorization"
+        in: "header"
+        description: "access_token capturado no login"
+        required: true
+        type: "string"
+      - 
+        name: "client_id"
+        in: "header"
+        description: "client_id"
+        required: true
+        type: "string"
+      - 
+        name: "tokentransaction"
+        in: "header"
+        description: "Token de transação valido"
+        required: true
+        type: "string"
+  /accounts/{accountId}/cards: 
+    get: 
+      tags: 
+        - "accounts"
+      summary: "Lista cartões da conta do portador"
+      parameters: []
+      responses: 
+        200: 
+          description: "Cartões encontrados"
           schema:
-            $ref: '#/definitions/AlterPasswordSchema'
-        responses: 
-          200: 
-            description: "Você alterou a senha do Portal Cateno em 23/03/2018 às 13:50. Caso tenha alguma dúvida, entrar em contato com a Central de Atendimento"
-            schema:
-              $ref: '#/definitions/MessageSchema'
-          400:
-            description: "Falha ao alterar senha do usuário, verifique se a senha atual está correta e a nova senha atende aos requisitos mínimos."
+            $ref: '#/definitions/CardsSchema'
+        400:
+          description: "Nenhum registro encontrado para essa solicitação"
+          schema:
+            $ref: '#/definitions/MessageSchema'
+    parameters: 
+      - 
+        name: "accountId"
+        in: "path"
+        description: "accountId"
+        required: true
+        type: "string"
+      - 
+        name: "Authorization"
+        in: "header"
+        description: "access_token capturado no login"
+        required: true
+        type: "string"
+      - 
+        name: "client_id"
+        in: "header"
+        description: "client_id"
+        required: true
+        type: "string"
+      
+  /oauth/login: 
+    post: 
+      tags: 
+      - "cognito"
+      summary: "Login do portador"
       parameters: 
-        - 
-          name: "client_id"
-          in: "header"
-          description: "client_id"
-          required: true
-          type: "string"
-    /password/forgot: 
-      get: 
-        tags: 
-        - "cognito"
-        summary: "Solicita código validador para alterar a senha"
-        parameters:
-        - name: "username"
-          in: "query"
-          type: "string"
-        - name: "idCompany"
-          in: "query"
-          type: "string"
-        responses: 
-          201: 
-            description: "Uma nova senha foi enviada para xxx"
-            schema:
-              $ref: '#/definitions/MessageSchema'
-          400:
-            description: "Você ainda está com senha temporária, para continuar você precisará de uma nova. Favor voltar ao início do portal e solicitar um novo cadastro de acesso para receber uma nova senha."
-      post: 	
-          tags: 	
-          - "cognito"	
-          summary: "Altera a senha do portal esquecida"	
-          parameters: 	
-          - in: body	
-            name: body	
-            description: "parametros de confirmação de senha"	
+      - in: body
+        name: LoginSchema
+        description: "Parametros de login"
+        schema:
+          $ref: '#/definitions/LoginSchema'
+      responses: 
+        200: 
+          description: "Sucesso no login"
+          schema:
+            $ref: '#/definitions/LoginResponseSchema' 
+        401:
+          description: "Falha na autenticação. Verifique se os dados foram informados corretamente. / Usuário ou senha incorretos. Você possui mais x tentativas antes do bloqueio de acesso"
+        423:
+          description: "O seu usuário está bloqueado, por favor realize o processo de esqueceu a senha."
+    parameters: 
+      - 
+        name: "client_id"
+        in: "header"
+        description: "client_id"
+        required: true
+        type: "string"
+  /oauth/password: 
+    put:  
+      tags: 
+      - "cognito"
+      summary: "Altera a senha do Portal entrando com a senha anterior"
+      parameters: 
+      - in: body
+        name: body
+        description: "Parametros de alteração de senha"
+        schema:
+          $ref: '#/definitions/AlterPasswordSchema'
+      responses: 
+        200: 
+          description: "Você alterou a senha do Portal Cateno em 23/03/2018 às 13:50. Caso tenha alguma dúvida, entrar em contato com a Central de Atendimento"
+          schema:
+            $ref: '#/definitions/MessageSchema'
+        400:
+          description: "Falha ao alterar senha do usuário, verifique se a senha atual está correta e a nova senha atende aos requisitos mínimos."
+    parameters: 
+      - 
+        name: "client_id"
+        in: "header"
+        description: "client_id"
+        required: true
+        type: "string"
+  /password/forgot: 
+    get: 
+      tags: 
+      - "cognito"
+      summary: "Solicita código validador para alterar a senha"
+      parameters:
+      - name: "username"
+        in: "query"
+        type: "string"
+      - name: "idCompany"
+        in: "query"
+        type: "string"
+      responses: 
+        201: 
+          description: "Uma nova senha foi enviada para xxx"
+          schema:
+            $ref: '#/definitions/MessageSchema'
+        400:
+          description: "Você ainda está com senha temporária, para continuar você precisará de uma nova. Favor voltar ao início do portal e solicitar um novo cadastro de acesso para receber uma nova senha."
+    post: 	
+        tags: 	
+        - "cognito"	
+        summary: "Altera a senha do portal esquecida"	
+        parameters: 	
+        - in: body	
+          name: body	
+          description: "parametros de confirmação de senha"	
+          schema:	
+            $ref: '#/definitions/ConfirmPasswordSchema'	
+        responses: 	
+          200: 	
+            description: "Senha alterada com sucesso"	
             schema:	
-              $ref: '#/definitions/ConfirmPasswordSchema'	
-          responses: 	
-            200: 	
-              description: "Senha alterada com sucesso"	
-              schema:	
-                $ref: '#/definitions/MessageSchema'	
-            400:	
-              description: "Código de verificação inválido / Falha ao resetar a senha / A senha não atende aos requisitos mínimos. Ela deve possuir ao menos 1 letra minúscula, 1 letra maiúscula, 1 número e 1 caracter especial."
+              $ref: '#/definitions/MessageSchema'	
+          400:	
+            description: "Código de verificação inválido / Falha ao resetar a senha / A senha não atende aos requisitos mínimos. Ela deve possuir ao menos 1 letra minúscula, 1 letra maiúscula, 1 número e 1 caracter especial."
+    parameters: 
+      - 
+        name: "accountId"
+        in: "path"
+        description: "accountId"
+        required: true
+        type: "string" 
+      - 
+        name: "Authorization"
+        in: "header"
+        description: "access_token capturado no login"
+        required: true
+        type: "string"
+      - 
+        name: "client_id"
+        in: "header"
+        description: "client_id"
+        required: true
+        type: "string"
+  /accounts/{accountId}/extract: 
+    get: 
+      tags: 
+        - "accounts"
+      summary: "Extrato da conta"
       parameters: 
-        - 
-          name: "accountId"
-          in: "path"
-          description: "accountId"
-          required: true
-          type: "string" 
-        - 
-          name: "Authorization"
-          in: "header"
-          description: "access_token capturado no login"
-          required: true
-          type: "string"
-        - 
-          name: "client_id"
-          in: "header"
-          description: "client_id"
-          required: true
-          type: "string"
-    /accounts/{accountId}/extract: 
-      get: 
-        tags: 
-          - "accounts"
-        summary: "Extrato da conta"
-        parameters: 
-        - name: "initialDate"
-          in: "query"
-          type: "string"
-        - name: "finalDate"
-          in: "query"
-          type: "string"
-        responses: 
-          200: 
-            description: "Conta encontrada"
-            schema:
-              $ref: "#/definitions/ExtractSchema"
-          400:
-            description: "Nenhum registro encontrado para essa solicitação."
-            schema:
-              $ref: "#/definitions/MessageSchema"
-      parameters: 
-        - 
-          name: "accountId"
-          in: "path"
-          description: "accountId"
-          required: true
-          type: "string" 
-        - 
-          name: "Authorization"
-          in: "header"
-          description: "access_token capturado no login"
-          required: true
-          type: "string"
-        - 
-          name: "client_id"
-          in: "header"
-          description: "client_id"
-          required: true
-          type: "string"
-  definitions:
-    UnlockCardRequestSchema:
-      type: "object"
-      properties:
-        transactionToken:
-          type: "string"
-    TransactionRequestSchema:
-      type: "object"
-      properties:
-        token:
-          type: "string"
-    TransactionPostSchema:
-      type: "object"
-      properties:
-        username:
-          type: "string"
-        password:
-          type: "string"
-        code:
-          type: "string"
-        cardId:
-          type: "string"
-    P2pSchema:
-      type: "object"
-      properties:
-        valorTotal:
-          type: "string"
-        cpf_cnpj_destinatario:
-          type: "string"
-        conta_cartao_origem:
-          type: "string"
-        clienteNome_origem:
-          type: "string"
-        favorecido:
-          type: "string"
-        conta_cartao_destinatario:
-          type: "string"
-        conta_destinatario:
-          type: "string"
-        transactionToken:
-          type: "string"
-    TransferSchema:
-      type: "object"
-      properties:
-        agencia_destinatario:
-          type: "string"
-        conta_destinatario:
-          type: "string"
-        digitoConta_destinatario:
-          type: "string"
-        banco_destinatario:
-          type: "string"
-        tipoConta_destinatario:
-          type: "string"
-        favorecido:
-          type: "string"
-        valorTotal:
-          type: "string"
-        tipoTransferencia:
-          type: "string"
-        cpf_cnpj_destinatario:
-          type: "string"
-        conta_cartao_origem:
-          type: "string"
-        clienteNome_origem:
-          type: "string"
-        destinatario:
-          type: "string"
-        valorTarifa:
-          type: "string"
-        protocolId:
-          type: "string"
-        autenticacao:
-          type: "string"
-        transactionToken:
-          type: "string"
-    PagamentoBoletoSchema:
-      type: "object"
-      properties:
-        valorTotal:
-          type: "string"
-        dataVencimento:
-          type: "string"
-        serviceType:
-          type: "string"
-        statusComprovante:
-          type: "string"
-        instituicaoRecebedora:
-          type: "string"
-        protocolPaymentId:
-          type: "string"
-        protocolId:
-          type: "string"
-        cpf_cnpj_destinatario:
-          type: "string"
-        conta_cartao_origem:
-          type: "string"
-        clienteNome_origem:
-          type: "string"
-        transactionToken:
-          type: "string"
-        cod_barra:
-          type: "string"
-    RechargeCellSchema:
-      type: "object"
-      properties:
-        valorTotal:
-          type: "string"
-        operadora:
-          type: "string"
-        ddd:
-          type: "string"
-        countrycode:
-          type: "string"
-        numero_Cell:
-          type: "string"
-        clienteNome_origem:
-          type: "string"
-        cpf_cnpj_origem:
-          type: "string"
-        tarifa:
-          type: "string"
-        transactionToken:
-          type: "string"
-    MessageSchema:
-      type: "object"
-      properties:
-        message:
-          type: "string"
-    CardAlterPasswordSchema:
-      type: "object"
-      properties:
-        password:
-          type: "string"
-        newPassword:
-          type: "string"
-        randomCode:
-          type: "string"
-    2faSchema:
-      type: "object"
-      properties:
-        email:
-          type: "string"
-        phoneNumber:
-          type: "string"
-    UserSchema:
-      type: "object"
-      properties:
-        id:
-          type: "number"
-        nome:
-          type: "string"
-        tipo:
-          type: "number"
-        cpf:
-          type: "string"
-        dataNascimento:
-          type: "number"
-        sexo:
-          type: "string"
-        numeroIdentidade:
-          type: "number"
-        orgaoExpedidorIdentidade:
-          type: "string"
-        unidadeFederativaIdentidade:
-          type: "string"
-        dataEmissaoIdentidade:
-          type: "number"
-        email:
-          type: "string"
-        telefone:
-          type: object
-          properties:
-            id:
-              type: "number"
-            idTipoTelefone:
-              type: "number"
-            idPessoa:
-              type: "number"
-            ddd:
-              type: "string"
-            telefone:
-              type: "string"
-            ramal:
-              type: "string"
-            status:
-              type: "number"
-    CardSchema:
-      type: "object"
-      properties:
-        id:
-          type: "number"
-        flagTitular:
-          type: "number"
-        idPessoa:
-          type: "number"
-        sequencialCartao:
-          type: "number"
-        idConta:
-          type: "number"
-        idStatus:
-          type: "number"
-        dataStatus:
-          type: "string"
-        idEstagio:
-          type: "number"
-        dataEstagio:
-          type: "string"
-        numeroBin:
-          type: "number"
-        numeroCartao:
-          type: "number"
-        numeroCartaoHash:
-          type: "string"
-        numeroCartaoCriptografado:
-          type: "string"
-        dataEmissao:
-          type: "string"
-        dataValidade:
-          type: "string"
-        cartaoVirtual:
-          type: "number"
-        impressaoAvulsa:
-          type: "string"
-        dataImpressao:
-          type: "string"
-        nomeArquivoImpressao:
-          type: "string"
-        idProduto:
-          type: "number"
-        nomeImpresso:
-          type: "string"
-        codigoDesbloqueio:
-          type: "string"
-        tipoPortador:
-          type: "string"
-        idStatusCartao:
-          type: "number"
-        dataStatusCartao:
-          type: "string"
-        idEstagioCartao:
-          type: "number"
-        dataEstagioCartao:
-          type: "string"
-        dataGeracao:
-          type: "string"
-        flagVirtual:
-          type: "boolean"
-        flagImpressaoOrigemComerial:
-          type: "string"
-        arquivoImpressao:
-          type: "string"
-    UnlockCardSchema:
-      type: "object"
-      properties:
-        id:
-          type: "number"
-        flagTitular:
-          type: "number"
-        idPessoa:
-          type: "number"
-        sequencialCartao:
-          type: "number"
-        idConta:
-          type: "number"
-        idStatus:
-          type: "number"
-        dataStatus:
-          type: "string"
-        idEstagio:
-          type: "number"
-        dataEstagio:
-          type: "string"
-        numeroBin:
-          type: "number"
-        numeroCartao:
-          type: "number"
-        numeroCartaoHash:
-          type: "string"
-        numeroCartaoCriptografado:
-          type: "string"
-        dataEmissao:
-          type: "string"
-        dataValidade:
-          type: "string"
-        cartaoVirtual:
-          type: "number"
-        impressaoAvulsa:
-          type: "string"
-        dataImpressao:
-          type: "string"
-        nomeArquivoImpressao:
-          type: "string"
-        idProduto:
-          type: "number"
-        nomeImpresso:
-          type: "string"
-    ForgotPasswordSchema:
-      type: "object"
-      properties:
-        username:
-          type: "string"
-        idCompany:
-          type: "string"
-        password:
-          type: "string"
-        newPassword:
-          type: "string"
-    ResetPasswordSchema:
-      type: "object"
-      properties:
-        username:
-          type: "string"
-        idCompany:
-          type: "string"
-    CryptographedCardNumber:
-      type: "object"
-      properties:
-        encryptedParam:
-          type: "string"
-    AccountSchema:
-      type: "object"
-      properties:
-        id:
-          type: "number"
-        idPessoa:
-          type: "number"
-        nome:
-          type: "string"
-        idProduto:
-          type: "number"
-        idOrigemComercial:
-          type: "number"
-        nomeOrigemComercial:
-          type: "string"
-        idFatasiaBasica:
-          type: "number"
-        nomeFantasiaBasica:
-          type: "string"
-        idStatusConta:
-          type: "number"
-        statusConta:
-          type: "string"
-        diaVencimento:
-          type: "number"
-        melhorDiaCompra:
-          type: "number"
-        dataStatusConta:
-          type: "string"
-        dataCadastro:
-          type: "string"
-        dataUltimaAlteracaoVencimento:
-          type: "string"
-        dataHoraUltimaCompra:
-          type: "string"
-        numeroAgencia:
-          type: "number"
-        numeroContaCorrente:
-          type: "string"
-        valorRenda:
-          type: "number"
-        formaEnvioFatura:
-          type: "string"
-        titular:
-          type: "boolean"    
-        limiteGlobal:
-          type: "number"
-        limiteSaqueGlobal:
-          type: "number"
-        saldoDisponivelGlobal:
-          type: "number"
-        saldoDisponivelSaque:
-          type: "number"
-        impedidoFinanciamento:
-          type: "boolean"
-        diasAtraso:
-          type: "number"
-        proximoVencimentoPadrao:
-          type: "string"
-        idProposta:
-          type: "number"
-        quantidadePagamentos:
-          type: "number"
-        correspondencia:
-          type: "number"
-        dataInicioAtraso:
-          type: "string"
-        rotativoPagaJuros:
-          type: "number"
-        totalPosProx:
-          type: "number"
-        saldoAtualFinal:
-          type: "number"
-        saldoExtratoAnterior:
-          type: "number"
-        aceitaNovaContaPorGrupoProduto:
-          type: "boolean"
-        funcaoAtiva:
-          type: "string"
-    ExtractSchema:
-      type: "object"
-      properties:
-        id:
-          type: "number"
-        idTipoTransacao:
-          type: "number"
-        descricaoAbreviada:
-          type: "string"
-        statusTransacao:
-          type: "string"
-        idEvento:
-          type: "number"
-        tipoEvento:
-          type: "string"
-        idConta:
-          type: "number"
-        cartaoMascarado:
-          type: "string"
-        nomePortador:
-          type: "string"
-        dataTransacao:
-          type: "string"
-        dataFaturamento:
-          type: "string"
-        dataVencimento:
-          type: "string"
-        modoEntradaTransacao:
-          type: "string"
-        valorTaxaEmbarque:
-          type: "number"
-        valorEntrada:
-          type: "number"
-        valorBRL:
-          type: "number"
-        valorUSD:
-          type: "number"
-        cotacaoUSD:
-          type: "number"
-        dataCotacaoUSD:
-          type: "string"
-        codigoMoedaOrigem:
-          type: "string"
-        codigoMoedaDestino:
-          type: "string"    
-        codigoAutorizacao:
-          type: "string"
-        codigoReferencia:
-          type: "string"
-        codigoTerminal:
-          type: "string"
-        codigoMCC:
-          type: "number"
-        grupoMCC:
-          type: "number"
-        grupoDescricaoMCC:
-          type: "string"
-        idEstabelecimento:
-          type: "number"
-        nomeEstabelecimento:
-          type: "string"
-        nomeFantasiaEstabelecimento:
-          type: "string"
-        localidadeEstabelecimento:
-          type: "string"
-        planoParcelamento:
-          type: "number"
-        numeroParcela:
-          type: "number"
-        detalhesTransacao:
-          type: "string"
-        flagCredito:
-          type: "number"
-        flagFaturado:
-          type: "number"
-        flagEstorno:
-          type: "number"
-        idTransacaoEstorno:
-          type: "number"
-    CardsSchema:
-      type: "object"
-      properties:
-        id:
-          type: "number"
-        flagTitular:
-          type: "number"
-        idPessoa:
-          type: "number"
-        sequencialCartao:
-          type: "number"
-        idConta:
-          type: "number"
-        idStatus:
-          type: "number"
-        dataStatus:
-          type: "string"
-        idEstagio:
-          type: "number"
-        dataEstagio:
-          type: "string"
-        numeroBin:
-          type: "number"
-        numeroCartao:
-          type: "string"
-        numeroCartaoHash:
-          type: "number"
-        numeroCartaoCriptografado:
-          type: "string"
-        dataEmissao:
-          type: "string"
-        dataValidade:
-          type: "string"
-        cartaoVirtual:
-          type: "number"
-        impressaoAvulsa:
-          type: "number"
-        dataImpressao:
-          type: "string"
-        nomeArquivoImpressao:
-          type: "string"
-        idProduto:
-          type: "number"
-        nomeImpresso:
-          type: "string"    
-        codigoDesbloqueio:
-          type: "string"
-    RegisterSchema:
-      type: "object"
-      properties:
-        username:
-          type: "string"
-        idCompany:
-          type: "string"
-        email:
-          type: "string"
-    LoginSchema:
-      type: "object"
-      properties:
-        username:
-          type: "string"
-        idCompany:
-          type: "string"
-        password:
-          type: "string"
-    LoginResponseSchema:
-      type: "object"
-      properties:
-        first_access:
-          type: "string"
-        access_token:
-          type: "string"
-        refresh_token:
-          type: "string"
-    ConfirmPasswordSchema:
-      type: "object"
-      properties:
-        username:
-          type: "string"
-        code:
-          type: "string"
-        idCompany:
-          type: "string"
-        password:
-          type: "string"
-    AlterPasswordSchema:
-      type: "object"
-      properties:
-        username:
-          type: "string"
-        oldpass:
-          type: "string"
-        newpass:
-          type: "string"
-        idCompany:
-          type: "string"
-    RechargePdfSchema:
-      type: "object"
-      properties:
-        pdf:
-          type: "string"
-    RechargeRegisterSchema:
-      type: "object"
-      properties:
-        account:
-          type: "string"
-        cpf:
-          type: "string"
-        value:
-          type: "string"
-        productId:
-          type: "string"
-    RechargeResponseSchema:
-      type: "object"
-      properties:
-        titleNumberBb:
-          type: "string"
-        digitableLine:
-          type: "string"
-        numericBarcode:
-          type: "string"
-        codigoCliente:
-          type: "string"
-        numeroContratoCobranca:
-          type: "string"
-        digitableLineFormatted:
-          type: "string"
-        info:
-          type: "object"
-          properties:
-            product:
-              type: "string"
-            cpf:
-              type: "string"
-            account:
-              type: "string"
-            date:
-              type: "string"
-            transactionToken:
-              type: "string"
-    RechargePaymentsSchema:
-      type: "array"
-      items:
-        type: "object"
+      - name: "initialDate"
+        in: "query"
+        type: "string"
+      - name: "finalDate"
+        in: "query"
+        type: "string"
+      responses: 
+        200: 
+          description: "Conta encontrada"
+          schema:
+            $ref: "#/definitions/ExtractSchema"
+        400:
+          description: "Nenhum registro encontrado para essa solicitação."
+          schema:
+            $ref: "#/definitions/MessageSchema"
+    parameters: 
+      - 
+        name: "accountId"
+        in: "path"
+        description: "accountId"
+        required: true
+        type: "string" 
+      - 
+        name: "Authorization"
+        in: "header"
+        description: "access_token capturado no login"
+        required: true
+        type: "string"
+      - 
+        name: "client_id"
+        in: "header"
+        description: "client_id"
+        required: true
+        type: "string"
+definitions:
+  UnlockCardRequestSchema:
+    type: "object"
+    properties:
+      transactionToken:
+        type: "string"
+  TransactionRequestSchema:
+    type: "object"
+    properties:
+      token:
+        type: "string"
+  TransactionPostSchema:
+    type: "object"
+    properties:
+      username:
+        type: "string"
+      password:
+        type: "string"
+      code:
+        type: "string"
+      cardId:
+        type: "string"
+  P2pSchema:
+    type: "object"
+    properties:
+      valorTotal:
+        type: "string"
+      cpf_cnpj_destinatario:
+        type: "string"
+      conta_cartao_origem:
+        type: "string"
+      clienteNome_origem:
+        type: "string"
+      favorecido:
+        type: "string"
+      conta_cartao_destinatario:
+        type: "string"
+      conta_destinatario:
+        type: "string"
+      transactionToken:
+        type: "string"
+  TransferSchema:
+    type: "object"
+    properties:
+      agencia_destinatario:
+        type: "string"
+      conta_destinatario:
+        type: "string"
+      digitoConta_destinatario:
+        type: "string"
+      banco_destinatario:
+        type: "string"
+      tipoConta_destinatario:
+        type: "string"
+      favorecido:
+        type: "string"
+      valorTotal:
+        type: "string"
+      tipoTransferencia:
+        type: "string"
+      cpf_cnpj_destinatario:
+        type: "string"
+      conta_cartao_origem:
+        type: "string"
+      clienteNome_origem:
+        type: "string"
+      destinatario:
+        type: "string"
+      valorTarifa:
+        type: "string"
+      protocolId:
+        type: "string"
+      autenticacao:
+        type: "string"
+      transactionToken:
+        type: "string"
+  PagamentoBoletoSchema:
+    type: "object"
+    properties:
+      valorTotal:
+        type: "string"
+      dataVencimento:
+        type: "string"
+      serviceType:
+        type: "string"
+      statusComprovante:
+        type: "string"
+      instituicaoRecebedora:
+        type: "string"
+      protocolPaymentId:
+        type: "string"
+      protocolId:
+        type: "string"
+      cpf_cnpj_destinatario:
+        type: "string"
+      conta_cartao_origem:
+        type: "string"
+      clienteNome_origem:
+        type: "string"
+      transactionToken:
+        type: "string"
+      cod_barra:
+        type: "string"
+  RechargeCellSchema:
+    type: "object"
+    properties:
+      valorTotal:
+        type: "string"
+      operadora:
+        type: "string"
+      ddd:
+        type: "string"
+      countrycode:
+        type: "string"
+      numero_Cell:
+        type: "string"
+      clienteNome_origem:
+        type: "string"
+      cpf_cnpj_origem:
+        type: "string"
+      tarifa:
+        type: "string"
+      transactionToken:
+        type: "string"
+  MessageSchema:
+    type: "object"
+    properties:
+      message:
+        type: "string"
+  CardAlterPasswordSchema:
+    type: "object"
+    properties:
+      password:
+        type: "string"
+      newPassword:
+        type: "string"
+      randomCode:
+        type: "string"
+  2faSchema:
+    type: "object"
+    properties:
+      email:
+        type: "string"
+      phoneNumber:
+        type: "string"
+  UserSchema:
+    type: "object"
+    properties:
+      id:
+        type: "number"
+      nome:
+        type: "string"
+      tipo:
+        type: "number"
+      cpf:
+        type: "string"
+      dataNascimento:
+        type: "number"
+      sexo:
+        type: "string"
+      numeroIdentidade:
+        type: "number"
+      orgaoExpedidorIdentidade:
+        type: "string"
+      unidadeFederativaIdentidade:
+        type: "string"
+      dataEmissaoIdentidade:
+        type: "number"
+      email:
+        type: "string"
+      telefone:
+        type: object
         properties:
-          bankslip:      
-            type: "string"
-          command:
-            type: "string"
-          status:
-            type: "string"
-          registro:
-            type: "string"
-    RechargeEmailPdfSchema:
-         type: "object"
-         properties:
-          ourNumber:      
-            type: "string"
-          email:
-            type: "string"
-    CarrierAccountsSchema:
-        type: "object"
-        properties: 
           id:
             type: "number"
-          idProduto:
-            type: "number"
-          idOrigemComercial:
+          idTipoTelefone:
             type: "number"
           idPessoa:
             type: "number"
-          idStatusConta:
-            type: "number"
-          diaVencimento:
-            type: "number"
-          melhorDiaCompra:
-            type: "number"
-          dataStatusConta:
+          ddd:
             type: "string"
-          dataCadastro:
+          telefone:
             type: "string"
-          dataUltimaAlteracaoVencimento:
+          ramal:
             type: "string"
-          valorRenda:
+          status:
             type: "number"
-          idProposta:
-            type: "number"
-          funcaoAtiva:
+  CardSchema:
+    type: "object"
+    properties:
+      id:
+        type: "number"
+      flagTitular:
+        type: "number"
+      idPessoa:
+        type: "number"
+      sequencialCartao:
+        type: "number"
+      idConta:
+        type: "number"
+      idStatus:
+        type: "number"
+      dataStatus:
+        type: "string"
+      idEstagio:
+        type: "number"
+      dataEstagio:
+        type: "string"
+      numeroBin:
+        type: "number"
+      numeroCartao:
+        type: "number"
+      numeroCartaoHash:
+        type: "string"
+      numeroCartaoCriptografado:
+        type: "string"
+      dataEmissao:
+        type: "string"
+      dataValidade:
+        type: "string"
+      cartaoVirtual:
+        type: "number"
+      impressaoAvulsa:
+        type: "string"
+      dataImpressao:
+        type: "string"
+      nomeArquivoImpressao:
+        type: "string"
+      idProduto:
+        type: "number"
+      nomeImpresso:
+        type: "string"
+      codigoDesbloqueio:
+        type: "string"
+      tipoPortador:
+        type: "string"
+      idStatusCartao:
+        type: "number"
+      dataStatusCartao:
+        type: "string"
+      idEstagioCartao:
+        type: "number"
+      dataEstagioCartao:
+        type: "string"
+      dataGeracao:
+        type: "string"
+      flagVirtual:
+        type: "boolean"
+      flagImpressaoOrigemComerial:
+        type: "string"
+      arquivoImpressao:
+        type: "string"
+  UnlockCardSchema:
+    type: "object"
+    properties:
+      id:
+        type: "number"
+      flagTitular:
+        type: "number"
+      idPessoa:
+        type: "number"
+      sequencialCartao:
+        type: "number"
+      idConta:
+        type: "number"
+      idStatus:
+        type: "number"
+      dataStatus:
+        type: "string"
+      idEstagio:
+        type: "number"
+      dataEstagio:
+        type: "string"
+      numeroBin:
+        type: "number"
+      numeroCartao:
+        type: "number"
+      numeroCartaoHash:
+        type: "string"
+      numeroCartaoCriptografado:
+        type: "string"
+      dataEmissao:
+        type: "string"
+      dataValidade:
+        type: "string"
+      cartaoVirtual:
+        type: "number"
+      impressaoAvulsa:
+        type: "string"
+      dataImpressao:
+        type: "string"
+      nomeArquivoImpressao:
+        type: "string"
+      idProduto:
+        type: "number"
+      nomeImpresso:
+        type: "string"
+  ForgotPasswordSchema:
+    type: "object"
+    properties:
+      username:
+        type: "string"
+      idCompany:
+        type: "string"
+      password:
+        type: "string"
+      newPassword:
+        type: "string"
+  ResetPasswordSchema:
+    type: "object"
+    properties:
+      username:
+        type: "string"
+      idCompany:
+        type: "string"
+  CryptographedCardNumber:
+    type: "object"
+    properties:
+      encryptedParam:
+        type: "string"
+  AccountSchema:
+    type: "object"
+    properties:
+      id:
+        type: "number"
+      idPessoa:
+        type: "number"
+      nome:
+        type: "string"
+      idProduto:
+        type: "number"
+      idOrigemComercial:
+        type: "number"
+      nomeOrigemComercial:
+        type: "string"
+      idFatasiaBasica:
+        type: "number"
+      nomeFantasiaBasica:
+        type: "string"
+      idStatusConta:
+        type: "number"
+      statusConta:
+        type: "string"
+      diaVencimento:
+        type: "number"
+      melhorDiaCompra:
+        type: "number"
+      dataStatusConta:
+        type: "string"
+      dataCadastro:
+        type: "string"
+      dataUltimaAlteracaoVencimento:
+        type: "string"
+      dataHoraUltimaCompra:
+        type: "string"
+      numeroAgencia:
+        type: "number"
+      numeroContaCorrente:
+        type: "string"
+      valorRenda:
+        type: "number"
+      formaEnvioFatura:
+        type: "string"
+      titular:
+        type: "boolean"    
+      limiteGlobal:
+        type: "number"
+      limiteSaqueGlobal:
+        type: "number"
+      saldoDisponivelGlobal:
+        type: "number"
+      saldoDisponivelSaque:
+        type: "number"
+      impedidoFinanciamento:
+        type: "boolean"
+      diasAtraso:
+        type: "number"
+      proximoVencimentoPadrao:
+        type: "string"
+      idProposta:
+        type: "number"
+      quantidadePagamentos:
+        type: "number"
+      correspondencia:
+        type: "number"
+      dataInicioAtraso:
+        type: "string"
+      rotativoPagaJuros:
+        type: "number"
+      totalPosProx:
+        type: "number"
+      saldoAtualFinal:
+        type: "number"
+      saldoExtratoAnterior:
+        type: "number"
+      aceitaNovaContaPorGrupoProduto:
+        type: "boolean"
+      funcaoAtiva:
+        type: "string"
+  ExtractSchema:
+    type: "object"
+    properties:
+      id:
+        type: "number"
+      idTipoTransacao:
+        type: "number"
+      descricaoAbreviada:
+        type: "string"
+      statusTransacao:
+        type: "string"
+      idEvento:
+        type: "number"
+      tipoEvento:
+        type: "string"
+      idConta:
+        type: "number"
+      cartaoMascarado:
+        type: "string"
+      nomePortador:
+        type: "string"
+      dataTransacao:
+        type: "string"
+      dataFaturamento:
+        type: "string"
+      dataVencimento:
+        type: "string"
+      modoEntradaTransacao:
+        type: "string"
+      valorTaxaEmbarque:
+        type: "number"
+      valorEntrada:
+        type: "number"
+      valorBRL:
+        type: "number"
+      valorUSD:
+        type: "number"
+      cotacaoUSD:
+        type: "number"
+      dataCotacaoUSD:
+        type: "string"
+      codigoMoedaOrigem:
+        type: "string"
+      codigoMoedaDestino:
+        type: "string"    
+      codigoAutorizacao:
+        type: "string"
+      codigoReferencia:
+        type: "string"
+      codigoTerminal:
+        type: "string"
+      codigoMCC:
+        type: "number"
+      grupoMCC:
+        type: "number"
+      grupoDescricaoMCC:
+        type: "string"
+      idEstabelecimento:
+        type: "number"
+      nomeEstabelecimento:
+        type: "string"
+      nomeFantasiaEstabelecimento:
+        type: "string"
+      localidadeEstabelecimento:
+        type: "string"
+      planoParcelamento:
+        type: "number"
+      numeroParcela:
+        type: "number"
+      detalhesTransacao:
+        type: "string"
+      flagCredito:
+        type: "number"
+      flagFaturado:
+        type: "number"
+      flagEstorno:
+        type: "number"
+      idTransacaoEstorno:
+        type: "number"
+  CardsSchema:
+    type: "object"
+    properties:
+      id:
+        type: "number"
+      flagTitular:
+        type: "number"
+      idPessoa:
+        type: "number"
+      sequencialCartao:
+        type: "number"
+      idConta:
+        type: "number"
+      idStatus:
+        type: "number"
+      dataStatus:
+        type: "string"
+      idEstagio:
+        type: "number"
+      dataEstagio:
+        type: "string"
+      numeroBin:
+        type: "number"
+      numeroCartao:
+        type: "string"
+      numeroCartaoHash:
+        type: "number"
+      numeroCartaoCriptografado:
+        type: "string"
+      dataEmissao:
+        type: "string"
+      dataValidade:
+        type: "string"
+      cartaoVirtual:
+        type: "number"
+      impressaoAvulsa:
+        type: "number"
+      dataImpressao:
+        type: "string"
+      nomeArquivoImpressao:
+        type: "string"
+      idProduto:
+        type: "number"
+      nomeImpresso:
+        type: "string"    
+      codigoDesbloqueio:
+        type: "string"
+  RegisterSchema:
+    type: "object"
+    properties:
+      username:
+        type: "string"
+      idCompany:
+        type: "string"
+      email:
+        type: "string"
+  LoginSchema:
+    type: "object"
+    properties:
+      username:
+        type: "string"
+      idCompany:
+        type: "string"
+      password:
+        type: "string"
+  LoginResponseSchema:
+    type: "object"
+    properties:
+      first_access:
+        type: "string"
+      access_token:
+        type: "string"
+      refresh_token:
+        type: "string"
+  ConfirmPasswordSchema:
+    type: "object"
+    properties:
+      username:
+        type: "string"
+      code:
+        type: "string"
+      idCompany:
+        type: "string"
+      password:
+        type: "string"
+  AlterPasswordSchema:
+    type: "object"
+    properties:
+      username:
+        type: "string"
+      oldpass:
+        type: "string"
+      newpass:
+        type: "string"
+      idCompany:
+        type: "string"
+  RechargePdfSchema:
+    type: "object"
+    properties:
+      pdf:
+        type: "string"
+  RechargeRegisterSchema:
+    type: "object"
+    properties:
+      account:
+        type: "string"
+      cpf:
+        type: "string"
+      value:
+        type: "string"
+      productId:
+        type: "string"
+  RechargeResponseSchema:
+    type: "object"
+    properties:
+      titleNumberBb:
+        type: "string"
+      digitableLine:
+        type: "string"
+      numericBarcode:
+        type: "string"
+      codigoCliente:
+        type: "string"
+      numeroContratoCobranca:
+        type: "string"
+      digitableLineFormatted:
+        type: "string"
+      info:
+        type: "object"
+        properties:
+          product:
             type: "string"
-    CarrierPdfSchema:
+          cpf:
+            type: "string"
+          account:
+            type: "string"
+          date:
+            type: "string"
+          transactionToken:
+            type: "string"
+  RechargePaymentsSchema:
+    type: "array"
+    items:
       type: "object"
       properties:
+        bankslip:      
+          type: "string"
+        command:
+          type: "string"
+        status:
+          type: "string"
+        registro:
+          type: "string"
+  RechargeEmailPdfSchema:
+       type: "object"
+       properties:
+        ourNumber:      
+          type: "string"
+        email:
+          type: "string"
+  CarrierAccountsSchema:
+      type: "object"
+      properties: 
         id:
           type: "number"
-        idPessoa:
-          type: "number"
-        nome:
-          type: "string"
         idProduto:
           type: "number"
         idOrigemComercial:
           type: "number"
-        nomeOrigemComercial:
-          type: "string"
-        idFatasiaBasica:
+        idPessoa:
           type: "number"
-        nomeFantasiaBasica:
-          type: "string"
         idStatusConta:
           type: "number"
-        statusConta:
-          type: "string"
         diaVencimento:
           type: "number"
         melhorDiaCompra:
@@ -925,154 +1055,287 @@
           type: "string"
         dataUltimaAlteracaoVencimento:
           type: "string"
-        dataHoraUltimaCompra:
-          type: "string"
-        numeroAgencia:
-          type: "number"
-        numeroContaCorrente:
-          type: "string"
         valorRenda:
           type: "number"
-        formaEnvioFatura:
-          type: "string"
-        titular:
-          type: "boolean"    
-        limiteGlobal:
-          type: "number"
-        limiteSaqueGlobal:
-          type: "number"
-        saldoDisponivelGlobal:
-          type: "number"
-        saldoDisponivelSaque:
-          type: "number"
-        impedidoFinanciamento:
-          type: "boolean"
-        diasAtraso:
-          type: "number"
-        proximoVencimentoPadrao:
-          type: "string"
         idProposta:
           type: "number"
-        quantidadePagamentos:
-          type: "number"
-        correspondencia:
-          type: "number"
-        dataInicioAtraso:
-          type: "string"
-        rotativoPagaJuros:
-          type: "number"
-        totalPosProx:
-          type: "number"
-        saldoAtualFinal:
-          type: "number"
-        saldoExtratoAnterior:
-          type: "number"
-        aceitaNovaContaPorGrupoProduto:
-          type: "boolean"
         funcaoAtiva:
           type: "string"
-        extract:
-          type: "array"
-          items:
-            type: "object"
-            properties:
-              id:
-                type: "number"
-              idTipoTransacao:
-                type: "number"
-              descricaoAbreviada:
-                type: "string"
-              statusTransacao:
-                type: "string"
-              idEvento:
-                type: "number"
-              tipoEvento:
-                type: "string"
-              idConta:
-                type: "number"
-              cartaoMascarado:
-                type: "string"
-              nomePortador:
-                type: "string"
-              dataTransacao:
-                type: "string"
-              dataFaturamento:
-                type: "string"
-              dataVencimento:
-                type: "string"
-              modoEntradaTransacao:
-                type: "string"
-              valorTaxaEmbarque:
-                type: "number"
-              valorEntrada:
-                type: "number"
-              valorBRL:
-                type: "number"
-              valorUSD:
-                type: "number"
-              cotacaoUSD:
-                type: "number"
-              dataCotacaoUSD:
-                type: "string"
-              codigoMoedaOrigem:
-                type: "string"
-              codigoMoedaDestino:
-                type: "string"    
-              codigoAutorizacao:
-                type: "string"
-              codigoReferencia:
-                type: "string"
-              codigoTerminal:
-                type: "string"
-              codigoMCC:
-                type: "number"
-              grupoMCC:
-                type: "number"
-              grupoDescricaoMCC:
-                type: "string"
-              idEstabelecimento:
-                type: "number"
-              nomeEstabelecimento:
-                type: "string"
-              nomeFantasiaEstabelecimento:
-                type: "string"
-              localidadeEstabelecimento:
-                type: "string"
-              planoParcelamento:
-                type: "number"
-              numeroParcela:
-                type: "number"
-              detalhesTransacao:
-                type: "string"
-              flagCredito:
-                type: "number"
-              flagFaturado:
-                type: "number"
-              flagEstorno:
-                type: "number"
-              idTransacaoEstorno:
-                type: "number"
-    CepSchema:
-      type: "object"
-      properties:
-        cep:
-          type: "string"
-        endereco:
-          type: "string"
-        bairro: 
-          type: "string"
-        cidade:
-          type: "string"
-        uf:
-          type: "string"
-    NewPasswordSchema:
-      type: "object"
-      properties:
-        username:
-          type: "string"
-        idCompany:
-          type: "string"
-        password: 
-          type: "string"
-        newPassword:
-          type: "string"
+  CarrierPdfSchema:
+    type: "object"
+    properties:
+      id:
+        type: "number"
+      idPessoa:
+        type: "number"
+      nome:
+        type: "string"
+      idProduto:
+        type: "number"
+      idOrigemComercial:
+        type: "number"
+      nomeOrigemComercial:
+        type: "string"
+      idFatasiaBasica:
+        type: "number"
+      nomeFantasiaBasica:
+        type: "string"
+      idStatusConta:
+        type: "number"
+      statusConta:
+        type: "string"
+      diaVencimento:
+        type: "number"
+      melhorDiaCompra:
+        type: "number"
+      dataStatusConta:
+        type: "string"
+      dataCadastro:
+        type: "string"
+      dataUltimaAlteracaoVencimento:
+        type: "string"
+      dataHoraUltimaCompra:
+        type: "string"
+      numeroAgencia:
+        type: "number"
+      numeroContaCorrente:
+        type: "string"
+      valorRenda:
+        type: "number"
+      formaEnvioFatura:
+        type: "string"
+      titular:
+        type: "boolean"    
+      limiteGlobal:
+        type: "number"
+      limiteSaqueGlobal:
+        type: "number"
+      saldoDisponivelGlobal:
+        type: "number"
+      saldoDisponivelSaque:
+        type: "number"
+      impedidoFinanciamento:
+        type: "boolean"
+      diasAtraso:
+        type: "number"
+      proximoVencimentoPadrao:
+        type: "string"
+      idProposta:
+        type: "number"
+      quantidadePagamentos:
+        type: "number"
+      correspondencia:
+        type: "number"
+      dataInicioAtraso:
+        type: "string"
+      rotativoPagaJuros:
+        type: "number"
+      totalPosProx:
+        type: "number"
+      saldoAtualFinal:
+        type: "number"
+      saldoExtratoAnterior:
+        type: "number"
+      aceitaNovaContaPorGrupoProduto:
+        type: "boolean"
+      funcaoAtiva:
+        type: "string"
+      extract:
+        type: "array"
+        items:
+          type: "object"
+          properties:
+            id:
+              type: "number"
+            idTipoTransacao:
+              type: "number"
+            descricaoAbreviada:
+              type: "string"
+            statusTransacao:
+              type: "string"
+            idEvento:
+              type: "number"
+            tipoEvento:
+              type: "string"
+            idConta:
+              type: "number"
+            cartaoMascarado:
+              type: "string"
+            nomePortador:
+              type: "string"
+            dataTransacao:
+              type: "string"
+            dataFaturamento:
+              type: "string"
+            dataVencimento:
+              type: "string"
+            modoEntradaTransacao:
+              type: "string"
+            valorTaxaEmbarque:
+              type: "number"
+            valorEntrada:
+              type: "number"
+            valorBRL:
+              type: "number"
+            valorUSD:
+              type: "number"
+            cotacaoUSD:
+              type: "number"
+            dataCotacaoUSD:
+              type: "string"
+            codigoMoedaOrigem:
+              type: "string"
+            codigoMoedaDestino:
+              type: "string"    
+            codigoAutorizacao:
+              type: "string"
+            codigoReferencia:
+              type: "string"
+            codigoTerminal:
+              type: "string"
+            codigoMCC:
+              type: "number"
+            grupoMCC:
+              type: "number"
+            grupoDescricaoMCC:
+              type: "string"
+            idEstabelecimento:
+              type: "number"
+            nomeEstabelecimento:
+              type: "string"
+            nomeFantasiaEstabelecimento:
+              type: "string"
+            localidadeEstabelecimento:
+              type: "string"
+            planoParcelamento:
+              type: "number"
+            numeroParcela:
+              type: "number"
+            detalhesTransacao:
+              type: "string"
+            flagCredito:
+              type: "number"
+            flagFaturado:
+              type: "number"
+            flagEstorno:
+              type: "number"
+            idTransacaoEstorno:
+              type: "number"
+  CepSchema:
+    type: "object"
+    properties:
+      cep:
+        type: "string"
+      endereco:
+        type: "string"
+      bairro: 
+        type: "string"
+      cidade:
+        type: "string"
+      uf:
+        type: "string"
+  NewPasswordSchema:
+    type: "object"
+    properties:
+      username:
+        type: "string"
+      idCompany:
+        type: "string"
+      password: 
+        type: "string"
+      newPassword:
+        type: "string"
+  
+  p2pSchema:
+    type: "object"
+    properties:
+      valorTotal: 
+        type: "number"
+      cpf_cnpj_destinatario: 
+        type: "string"
+      conta_cartao_origem: 
+        type: "string"
+      clienteNome_origem: 
+        type: "string"
+      favorecido: 
+        type: "string"
+      conta_cartao_destinatario: 
+        type: "string"
+      conta_destinatario:
+        type: "number"
+  
+  transferSchema:
+    type: "object"
+    properties:
+      valorTotal: 
+        type: "number"
+      conta_cartao_origem: 
+        type: "string"
+      clienteNome_origem: 
+        type: "string"
+      banco_destinatario: 
+        type: "string"
+      agencia_destinatario: 
+        type: "string"
+      conta_destinatario: 
+        type: "string"
+      digitoConta_destinatario:
+        type: "number"
+      cpf_cnpj_destinatario:
+        type: "string"
+      tipoConta_destinatario:
+        type: "string"
+      tipoTransferencia:
+        type: "string"
+      favorecido:
+        type: "string"
+      valor_transferencia: 
+        type: "string"
+      valorTarifa:
+        type: "string"
+  
+  rechargeCellSchema:
+    type: "object"
+    properties:
+      valorTotal: 
+        type: "number"
+      conta_cartao_origem:
+        type: "string"
+      clienteNome_origem:
+        type: "string"
+      cpf_cnpj_origem:
+        type: "string"
+      countryCode:
+        type: "string"
+      ddd:
+        type: "string"
+      numero_Cel:
+        type: "string"
+      operadora:
+        type: "string"
+      valor:
+        type: "number"
+      tarifa:
+        type: "number"
+  
+  billPaymentSchema:
+    type: "object"
+    properties:
+      valorTotal: 
+        type: "number"
+      conta_cartao_origem:
+        type: "string"
+      clienteNome_origem:
+        type: "string"
+      cpf_cnpj_origem:
+        type: "string"
+      cod_barra:
+        type: "string"
+      instituicaoRecebedora:
+        type: "string"
+      dataVencimento:
+        type: "string"
+      dataPagamento:
+        type: "string"
+      descricao:
+        type: "number"
