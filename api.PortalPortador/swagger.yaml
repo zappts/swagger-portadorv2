@@ -54,7 +54,7 @@ paths:
     post:   
       tags:
         - "transaction"        
-      sumary: "Realiza transação entre constas de portador"
+      summary: "Realiza transação entre constas de portador"
       parameters:
       - in: body
         name: p2pSchema
@@ -95,7 +95,7 @@ paths:
     post:   
       tags:
         - "transaction"        
-      sumary: "Realiza transação entre consta portador e outro banco"
+      summary: "Realiza transação entre consta portador e outro banco"
       parameters:
       - in: body
         name: transferSchema
@@ -136,7 +136,7 @@ paths:
     post:   
       tags:
         - "transaction"        
-      sumary: "Realiza recarga de celular"
+      summary: "Realiza recarga de celular"
       parameters:
       - in: body
         name: rechargeCellSchema
@@ -177,7 +177,7 @@ paths:
     post:   
       tags:
         - "transaction"        
-      sumary: "Realiza pagamento de boleto"
+      summary: "Realiza pagamento de boleto"
       parameters:
       - in: body
         name: billPaymentSchema
@@ -214,18 +214,12 @@ paths:
         description: "Token de transação valido"
         required: true
         type: "string"
-  /accounts/{accountId}/voucher/{idVoucher}:
+  /accounts/{accountId}/voucher/:
     get:   
       tags:
         - "boleto"        
-      sumary: "Retorna boletos do portador"
-      parameters: []
-      responses: 
-        200: 
-          description: "Operaçao realizada com sucesso. Gerando comprovantes"
-        400:
-          description: "Token inválido"
-    parameters: 
+      summary: "Retorna boletos do portador"
+      parameters: 
       - 
         name: "accountId"
         in: "path"
@@ -262,6 +256,12 @@ paths:
         description: "tipo"
         required: false
         type: "number"
+      responses: 
+        200: 
+          description: "Operaçao realizada com sucesso. Gerando comprovantes"
+        400:
+          description: "Token inválido"
+    
   /accounts/{accountId}/cards: 
     get: 
       tags: 
