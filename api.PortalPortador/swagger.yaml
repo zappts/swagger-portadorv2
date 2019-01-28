@@ -258,9 +258,9 @@ paths:
         type: "number"
       responses: 
         200: 
-          description: "Operaçao realizada com sucesso. Gerando comprovantes"
-        400:
-          description: "Token inválido"
+          description: "retorna lista de boletos do usuário"
+          schema:
+            $ref: '#/definitions/boletoSchema'
     
   /accounts/{accountId}/cards: 
     get: 
@@ -1389,3 +1389,19 @@ definitions:
         type: "string"
       descricao:
         type: "number"
+
+  boletoSchema:
+    type: "objetc"
+    properties:
+      valorTotal:
+        type: "string"
+      data_hora:
+        type: "string"
+      tipoAcao:
+        type: "number"
+      statusComprovante:
+        type: "string"
+      descricao: 
+        type: "string"
+      idVouche:
+        type: "string"
