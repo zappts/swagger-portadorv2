@@ -7,6 +7,8 @@ basePath: "/prepaid-holder/v1"
 tags:
 - name: "accounts"
   description: "Operações com contas"
+- name: "boleto"
+  description: "Operações com boletos"
 - name: "user"
   description: "Operações com usuarios"
 - name: "transaction"
@@ -212,6 +214,54 @@ paths:
         description: "Token de transação valido"
         required: true
         type: "string"
+  /accounts/{accountId}/voucher/{idVoucher}:
+    get:   
+      tags:
+        - "boleto"        
+      sumary: "Retorna boletos do portador"
+      parameters: []
+      responses: 
+        200: 
+          description: "Operaçao realizada com sucesso. Gerando comprovantes"
+        400:
+          description: "Token inválido"
+    parameters: 
+      - 
+        name: "accountId"
+        in: "path"
+        description: "accountId"
+        required: true
+        type: "string"
+      - 
+        name: "Authorization"
+        in: "header"
+        description: "access_token capturado no login"
+        required: true
+        type: "string"
+      - 
+        name: "client_id"
+        in: "header"
+        description: "client_id"
+        required: true
+        type: "string"
+      - 
+        name: "startdate"
+        in: "query"
+        description: "startdate (YYYY-MM-DD)"
+        required: false
+        type: "string"
+      - 
+        name: "enddate"
+        in: "query"
+        description: "enddate (YYYY-MM-DD)"
+        required: false
+        type: "string"
+      - 
+        name: "tipo"
+        in: "query"
+        description: "tipo"
+        required: false
+        type: "number"
   /accounts/{accountId}/cards: 
     get: 
       tags: 
