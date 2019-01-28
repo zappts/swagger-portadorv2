@@ -214,7 +214,7 @@ paths:
         description: "Token de transação valido"
         required: true
         type: "string"
-  /accounts/{accountId}/voucher/:
+  /voucher/{accountId}:
     get:   
       tags:
         - "boleto"        
@@ -293,7 +293,7 @@ paths:
         type: "string"
       responses: 
         200: 
-          description: "retorna boleto do usuário"
+          description: "retorna boleto específico do usuário"
           schema:
             $ref: '#/definitions/boletoSchema'
   /accounts/{accountId}/cards: 
