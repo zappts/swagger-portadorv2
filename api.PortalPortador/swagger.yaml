@@ -5,21 +5,26 @@ info:
   title: "Pré-Pago Portador"
 basePath: "/prepaid-holder/v1"
 tags:
-- name: "accounts"
-  description: "Operações com contas"
-- name: "boleto"
-  description: "Operações com boletos"
-- name: "user"
+- name: "OAuth"
+  description: "Operaçoes com a autenticação"
+- name: "User"
   description: "Operações com usuarios"
-- name: "transaction"
+- name: "Accounts"
+  description: "Operações com contas"
+- name: "Cards"
+  description: "Operações com cartões"
+- name: "Transaction"
   description: "Operações com transações"  
-- name: "cognito"
-  description: "Operaçoes com o AWS Cognito"
+- name: "Boleto"
+  description: "Operações com boletos"
+
+
 paths: 
+  #USER
   /user/{cpf}: 
     get: 
       tags: 
-        - "user"
+        - "User"
       summary: "Recebe os dados do usuárior"
       parameters: 
         - 
@@ -49,213 +54,214 @@ paths:
             description: "Nenhuma conta ativa para o usuário encontrada neste domínio."  
             schema:
               $ref: '#/definitions/ErrorSchema'
-              
+  #TRANSACTION            
   /accounts/{accountId}/transaction/p2p:
     post:   
       tags:
-        - "transaction"        
+        - "Transaction"        
       summary: "Realiza transação entre constas de portador"
       parameters:
-      - in: body
-        name: p2pSchema
-        description: "Parametros para transação P2P"
-        schema:
-          $ref: '#/definitions/p2pSchema'
+        - 
+          name: "accountId"
+          in: "path"
+          description: "accountId"
+          required: true
+          type: "string"
+        - 
+          name: "Authorization"
+          in: "header"
+          description: "access_token capturado no login"
+          required: true
+          type: "string"
+        - 
+          name: "client_id"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
+        - 
+          name: "tokentransaction"
+          in: "header"
+          description: "Token de transação valido"
+          required: true
+          type: "string"
+        - in: body
+          name: p2pSchema
+          description: "Parametros para transação P2P"
+          schema:
+            $ref: '#/definitions/p2pSchema'
       responses: 
         200: 
           description: "Operaçao realizada com sucesso. Gerando comprovantes"
         400:
           description: "Token inválido"
-    parameters: 
-      - 
-        name: "accountId"
-        in: "path"
-        description: "accountId"
-        required: true
-        type: "string"
-      - 
-        name: "Authorization"
-        in: "header"
-        description: "access_token capturado no login"
-        required: true
-        type: "string"
-      - 
-        name: "client_id"
-        in: "header"
-        description: "client_id"
-        required: true
-        type: "string"
-      - 
-        name: "tokentransaction"
-        in: "header"
-        description: "Token de transação valido"
-        required: true
-        type: "string"
+      
   /accounts/{accountId}/transaction/transfer:
     post:   
       tags:
-        - "transaction"        
+        - "Transaction"        
       summary: "Realiza transação entre consta portador e outro banco"
       parameters:
-      - in: body
-        name: transferSchema
-        description: "Parametros para transação entre bancos"
-        schema:
-          $ref: '#/definitions/transferSchema'
+        - 
+          name: "accountId"
+          in: "path"
+          description: "accountId"
+          required: true
+          type: "string"
+        - 
+          name: "Authorization"
+          in: "header"
+          description: "access_token capturado no login"
+          required: true
+          type: "string"
+        - 
+          name: "client_id"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
+        - 
+          name: "tokentransaction"
+          in: "header"
+          description: "Token de transação valido"
+          required: true
+          type: "string"
+        - in: body
+          name: transferSchema
+          description: "Parametros para transação entre bancos"
+          schema:
+            $ref: '#/definitions/transferSchema'
       responses: 
         200: 
           description: "Operaçao realizada com sucesso. Gerando comprovantes"
         400:
-          description: "Token inválido"
-    parameters: 
-      - 
-        name: "accountId"
-        in: "path"
-        description: "accountId"
-        required: true
-        type: "string"
-      - 
-        name: "Authorization"
-        in: "header"
-        description: "access_token capturado no login"
-        required: true
-        type: "string"
-      - 
-        name: "client_id"
-        in: "header"
-        description: "client_id"
-        required: true
-        type: "string"
-      - 
-        name: "tokentransaction"
-        in: "header"
-        description: "Token de transação valido"
-        required: true
-        type: "string"
+          description: "Token inválido" 
+      
   /accounts/{accountId}/transaction/recharge-cell:
     post:   
       tags:
-        - "transaction"        
+        - "Transaction"        
       summary: "Realiza recarga de celular"
-      parameters:
-      - in: body
-        name: rechargeCellSchema
-        description: "Parametros para recarga de celular"
-        schema:
-          $ref: '#/definitions/rechargeCellSchema'
+      parameters: 
+        - 
+          name: "accountId"
+          in: "path"
+          description: "accountId"
+          required: true
+          type: "string"
+        - 
+          name: "Authorization"
+          in: "header"
+          description: "access_token capturado no login"
+          required: true
+          type: "string"
+        - 
+          name: "client_id"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
+        - 
+          name: "tokentransaction"
+          in: "header"
+          description: "Token de transação valido"
+          required: true
+          type: "string"
+        - in: body
+          name: rechargeCellSchema
+          description: "Parametros para recarga de celular"
+          schema:
+            $ref: '#/definitions/rechargeCellSchema'
       responses: 
         200: 
           description: "Operaçao realizada com sucesso. Gerando comprovantes"
         400:
           description: "Token inválido"
-    parameters: 
-      - 
-        name: "accountId"
-        in: "path"
-        description: "accountId"
-        required: true
-        type: "string"
-      - 
-        name: "Authorization"
-        in: "header"
-        description: "access_token capturado no login"
-        required: true
-        type: "string"
-      - 
-        name: "client_id"
-        in: "header"
-        description: "client_id"
-        required: true
-        type: "string"
-      - 
-        name: "tokentransaction"
-        in: "header"
-        description: "Token de transação valido"
-        required: true
-        type: "string"
+    
   /accounts/{accountId}/transaction/bill-payment:
     post:   
       tags:
-        - "transaction"        
+        - "Transaction"        
       summary: "Realiza pagamento de boleto"
       parameters:
-      - in: body
-        name: billPaymentSchema
-        description: "Parametros para pagamento de boleto"
-        schema:
-          $ref: '#/definitions/billPaymentSchema'
+        - 
+          name: "accountId"
+          in: "path"
+          description: "accountId"
+          required: true
+          type: "string"
+        - 
+          name: "Authorization"
+          in: "header"
+          description: "access_token capturado no login"
+          required: true
+          type: "string"
+        - 
+          name: "client_id"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
+        - 
+          name: "tokentransaction"
+          in: "header"
+          description: "Token de transação valido"
+          required: true
+          type: "string"
+        - in: body
+          name: billPaymentSchema
+          description: "Parametros para pagamento de boleto"
+          schema:
+            $ref: '#/definitions/billPaymentSchema'
       responses: 
         200: 
           description: "Operaçao realizada com sucesso. Gerando comprovantes"
         400:
           description: "Token inválido"
-    parameters: 
-      - 
-        name: "accountId"
-        in: "path"
-        description: "accountId"
-        required: true
-        type: "string"
-      - 
-        name: "Authorization"
-        in: "header"
-        description: "access_token capturado no login"
-        required: true
-        type: "string"
-      - 
-        name: "client_id"
-        in: "header"
-        description: "client_id"
-        required: true
-        type: "string"
-      - 
-        name: "tokentransaction"
-        in: "header"
-        description: "Token de transação valido"
-        required: true
-        type: "string"
+      
+  #BOLETO      
   /voucher/{accountId}:
     get:   
       tags:
-        - "boleto"        
+        - "Boleto"        
       summary: "Retorna boletos do portador"
       parameters: 
-      - 
-        name: "accountId"
-        in: "path"
-        description: "accountId"
-        required: true
-        type: "string"
-      - 
-        name: "Authorization"
-        in: "header"
-        description: "access_token capturado no login"
-        required: true
-        type: "string"
-      - 
-        name: "client_id"
-        in: "header"
-        description: "client_id"
-        required: true
-        type: "string"
-      - 
-        name: "startdate"
-        in: "query"
-        description: "startdate (YYYY-MM-DD)"
-        required: false
-        type: "string"
-      - 
-        name: "enddate"
-        in: "query"
-        description: "enddate (YYYY-MM-DD)"
-        required: false
-        type: "string"
-      - 
-        name: "tipo"
-        in: "query"
-        description: "tipo"
-        required: false
-        type: "number"
+        - 
+          name: "accountId"
+          in: "path"
+          description: "accountId"
+          required: true
+          type: "string"
+        - 
+          name: "Authorization"
+          in: "header"
+          description: "access_token capturado no login"
+          required: true
+          type: "string"
+        - 
+          name: "client_id"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
+        - 
+          name: "startdate"
+          in: "query"
+          description: "startdate (YYYY-MM-DD)"
+          required: false
+          type: "string"
+        - 
+          name: "enddate"
+          in: "query"
+          description: "enddate (YYYY-MM-DD)"
+          required: false
+          type: "string"
+        - 
+          name: "tipo"
+          in: "query"
+          description: "tipo"
+          required: false
+          type: "number"
       responses: 
         200: 
           description: "retorna lista de boletos do usuário"
@@ -264,44 +270,103 @@ paths:
   /accounts/{accountId}/voucher/{idVoucher}:
     get:   
       tags:
-        - "boleto"        
+        - "Boleto"        
       summary: "Retorna boleto específico do portador"
       parameters: 
-      - 
-        name: "accountId"
-        in: "path"
-        description: "accountId"
-        required: true
-        type: "string"
-      - 
-        name: "idVoucher"
-        in: "path"
-        description: "id do comprovante (idVoucher)"
-        required: true
-        type: "string"
-      - 
-        name: "Authorization"
-        in: "header"
-        description: "access_token capturado no login"
-        required: true
-        type: "string"
-      - 
-        name: "client_id"
-        in: "header"
-        description: "client_id"
-        required: true
-        type: "string"
+        - 
+          name: "accountId"
+          in: "path"
+          description: "accountId"
+          required: true
+          type: "string"
+        - 
+          name: "idVoucher"
+          in: "path"
+          description: "id do comprovante (idVoucher)"
+          required: true
+          type: "string"
+        - 
+          name: "Authorization"
+          in: "header"
+          description: "access_token capturado no login"
+          required: true
+          type: "string"
+        - 
+          name: "client_id"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
       responses: 
         200: 
           description: "retorna boleto específico do usuário"
           schema:
             $ref: '#/definitions/boletoSchema'
+  #ACCOUNTS
+  /accounts/{accountId}/extract: 
+    get: 
+      tags: 
+        - "Accounts"
+      summary: "Extrato da conta"
+      parameters: 
+        - 
+          name: "accountId"
+          in: "path"
+          description: "accountId"
+          required: true
+          type: "string" 
+        - 
+          name: "Authorization"
+          in: "header"
+          description: "access_token capturado no login"
+          required: true
+          type: "string"
+        - 
+          name: "client_id"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
+        - name: "initialDate"
+          in: "query"
+          type: "string"
+        - name: "finalDate"
+          in: "query"
+          type: "string"
+      responses: 
+        200: 
+          description: "Conta encontrada"
+          schema:
+            $ref: "#/definitions/ExtractSchema"
+        400:
+          description: "Nenhum registro encontrado para essa solicitação."
+          schema:
+            $ref: "#/definitions/MessageSchema"
+
   /accounts/{accountId}/cards: 
     get: 
       tags: 
-        - "accounts"
+        - "Accounts"
       summary: "Lista cartões da conta do portador"
-      parameters: []
+      parameters:
+        - 
+          name: "accountId"
+          in: "path"
+          description: "accountId"
+          required: true
+          type: "string"
+        - 
+          name: "Authorization"
+          in: "header"
+          description: "access_token capturado no login"
+          required: true
+          type: "string"
+        - 
+          name: "client_id"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
       responses: 
         200: 
           description: "Cartões encontrados"
@@ -311,37 +376,52 @@ paths:
           description: "Nenhum registro encontrado para essa solicitação"
           schema:
             $ref: '#/definitions/MessageSchema'
-    parameters: 
-      - 
-        name: "accountId"
-        in: "path"
-        description: "accountId"
-        required: true
-        type: "string"
-      - 
-        name: "Authorization"
-        in: "header"
-        description: "access_token capturado no login"
-        required: true
-        type: "string"
-      - 
-        name: "client_id"
-        in: "header"
-        description: "client_id"
-        required: true
-        type: "string"
-      
+  
+  /accountdetail:
+    get:
+      tags:
+        - "Accounts"
+      summary: "Lista os detalhes da conta pelo ID"
+      parameters: 
+        - 
+          name: "accountId"
+          in: "query"
+          description: "accountId"
+          required: true
+          type: "string"
+        - 
+          name: "Authorization"
+          in: "header"
+          description: "access_token capturado no login"
+          required: true
+          type: "string"
+        - 
+          name: "client_id"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
+      responses: 
+        200: 
+          description: "Conta encontrada"
+          schema:
+            $ref: '#/definitions/accountDetailSchema'
+        404:
+          description: "Nenhum registro encontrado para essa solicitação"
+          schema:
+            $ref: '#/definitions/MessageSchema'
+  #OAUTH    
   /oauth/login: 
     post: 
       tags: 
-      - "cognito"
+      - "OAuth"
       summary: "Login do portador"
       parameters: 
-      - in: body
-        name: LoginSchema
-        description: "Parametros de login"
-        schema:
-          $ref: '#/definitions/LoginSchema'
+        - in: body
+          name: LoginSchema
+          description: "Parametros de login"
+          schema:
+            $ref: '#/definitions/LoginSchema'
       responses: 
         200: 
           description: "Sucesso no login"
@@ -370,14 +450,20 @@ paths:
   /oauth/password: 
     put:  
       tags: 
-      - "cognito"
+      - "OAuth"
       summary: "Altera a senha do Portal entrando com a senha anterior"
       parameters: 
-      - in: body
-        name: body
-        description: "Parametros de alteração de senha"
-        schema:
-          $ref: '#/definitions/AlterPasswordSchema'
+        - 
+          name: "client_id"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
+        - in: body
+          name: body
+          description: "Parametros de alteração de senha"
+          schema:
+            $ref: '#/definitions/AlterPasswordSchema'
       responses: 
         200: 
           description: "Você alterou a senha do Portal Cateno em 23/03/2018 às 13:50. Caso tenha alguma dúvida, entrar em contato com a Central de Atendimento"
@@ -385,25 +471,19 @@ paths:
             $ref: '#/definitions/MessageSchema'
         400:
           description: "Falha ao alterar senha do usuário, verifique se a senha atual está correta e a nova senha atende aos requisitos mínimos."
-    parameters: 
-      - 
-        name: "client_id"
-        in: "header"
-        description: "client_id"
-        required: true
-        type: "string"
+     
   /password/forgot: 
     get: 
       tags: 
-      - "cognito"
+      - "OAuth"
       summary: "Solicita código validador para alterar a senha"
       parameters:
-      - name: "username"
-        in: "query"
-        type: "string"
-      - name: "idCompany"
-        in: "query"
-        type: "string"
+        - name: "username"
+          in: "query"
+          type: "string"
+        - name: "idCompany"
+          in: "query"
+          type: "string"
       responses: 
         201: 
           description: "Uma nova senha foi enviada para xxx"
@@ -413,14 +493,32 @@ paths:
           description: "Você ainda está com senha temporária, para continuar você precisará de uma nova. Favor voltar ao início do portal e solicitar um novo cadastro de acesso para receber uma nova senha."
     post: 	
         tags: 	
-        - "cognito"	
+        - "OAuth"	
         summary: "Altera a senha do portal esquecida"	
-        parameters: 	
-        - in: body	
-          name: body	
-          description: "parametros de confirmação de senha"	
-          schema:	
-            $ref: '#/definitions/ConfirmPasswordSchema'	
+        parameters:
+          - 
+            name: "accountId"
+            in: "path"
+            description: "accountId"
+            required: true
+            type: "string" 
+          - 
+            name: "Authorization"
+            in: "header"
+            description: "access_token capturado no login"
+            required: true
+            type: "string"
+          - 
+            name: "client_id"
+            in: "header"
+            description: "client_id"
+            required: true
+            type: "string" 	
+          - in: body	
+            name: body	
+            description: "parametros de confirmação de senha"	
+            schema:	
+              $ref: '#/definitions/ConfirmPasswordSchema'	
         responses: 	
           200: 	
             description: "Senha alterada com sucesso"	
@@ -428,65 +526,90 @@ paths:
               $ref: '#/definitions/MessageSchema'	
           400:	
             description: "Código de verificação inválido / Falha ao resetar a senha / A senha não atende aos requisitos mínimos. Ela deve possuir ao menos 1 letra minúscula, 1 letra maiúscula, 1 número e 1 caracter especial."
-    parameters: 
-      - 
-        name: "accountId"
-        in: "path"
-        description: "accountId"
-        required: true
-        type: "string" 
-      - 
-        name: "Authorization"
-        in: "header"
-        description: "access_token capturado no login"
-        required: true
-        type: "string"
-      - 
-        name: "client_id"
-        in: "header"
-        description: "client_id"
-        required: true
-        type: "string"
-  /accounts/{accountId}/extract: 
+  
+  #CARDS
+  /cards/{cardId}/password: 
     get: 
       tags: 
-        - "accounts"
-      summary: "Extrato da conta"
-      parameters: 
-      - name: "initialDate"
-        in: "query"
-        type: "string"
-      - name: "finalDate"
-        in: "query"
-        type: "string"
+      - "Cards"
+      summary: "Valida a senha do cartão"
+      parameters:
+        - 
+           name: "cardId"
+           in: "path"
+           description: "cardId"
+           required: true
+           type: "string"
+        - 
+           name: "password"
+           in: "header"
+           description: "senha criptografada"
+           required: true
+           type: "string"
+      responses: 
+        201: 
+          description: "Senha correta"
+          schema:
+            $ref: '#/definitions/MessageCardVerifySchema'
+  
+  #EXTRATO
+  /carriers/{carrierId}/products/{productId}/pdf: 
+    get: 
+      tags: 
+      - "Extrato"
+      summary: "Lista os extratos de uma conta quando extrato normal, e lista os extratos de todas as contas desse usuário quando consolidado"
+      parameters:
+        - 
+           name: "carrierId"
+           in: "path"
+           description: "idPessoa"
+           required: true
+           type: "integer"
+        - 
+           name: "type"
+           in: "query"
+           description: "'C' (consolidado) ou idConta (extrato normal)"
+           required: true
+           type: "string"
       responses: 
         200: 
-          description: "Conta encontrada"
+          description: "Extrato encontrado"
           schema:
-            $ref: "#/definitions/ExtractSchema"
-        400:
+            $ref: '#/definitions/ExtratoSchema'
+        401: 
+          description: "Não autorizado"
+        404: 
           description: "Nenhum registro encontrado para essa solicitação."
+
+  /carriers/{personId}/products/{productId}/accounts: 
+    get: 
+      tags: 
+      - "Extrato"
+      summary: "Lista as contas do usuário no produto"
+      parameters:
+        - 
+           name: "personId"
+           in: "path"
+           description: "idPessoa"
+           required: true
+           type: "integer"
+        - 
+           name: "productId"
+           in: "path"
+           description: "idProduto"
+           required: true
+           type: "string"
+      responses: 
+        200: 
+          description: "Extrato encontrado"
           schema:
-            $ref: "#/definitions/MessageSchema"
-    parameters: 
-      - 
-        name: "accountId"
-        in: "path"
-        description: "accountId"
-        required: true
-        type: "string" 
-      - 
-        name: "Authorization"
-        in: "header"
-        description: "access_token capturado no login"
-        required: true
-        type: "string"
-      - 
-        name: "client_id"
-        in: "header"
-        description: "client_id"
-        required: true
-        type: "string"
+            $ref: '#/definitions/ExtratoContasProdutoSchema'
+        401: 
+          description: "Unauthorized"
+        404: 
+          description: "Nenhum registro encontrado para essa solicitação" 
+  
+      
 definitions:
   UnlockCardRequestSchema:
     type: "object"
@@ -616,6 +739,15 @@ definitions:
     properties:
       message:
         type: "string"
+  #CARDS
+  MessageCardVerifySchema:
+    type: "object"
+    properties:
+      message:
+        type: "string"
+      token:
+        type: "string"
+  
   CardAlterPasswordSchema:
     type: "object"
     properties:
@@ -1334,7 +1466,7 @@ definitions:
         type: "string"
       newPassword:
         type: "string"
-  
+  #TRANSFER
   p2pSchema:
     type: "object"
     properties:
@@ -1428,7 +1560,8 @@ definitions:
         type: "string"
       descricao:
         type: "number"
-
+  
+  #BOLETO
   boletoSchema:
     type: "objetc"
     properties:
@@ -1444,3 +1577,277 @@ definitions:
         type: "string"
       idVouche:
         type: "string"
+  
+  #ACCOUNTS
+  accountDetailSchema:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+      idPessoa:
+        type: "integer"
+      name:
+        type: "string"
+      idProduto:
+        type: "integer"
+      idOrigemComercial: 
+        type: "integer"
+      nomeOrigemComercial:
+        type: "string"
+      idFantasiaBasica:
+        type: "integer"
+      nomeFantasiaBasica:
+        type: "string"
+      idStatusConta:
+        type: "integer"
+      statusConta:
+        type: "string"
+      diaVencimento: 
+        type: "integer"
+      melhorDiaCompra:
+        type: "integer"
+      dataStatusConta:
+        type: "string"
+      dataCadastro:
+        type: "string"
+      dataUltimaAlteracaoVencimento:
+        type: "string"
+      dataHoraUltimaCompra: 
+        type: "string"
+      numeroAgencia:
+        type: "integer"
+      numeroContaCorrente:
+        type: "string"
+      valorRenda:
+        type: "string"
+      formaEnvioFatura:
+        type: "string"
+      titular:
+        type: "bolean"
+      limiteGlobal: 
+        type: "integer"
+      limiteSaqueGlobal:
+        type: "integer"
+      saldoDisponivelGlobal:
+        type: "float"
+      saldoDisponivelSaque:
+        type: "float"
+      impedidoFinanciamento:
+        type: "bolean"
+      diasAtraso:
+        type: "integer"
+      proximoVencimentoPadrao: 
+        type: "string"
+      idProposta:
+        type: "integer"
+      quantidadePagamentos:
+        type: "integer"
+      correspondencia:
+        type: "integer"
+      dataInicioAtraso:
+        type: "string"
+      rotativoPagaJuros:
+        type: "integer"
+      totalPosProx:
+        type: "integer"
+      saldoAtualFinal: 
+        type: "integer"
+      saldoExtratoAnterior:
+        type: "integer"
+      aceitaNovaContaPorGrupoProduto: 
+        type: "string"
+      funcaoAtiva:
+        type: "string"
+  
+  #EXTRATO
+  ExtratoSchema:
+    type: "object"
+    properties:
+      id: 
+        type: "integer"
+      idPessoa: 
+        type: "integer"
+      nome: 
+        type: "string"
+      idProduto: 
+        type: "integer"
+      idOrigemComercial: 
+        type: "integer"
+      nomeOrigemComercial: 
+        type: "string"
+      idFantasiaBasica: 
+        type: "integer"
+      nomeFantasiaBasica: 
+        type: "string"
+      idStatusConta: 
+        type: integer
+      statusConta: 
+        type: "string"
+      diaVencimento: 
+        type: "integer"
+      melhorDiaCompra: 
+        type: "integer"
+      dataStatusConta: 
+        type: "string"
+      dataCadastro: 
+        type: "string"
+      dataUltimaAlteracaoVencimento: 
+        type: "string"
+      dataHoraUltimaCompra: 
+        type: "string"
+      numeroAgencia: 
+        type: "integer"
+      numeroContaCorrente: 
+        type: "string"
+      valorRenda: 
+        type: "float"
+      formaEnvioFatura: 
+        type: "string"
+      titular: 
+        type: "bolean"
+      limiteGlobal: 
+        type: "integer"
+      limiteSaqueGlobal: 
+        type: "integer"
+      saldoDisponivelGlobal: 
+        type: "float"
+      saldoDisponivelSaque: 
+        type: "integer"
+      impedidoFinanciamento: 
+        type: "Bolean"
+      diasAtraso: 
+        type: "integer"
+      proximoVencimentoPadrao: 
+        type: "string"
+      idProposta: 
+        type: "integer"
+      quantidadePagamentos: 
+        type: "integer"
+      correspondencia: 
+        type: "integer"
+      dataInicioAtraso: 
+        type: "string"
+      rotativoPagaJuros: 
+        type: "float"
+      totalPosProx: 
+        type: "float"
+      saldoAtualFinal: 
+        type: "float"
+      saldoExtratoAnterior: 
+        type: "float"
+      aceitaNovaContaPorGrupoProduto: 
+        type: "string"
+      funcaoAtiva: 
+        type: "string"
+      extract: 
+        type: "object"
+        properties:
+          id: 
+            type: "integer"
+          idTipoTransacao: 
+            type: "integer"
+          descricaoAbreviada: 
+            type: "string"
+          statusTransacao: 
+            type: "integer"
+          idEvento: 
+            type: "integer"
+          tipoEvento: 
+            type: "string"
+          idConta: 
+            type: "integer"
+          cartaoMascarado: 
+            type: "integer"
+          nomePortador: 
+            type: "string"
+          dataTransacaoUTC: 
+            type: "string"
+          dataTransacao: 
+            type: "string"
+          dataFaturamento: 
+            type: "string"
+          dataVencimento: 
+            type: "string"
+          modoEntradaTransacao: 
+            type: "string"
+          valorTaxaEmbarque: 
+            type: "string"
+          valorEntrada: 
+            type: "string"
+          valorBRL: 
+            type: "string"
+          valorUSD: 
+            type: "string"
+          cotacaoUSD: 
+            type: "string"
+          dataCotacaoUSD: 
+            type: "string"
+          codigoMoedaOrigem: 
+            type: "string"
+          codigoMoedaDestino: 
+            type: "string"
+          codigoAutorizacao: 
+            type: "string"
+          codigoReferencia: 
+            type: "string"
+          codigoTerminal: 
+            type: "string"
+          codigoMCC: 
+            type: "string"
+          grupoMCC: 
+            type: "string"
+          grupoDescricaoMCC: 
+            type: "string"
+          idEstabelecimento: 
+            type: "integer"
+          nomeEstabelecimento: 
+            type: "string"
+          nomeFantasiaEstabelecimento: 
+            type: "string"
+          localidadeEstabelecimento: 
+            type: "string"
+          planoParcelamento: 
+            type: "string"
+          numeroParcela: 
+            type: "string"
+          detalhesTransacao: 
+            type: "string"
+          flagCredito: 
+            type: "integer"
+          flagFaturado: 
+            type: "integer"
+          flagEstorno: 
+            type: "string"
+          idTransacaoEstorno: 
+            type: "string"
+
+  ExtratoContasProdutoSchema:
+    type: "object"
+    properties:
+      id: 
+        type: "integer"
+      idProduto: 
+        type: "integer"
+      idOrigemComercial: 
+        type: "integer"
+      idPessoa: 
+        type: "integer"
+      idStatusConta: 
+        type: "integer"
+      diaVencimento: 
+        type: "integer"
+      melhorDiaCompra: 
+        type: "integer"
+      dataStatusConta: 
+        type: "string"
+      dataCadastro: 
+        type: "string"
+      dataUltimaAlteracaoVencimento: 
+        type: "string"
+      valorRenda: 
+        type: "string"
+      idProposta: 
+        type: "integer"
+      funcaoAtiva: 
+        type: "integer"
+       
