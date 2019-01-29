@@ -17,6 +17,8 @@ tags:
   description: "Operações com transações"  
 - name: "Boleto"
   description: "Operações com boletos"
+- name: "Extrato"
+  description: "Operações com extratos"
 
 
 paths: 
