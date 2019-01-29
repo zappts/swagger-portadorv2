@@ -345,6 +345,15 @@ paths:
       responses: 
         200: 
           description: "Sucesso no login"
+          headers:
+            access_token:
+              schema:
+                type: string
+              description: access_token.
+            refresh_token:
+              schema:
+                type: string
+              description: refresh_token.
           schema:
             $ref: '#/definitions/LoginResponseSchema' 
         401:
@@ -1025,10 +1034,6 @@ definitions:
     type: "object"
     properties:
       first_access:
-        type: "string"
-      access_token:
-        type: "string"
-      refresh_token:
         type: "string"
   ConfirmPasswordSchema:
     type: "object"
