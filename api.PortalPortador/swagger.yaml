@@ -19,6 +19,8 @@ tags:
   description: "Operações com boletos"
 - name: "Extrato"
   description: "Operações com extratos"
+- name: "Two factor authentication"
+  description: "Operações com dupla válidação"
 
 
 paths: 
@@ -610,8 +612,46 @@ paths:
           description: "Unauthorized"
         404: 
           description: "Nenhum registro encontrado para essa solicitação" 
+  #CARDS
+  /cards/{cardId}/password: 
+    get: 
+      tags: 
+      - "Cards"
+      summary: "Valida a senha do cartão"
+      parameters:
+        - 
+           name: "cardId"
+           in: "path"
+           description: "cardId"
+           required: true
+           type: "string"
+        - 
+           name: "password"
+           in: "header"
+           description: "senha criptografada"
+           required: true
+           type: "string"
+      responses: 
+        201: 
+          description: "Senha correta"
+          schema:
+            $ref: '#/definitions/MessageCardVerifySchema'
   
-      
+  #2fa
+  /2fa/{username}: 
+    get: 
+      tags: 
+      - "Two factor authentication"
+      summary: "Valida se o codigo esta correto"
+      parameters: []
+      responses: 
+        200: 
+          description: "Extrato encontrado"
+        401: 
+          description: "Não autorizado"
+        404: 
+          description: "Nenhum registro encontrado para essa solicitação."
+
 definitions:
   UnlockCardRequestSchema:
     type: "object"
