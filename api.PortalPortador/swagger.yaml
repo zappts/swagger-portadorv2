@@ -9,6 +9,8 @@ tags:
   description: "Operaçoes com a autenticação"
 - name: "User"
   description: "Operações com usuarios"
+- name: "CEP"
+  description: "Operações com cep"
 - name: "Accounts"
   description: "Operações com contas"
 - name: "Cards"
@@ -21,6 +23,8 @@ tags:
   description: "Operações com extratos"
 - name: "Two factor authentication"
   description: "Operações com dupla validação"
+- name: "Keys"
+  description: "Operações com chaves"
 
 
 paths: 
@@ -58,6 +62,37 @@ paths:
             description: "Nenhuma conta ativa para o usuário encontrada neste domínio."  
             schema:
               $ref: '#/definitions/ErrorSchema'
+
+  /cpf/{cpf}: 
+    get: 
+      tags: 
+        - "User"
+      summary: "Valida se o CPF já existe na Conductor"
+      parameters: 
+        - 
+          name: "client_id"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
+        - 
+          name: "productId"
+          in: "query"
+          description: "productId"
+          required: false
+          type: "string"
+        - 
+          name: "cpf"
+          in: "path"
+          description: "cpf"
+          required: true
+          type: "Number"
+      responses: 
+          200: 
+            description: "Usuário encontrado!"  
+          400: 
+            description: "Usuário não encontrado!"  
+
   #TRANSACTION            
   /accounts/{accountId}/transaction/p2p:
     post:   
@@ -222,6 +257,47 @@ paths:
           description: "Operaçao realizada com sucesso. Gerando comprovantes"
         400:
           description: "Token inválido"
+    
+  /recharge-bankslip-pdf/{ourNumber}:
+    get:   
+        tags:
+          - "Transaction"        
+        summary: "Gera o PDF do boleto registrado"
+        parameters:
+          - 
+            name: "accountId"
+            in: "path"
+            description: "accountId"
+            required: true
+            type: "string"
+          - 
+            name: "Authorization"
+            in: "header"
+            description: "access_token capturado no login"
+            required: true
+            type: "string"
+          - 
+            name: "client_id"
+            in: "header"
+            description: "client_id"
+            required: true
+            type: "string"
+          - 
+            name: "tokentransaction"
+            in: "header"
+            description: "Token de transação valido"
+            required: true
+            type: "string"
+          # - in: body
+          #   name: billPaymentSchema
+          #   description: "Parametros para pagamento de boleto"
+          #   schema:
+          #     $ref: '#/definitions/billPaymentSchema'
+        responses: 
+          200: 
+            description: "Operaçao realizada com sucesso. Gerando comprovantes"
+          400:
+            description: "Token inválido"
       
   #BOLETO      
   /voucher/{accountId}:
@@ -414,43 +490,96 @@ paths:
           description: "Nenhum registro encontrado para essa solicitação"
           schema:
             $ref: '#/definitions/MessageSchema'
-  #OAUTH    
-  /oauth/login: 
-    post: 
-      tags: 
-      - "OAuth"
-      summary: "Login do portador"
+  
+  /account:
+    post:
+      tags:
+        - "Accounts"
+      summary: "Retorna o id da conta através do número do cartão para fazer transferência"
       parameters: 
+        - 
+          name: "accountId"
+          in: "query"
+          description: "accountId"
+          required: true
+          type: "string"
+        - 
+          name: "Authorization"
+          in: "header"
+          description: "access_token capturado no login"
+          required: true
+          type: "string"
+        - 
+          name: "client_id"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
         - in: body
-          name: LoginSchema
-          description: "Parametros de login"
+          name: billPaymentSchema
           schema:
-            $ref: '#/definitions/LoginSchema'
+            $ref: '#/definitions/accounttSchema'
       responses: 
         200: 
-          description: "Sucesso no login"
-          headers:
-            access_token:
-              schema:
-                type: string
-              description: access_token.
-            refresh_token:
-              schema:
-                type: string
-              description: refresh_token.
+          description: "Conta encontrada"
           schema:
-            $ref: '#/definitions/LoginResponseSchema' 
-        401:
-          description: "Falha na autenticação. Verifique se os dados foram informados corretamente. / Usuário ou senha incorretos. Você possui mais x tentativas antes do bloqueio de acesso"
-        423:
-          description: "O seu usuário está bloqueado, por favor realize o processo de esqueceu a senha."
-    parameters: 
-      - 
-        name: "client_id"
-        in: "header"
-        description: "client_id"
-        required: true
-        type: "string"
+            $ref: '#/definitions/accountSchema'
+        404:
+          description: "Nenhum registro encontrado para essa solicitação"
+          schema:
+            $ref: '#/definitions/MessageSchema'
+  #OAUTH 
+  /password/forgot: 
+    get: 
+      tags: 
+      - "OAuth"
+      summary: "Solicita código validador para alterar a senha"
+      parameters:
+        - 
+          name: "client_id"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
+        - name: "username"
+          in: "query"
+          type: "string"
+        - name: "idCompany"
+          in: "query"
+          type: "string"
+      responses: 
+        201: 
+          description: "Uma nova senha foi enviada para xxx"
+          schema:
+            $ref: '#/definitions/MessageSchema'
+        400:
+          description: "Você ainda está com senha temporária, para continuar você precisará de uma nova. Favor voltar ao início do portal e solicitar um novo cadastro de acesso para receber uma nova senha."   
+
+    post:
+      tags: 
+      - "OAuth"
+      summary: "Altera a senha do portal esquecida"
+      parameters:
+        - 
+          name: "client_id"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
+        - in: body
+          name: body
+          description: "Parametros de alteração de senha"
+          schema:
+            $ref: '#/definitions/forgotSchema'
+      responses:
+        201: 
+          description: "senha alterada com sucesso"
+          schema:
+            $ref: '#/definitions/MessageSchema'
+        400:
+          description: " A senha não atende aos requisitos mínimos. Ela deve possuir ao menos 1 letra minúscula, 1 letra maiúscula, 1 número e 1 caracter especial."
+
+  
   /oauth/password: 
     put:  
       tags: 
@@ -475,26 +604,6 @@ paths:
             $ref: '#/definitions/MessageSchema'
         400:
           description: "Falha ao alterar senha do usuário, verifique se a senha atual está correta e a nova senha atende aos requisitos mínimos."
-     
-  /password/forgot: 
-    get: 
-      tags: 
-      - "OAuth"
-      summary: "Solicita código validador para alterar a senha"
-      parameters:
-        - name: "username"
-          in: "query"
-          type: "string"
-        - name: "idCompany"
-          in: "query"
-          type: "string"
-      responses: 
-        201: 
-          description: "Uma nova senha foi enviada para xxx"
-          schema:
-            $ref: '#/definitions/MessageSchema'
-        400:
-          description: "Você ainda está com senha temporária, para continuar você precisará de uma nova. Favor voltar ao início do portal e solicitar um novo cadastro de acesso para receber uma nova senha."
     post: 	
         tags: 	
         - "OAuth"	
@@ -530,6 +639,60 @@ paths:
               $ref: '#/definitions/MessageSchema'	
           400:	
             description: "Código de verificação inválido / Falha ao resetar a senha / A senha não atende aos requisitos mínimos. Ela deve possuir ao menos 1 letra minúscula, 1 letra maiúscula, 1 número e 1 caracter especial."
+
+  /oauth/login: 
+    post: 
+      tags: 
+      - "OAuth"
+      summary: "Login do portador"
+      parameters: 
+        - 
+          name: "client_id"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
+        - in: body
+          name: LoginSchema
+          description: "Parametros de login"
+          schema:
+            $ref: '#/definitions/LoginSchema'
+      responses: 
+        200: 
+          description: "Sucesso no login"
+          headers:
+            access_token:
+              schema:
+                type: string
+              description: access_token.
+            refresh_token:
+              schema:
+                type: string
+              description: refresh_token.
+          schema:
+            $ref: '#/definitions/LoginResponseSchema' 
+        401:
+          description: "Falha na autenticação. Verifique se os dados foram informados corretamente. / Usuário ou senha incorretos. Você possui mais x tentativas antes do bloqueio de acesso"
+        423:
+          description: "O seu usuário está bloqueado, por favor realize o processo de esqueceu a senha."
+
+  /oauth/register:
+    post:
+      tags:
+        - "OAuth" 
+      summary: "Registra o usuário"
+      parameters:
+        - 
+          name: "client_id"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
+      responses: 
+        200: 
+          description: "CPF cadastrado com sucesso"
+          schema:
+            $ref: '#/definitions/MessageSchema'               
   
   #CARDS
   /cards/{cardId}/password: 
@@ -539,22 +702,92 @@ paths:
       summary: "Valida a senha do cartão"
       parameters:
         - 
-           name: "cardId"
-           in: "path"
-           description: "cardId"
-           required: true
-           type: "string"
+          name: "client_id"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
         - 
-           name: "password"
-           in: "header"
-           description: "senha criptografada"
-           required: true
-           type: "string"
+          name: "cardId"
+          in: "path"
+          description: "cardId"
+          required: true
+          type: "string"
+        - 
+          name: "password"
+          in: "header"
+          description: "senha criptografada"
+          required: true
+          type: "string"
       responses: 
-        201: 
+        200: 
           description: "Senha correta"
           schema:
             $ref: '#/definitions/MessageCardVerifySchema'
+
+    put: 
+      tags: 
+      - "Cards"
+      summary: "Altera a senha do cartão"
+      parameters:
+        - 
+          name: "client_id"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
+        - 
+          name: "cardId"
+          in: "path"
+          description: "cardId"
+          required: true
+          type: "string"
+        - in: body
+          name: alterpassSchema
+          description: "Alterar senha esquecida"
+          schema:
+            $ref: '#/definitions/alterpassSchema'
+        - in: body
+          name: alterpasswithSchema
+          description: "Alterar senha com senha atual"
+          schema:
+            $ref: '#/definitions/alterpassSchema'
+      responses: 
+        200: 
+          description: "Senha alterada com sucesso"
+          schema:
+            $ref: '#/definitions/ResponseAlterpassSchema'
+  
+  /cards/{cardId}: 
+    post: 
+      tags: 
+      - "Cards"
+      summary: "Altera o status do cartão"
+      parameters:
+        - 
+          name: "client_id"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
+        - 
+          name: "cardId"
+          in: "path"
+          description: "cardId"
+          required: true
+          type: "string"
+      responses: 
+        200: 
+          description: "cartão desbloqueado"
+          schema:
+            $ref: '#/definitions/statusCartaoSchema'
+        404: 
+          description: "Estágio cartão não permite desbloqueio. Cartão não impresso"
+          schema:
+            $ref: '#/definitions/MessageSchema'
+
+    
+
   
   #EXTRATO
   /carriers/{carrierId}/products/{productId}/pdf: 
@@ -564,17 +797,23 @@ paths:
       summary: "Lista os extratos de uma conta quando extrato normal, e lista os extratos de todas as contas desse usuário quando consolidado"
       parameters:
         - 
-           name: "carrierId"
-           in: "path"
-           description: "idPessoa"
-           required: true
-           type: "integer"
+          name: "client_id"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
         - 
-           name: "type"
-           in: "query"
-           description: "'C' (consolidado) ou idConta (extrato normal)"
-           required: true
-           type: "string"
+          name: "carrierId"
+          in: "path"
+          description: "idPessoa"
+          required: true
+          type: "integer"
+        - 
+          name: "type"
+          in: "query"
+          description: "'C' (consolidado) ou idConta (extrato normal)"
+          required: true
+          type: "string"
       responses: 
         200: 
           description: "Extrato encontrado"
@@ -592,17 +831,23 @@ paths:
       summary: "Lista as contas do usuário no produto"
       parameters:
         - 
-           name: "personId"
-           in: "path"
-           description: "idPessoa"
-           required: true
-           type: "integer"
+          name: "client_id"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
         - 
-           name: "productId"
-           in: "path"
-           description: "idProduto"
-           required: true
-           type: "string"
+          name: "personId"
+          in: "path"
+          description: "idPessoa"
+          required: true
+          type: "integer"
+        - 
+          name: "productId"
+          in: "path"
+          description: "idProduto"
+          required: true
+          type: "string"
       responses: 
         200: 
           description: "Extrato encontrado"
@@ -621,17 +866,23 @@ paths:
       summary: "Valida se o codigo esta correto"
       parameters:
         - 
-           name: "username"
-           in: "path"
-           description: "CPF do usuário"
-           required: true
-           type: "integer"
+          name: "client_id"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
         - 
-           name: "randomCode"
-           in: "query"
-           description: "Código enviado"
-           required: true
-           type: "string"
+          name: "username"
+          in: "path"
+          description: "CPF do usuário"
+          required: true
+          type: "integer"
+        - 
+          name: "randomCode"
+          in: "query"
+          description: "Código enviado"
+          required: true
+          type: "string"
       responses: 
         200: 
           description: "Codigo correto!"
@@ -646,17 +897,23 @@ paths:
       summary: "Cadastra Codigo no banco e envia codigo para o celular"
       parameters:
         - 
-           name: "username"
-           in: "path"
-           description: "CPF do usuário"
-           required: true
-           type: "string"
+          name: "client_id"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
         - 
-           name: "cardId"
-           in: "body"
-           description: "ID do cartão"
-           required: true
-           type: "string"
+          name: "username"
+          in: "path"
+          description: "CPF do usuário"
+          required: true
+          type: "string"
+        - 
+          name: "cardId"
+          in: "body"
+          description: "ID do cartão"
+          required: true
+          type: "string"
       responses: 
         201: 
           description: "Código de validação enviado com sucesso."
@@ -664,6 +921,51 @@ paths:
           description: "Não autorizado"
         404: 
           description: "Falha no envio do código de validação."
+  #PUBLIC KEY
+  /publickey:
+    get:
+      tags:
+        - "Keys"
+      summary: "chave publica para criptografar senhas"
+      parameters: 
+        - 
+          name: "client_id"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
+      responses:
+        200:
+          description: "chave pública"
+  
+  #CEP
+  /cep:
+    get:
+      tags:
+        - "CEP"
+      summary: "Pega os dados do endereço por CEP"
+      parameters: 
+        - 
+          name: "client_id"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
+        - 
+          name: "cep"
+          in: "query"
+          description: "cep"
+          required: true
+          type: "string"
+      responses:
+        200:
+          description: "Endereço encontrado"
+          schema:
+            $ref: '#/definitions/CEPSchema'
+        404:
+          description: "Endereço não encontrado"
+
+
       
 definitions:
   UnlockCardRequestSchema:
@@ -801,6 +1103,96 @@ definitions:
       message:
         type: "string"
       token:
+        type: "string"
+  
+  alterpassSchema:
+    type: "object"
+    properties:
+      new_password: 
+        type: "string"
+      password: 
+        type: "string"
+  
+  alterpasswithSchema:
+    type: "object"
+    properties:
+      new_password: 
+        type: "string"
+      randomCode: 
+        type: "string"
+      username: 
+        type: "string"
+
+  ResponseAlterpassSchema:
+    type: "object"
+    properties:
+      message:
+        type: "string"
+  
+  statusCartaoSchema:
+    type: "object"
+    properties:
+      id: 
+        type: "integer"
+      flagTitular: 
+        type: "integer"
+      idPessoa: 
+        type: "integer"
+      sequencialCartao: 
+        type: "integer"
+      idConta: 
+        type: "integer"
+      idStatus: 
+        type: "integer"
+      dataStatus: 
+        type: "string"
+      idEstagio: 
+        type: "integer"
+      dataEstagio: 
+        type: "string"
+      numeroBin: 
+        type: "integer"
+      numeroCartao: 
+        type: "string"
+      numeroCartaoHash: 
+        type: "integer"
+      numeroCartaoCriptografado: 
+        type: "string"
+      dataEmissao: 
+        type: "string"
+      dataValidade: 
+        type: "string"
+      cartaoVirtual: 
+        type: "integer"
+      impressaoAvulsa: 
+        type: "string"
+      dataImpressao: 
+        type: "string"
+      nomeArquivoImpressao: 
+        type: "string"
+      idProduto: 
+        type: "integer"
+      nomeImpresso: 
+        type: "string"
+      codigoDesbloqueio: 
+        type: "string"
+      tipoPortador: 
+        type: "string"
+      idStatusCartao: 
+        type: "integer"
+      dataStatusCartao: 
+        type: "string"
+      idEstagioCartao: 
+        type: "integer"
+      dataEstagioCartao: 
+        type: "string"
+      dataGeracao: 
+        type: "string"
+      flagVirtual: 
+        type: "integer"
+      flagImpressaoOrigemComercial: 
+        type: "string"
+      arquivoImpressao: 
         type: "string"
   
   CardAlterPasswordSchema:
@@ -1713,6 +2105,78 @@ definitions:
         type: "string"
       funcaoAtiva:
         type: "string"
+
+  accounttSchema:
+    type: "object"
+    properties:
+      encryptedParam:
+        type: "string"
+  
+  accountSchema:
+    type: "object"
+    properties:
+      id: 
+        type: "integer"
+      flagTitular:  
+        type: "integer"
+      idPessoa: 
+        type: "integer"
+      sequencialCartao: 
+        type: "integer"
+      idConta:  
+        type: "integer"
+      idStatus: 
+        type: "integer"
+      dataStatus: 
+        type: "string"
+      idEstagio:  
+        type: "integer"
+      dataEstagio:  
+        type: "string"
+      numeroBin:  
+        type: "integer"
+      numeroCartao: 
+        type: "string"
+      numeroCartaoHash: 
+        type: "integer"
+      numeroCartaoCriptografado:  
+        type: "string"
+      dataEmissao:  
+        type: "string"
+      dataValidade: 
+        type: "string"
+      cartaoVirtual:  
+        type: "integer"
+      impressaoAvulsa:  
+        type: "integer"
+      dataImpressao:  
+        type: "integer"
+      nomeArquivoImpressao: 
+        type: "string"
+      idProduto:  
+        type: "integer"
+      nomeImpresso: 
+        type: "string"
+      codigoDesbloqueio:  
+        type: "string"
+      tipoPortador: 
+        type: "string"
+      idStatusCartao: 
+        type: "integer"
+      dataStatusCartao: 
+        type: "string"
+      idEstagioCartao:  
+        type: "integer"
+      dataEstagioCartao:  
+        type: "string"
+      dataGeracao:  
+        type: "string"
+      flagVirtual:  
+        type: "integer"
+      flagImpressaoOrigemComercial: 
+        type: "string"
+      arquivoImpressao: 
+        type: "string"
   
   #EXTRATO
   ExtratoSchema:
@@ -1905,4 +2369,29 @@ definitions:
         type: "integer"
       funcaoAtiva: 
         type: "integer"
-       
+  
+  #CEP
+  CEPSchema:
+    type: "object"
+    properties:
+      cep: 
+        type: "string"
+      endereco: 
+        type: "string"
+      bairro: 
+        type: "string"
+      cidade: 
+        type: "string"
+      uf: 
+        type: "string"
+  forgotSchema:
+    type: "object"
+    properties:
+      username: 
+        type: "string"
+      idCompany: 
+        type: "string"
+      code: 
+        type: "string"
+      password: 
+        type: "string"
