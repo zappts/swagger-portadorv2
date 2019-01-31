@@ -3,7 +3,7 @@ info:
   description: "Pré-Pago API"
   version: "1.0.0"
   title: "Pré-Pago Portador"
-basePath: "/prepaid-holder/v1"
+basePath: "/dev/prepaid-holder/v1"
 tags:
 - name: "OAuth"
   description: "Operaçoes com a autenticação"
@@ -619,14 +619,51 @@ paths:
       tags: 
       - "Two factor authentication"
       summary: "Valida se o codigo esta correto"
-      parameters: []
+      parameters:
+        - 
+           name: "username"
+           in: "path"
+           description: "CPF do usuário"
+           required: true
+           type: "integer"
+        - 
+           name: "randomCode"
+           in: "query"
+           description: "Código enviado"
+           required: true
+           type: "string"
       responses: 
         200: 
-          description: "Extrato encontrado"
+          description: "Codigo correto!"
         401: 
           description: "Não autorizado"
         404: 
-          description: "Nenhum registro encontrado para essa solicitação."
+          description: "Codigo incorreto!"
+
+    post: 
+      tags: 
+      - "Two factor authentication"
+      summary: "Cadastra Codigo no banco e envia codigo para o celular"
+      parameters:
+        - 
+           name: "username"
+           in: "path"
+           description: "CPF do usuário"
+           required: true
+           type: "string"
+        - 
+           name: "cardId"
+           in: "body"
+           description: "ID do cartão"
+           required: true
+           type: "string"
+      responses: 
+        201: 
+          description: "Código de validação enviado com sucesso."
+        401: 
+          description: "Não autorizado"
+        404: 
+          description: "Falha no envio do código de validação."
       
 definitions:
   UnlockCardRequestSchema:
