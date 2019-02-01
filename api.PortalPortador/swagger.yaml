@@ -621,6 +621,18 @@ paths:
       summary: "Valida se o codigo esta correto"
       parameters:
         - 
+          name: "Authorization"
+          in: "header"
+          description: "access_token capturado no login"
+          required: true
+          type: "string"
+        - 
+          name: "client_id"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
+        - 
            name: "username"
            in: "path"
            description: "CPF do usuário"
@@ -645,6 +657,18 @@ paths:
       - "Two factor authentication"
       summary: "Cadastra Codigo no banco e envia codigo para o celular"
       parameters:
+        - 
+          name: "Authorization"
+          in: "header"
+          description: "access_token capturado no login"
+          required: true
+          type: "string"
+        - 
+          name: "client_id"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
         - 
            name: "username"
            in: "path"
