@@ -268,11 +268,11 @@ paths:
         summary: "Gera o PDF do boleto registrado"
         parameters:
           - 
-            name: "accountId"
+            name: "ourNumber"
             in: "path"
-            description: "accountId"
+            description: "codigo ourNUmber"
             required: true
-            type: "string"
+            type: "integer"
           - 
             name: "Authorization"
             in: "header"
@@ -285,23 +285,104 @@ paths:
             description: "client_id"
             required: true
             type: "string"
-          - 
-            name: "tokentransaction"
-            in: "header"
-            description: "Token de transação valido"
-            required: true
-            type: "string"
-          # - in: body
-          #   name: billPaymentSchema
-          #   description: "Parametros para pagamento de boleto"
-          #   schema:
-          #     $ref: '#/definitions/billPaymentSchema'
         responses: 
           200: 
-            description: "Operaçao realizada com sucesso. Gerando comprovantes"
+            description: "pdf gerado como Base64"
+            schema:
+              $ref: '#/definitions/bankslippdfSchema'
           400:
-            description: "Token inválido"
-      
+            description: "Número do boleto não encontrado"
+          401:
+            description: "Unauthorized"
+
+  /recharge/bankslip/pdf:
+    post:
+      tags:
+        - "Transaction"        
+      summary: "Envia o pdf de recarga de boleto por e-mail"
+      parameters:
+        - 
+          name: "accountId"
+          in: "path"
+          description: "accountId"
+          required: true
+          type: "string"
+        - 
+          name: "Authorization"
+          in: "header"
+          description: "access_token capturado no login"
+          required: true
+          type: "string"
+        - 
+          name: "client_id"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
+        - 
+          name: "tokentransaction"
+          in: "header"
+          description: "Token de transação valido"
+          required: true
+          type: "string"
+        - in: body
+          name: bankslippdfbyemailSchema
+          description: "Parametros para enviar recarga de boleto por email"
+          schema:
+            $ref: '#/definitions/bankslippdfbyemailSchema'
+      responses: 
+        200: 
+          description: “The email was successfully sent”
+        400:
+          description: “Número do boleto não encontrado.”
+          schema:
+            $ref: '#/definitions/MessageSchema'
+
+  /recharge/bankslip/register:
+    post:
+      tags:
+        - "Transaction"        
+      summary: "Registra um boleto no Banco do Brasil"
+      parameters:
+        - 
+          name: "accountId"
+          in: "path"
+          description: "accountId"
+          required: true
+          type: "string"
+        - 
+          name: "Authorization"
+          in: "header"
+          description: "access_token capturado no login"
+          required: true
+          type: "string"
+        - 
+          name: "client_id"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
+        - 
+          name: "tokentransaction"
+          in: "header"
+          description: "Token de transação valido"
+          required: true
+          type: "string"
+        - in: body
+          name: banksliregisterSchema
+          description: "Parametros para enviar recarga de boleto por email"
+          schema:
+            $ref: '#/definitions/banksliregisterSchema'
+      responses: 
+        200: 
+          description: “The email was successfully sent”
+        400:
+          description: “Número do boleto não encontrado.”
+          schema:
+            $ref: '#/definitions/MessageSchema'
+  
+
+
   #BOLETO      
   /voucher/{accountId}:
     get:   
@@ -1929,7 +2010,7 @@ definitions:
         type: "string"
       newPassword:
         type: "string"
-  #TRANSFER
+  #TRANSACTION
   p2pSchema:
     type: "object"
     properties:
@@ -2024,6 +2105,30 @@ definitions:
       descricao:
         type: "number"
   
+  bankslippdfbyemailSchema:
+    type: "object"
+    properties:
+        ourNamber:
+          type: "string"
+        cpf:
+          type: "string"
+  
+  bankslippdfSchema:
+    type: "object"
+    properties:
+        pdf:
+          type: "string"
+          
+  banksliregisterSchema:
+    type: "object"
+    properties:
+        productId:
+          type: "integer"
+        account:
+          type: "integer"
+        value:
+          type: "integer"
+
   #BOLETO
   boletoSchema:
     type: "objetc"
@@ -2400,6 +2505,8 @@ definitions:
         type: "string"
       uf: 
         type: "string"
+  
+  #OAuth
   forgotSchema:
     type: "object"
     properties:
