@@ -582,12 +582,6 @@ paths:
       summary: "Retorna o id da conta através do número do cartão para fazer transferência"
       parameters: 
         - 
-          name: "accountId"
-          in: "query"
-          description: "accountId"
-          required: true
-          type: "string"
-        - 
           name: "Authorization"
           in: "header"
           description: "access_token capturado no login"
