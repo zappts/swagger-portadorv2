@@ -1017,7 +1017,7 @@ paths:
     get:
       tags:
         - "Keys"
-      summary: "chave publica para criptografar senhas"
+      summary: "chave pública para criptografar senhas através da criptografia RSA"
       parameters: 
         - 
           name: "client_id"
@@ -1027,7 +1027,7 @@ paths:
           type: "string"
       responses:
         200:
-          description: "chave pública"
+          description: "Retorna a chave pública"
   
   #CEP
   /cep:
