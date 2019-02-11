@@ -124,7 +124,7 @@ paths:
         - 
           name: "tokentransaction"
           in: "header"
-          description: "Token de transação valido"
+          description: "Token de transação valido capturado na função 'Valida a senha do cartão'"
           required: true
           type: "string"
         - in: body
@@ -165,7 +165,7 @@ paths:
         - 
           name: "tokentransaction"
           in: "header"
-          description: "Token de transação valido"
+          description: "Token de transação valido capturado na função 'Valida a senha do cartão'"
           required: true
           type: "string"
         - in: body
@@ -206,7 +206,7 @@ paths:
         - 
           name: "tokentransaction"
           in: "header"
-          description: "Token de transação valido"
+          description: "Token de transação valido capturado na função 'Valida a senha do cartão'"
           required: true
           type: "string"
         - in: body
@@ -247,7 +247,7 @@ paths:
         - 
           name: "tokentransaction"
           in: "header"
-          description: "Token de transação valido"
+          description: "Token de transação valido capturado na função 'Valida a senha do cartão'"
           required: true
           type: "string"
         - in: body
@@ -322,7 +322,7 @@ paths:
         - 
           name: "tokentransaction"
           in: "header"
-          description: "Token de transação valido"
+          description: "Token de transação valido capturado na função 'Valida a senha do cartão'"
           required: true
           type: "string"
         - in: body
@@ -365,7 +365,7 @@ paths:
         - 
           name: "tokentransaction"
           in: "header"
-          description: "Token de transação valido"
+          description: "Token de transação valido capturado na função 'Valida a senha do cartão'"
           required: true
           type: "string"
         - in: body
