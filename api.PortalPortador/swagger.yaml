@@ -825,7 +825,7 @@ paths:
           name: alterpassSchema
           description: "Alterar senha esquecida"
           schema:
-            $ref: '#/definitions/alterpassSchema'
+            $ref: '#/definitions/alterpasswithSchema'
         - in: body
           name: alterpasswithSchema
           description: "Alterar senha com senha atual"
@@ -1004,7 +1004,8 @@ paths:
            in: "body"
            description: "ID do cartão"
            required: true
-           type: "string"
+           schema:
+            $ref: '#/definitions/2faCardIdSchema'
       responses: 
         201: 
           description: "Código de validação enviado com sucesso."
@@ -1213,6 +1214,12 @@ definitions:
         type: "string"
       username: 
         type: "string"
+
+  2faCardIdSchema:
+    type: "object"
+    properties:
+      cardId:
+        type: "integer"
 
   ResponseAlterpassSchema:
     type: "object"
