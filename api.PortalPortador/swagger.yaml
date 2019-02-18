@@ -781,6 +781,12 @@ paths:
       summary: "Valida a senha do cartão"
       parameters:
         - 
+          name: "Authorization"
+          in: "header"
+          description: "access_token capturado no login"
+          required: true
+          type: "string"
+        - 
           name: "client_id"
           in: "header"
           description: "client_id"
@@ -809,6 +815,12 @@ paths:
       - "Cards"
       summary: "Altera a senha do cartão"
       parameters:
+        - 
+          name: "Authorization"
+          in: "header"
+          description: "access_token capturado no login"
+          required: true
+          type: "string"
         - 
           name: "client_id"
           in: "header"
@@ -844,6 +856,12 @@ paths:
       summary: "Altera o status do cartão"
       parameters:
         - 
+          name: "Authorization"
+          in: "header"
+          description: "access_token capturado no login"
+          required: true
+          type: "string"
+        - 
           name: "client_id"
           in: "header"
           description: "client_id"
@@ -875,6 +893,12 @@ paths:
       - "Extrato"
       summary: "Lista os extratos de uma conta quando extrato normal, e lista os extratos de todas as contas desse usuário quando consolidado"
       parameters:
+        - 
+          name: "Authorization"
+          in: "header"
+          description: "access_token capturado no login"
+          required: true
+          type: "string"
         - 
           name: "client_id"
           in: "header"
@@ -909,6 +933,12 @@ paths:
       - "Extrato"
       summary: "Lista as contas do usuário no produto"
       parameters:
+        - 
+          name: "Authorization"
+          in: "header"
+          description: "access_token capturado no login"
+          required: true
+          type: "string"
         - 
           name: "client_id"
           in: "header"
