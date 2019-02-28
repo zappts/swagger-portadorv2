@@ -36,7 +36,7 @@ paths:
     get: 
       tags: 
         - "User"
-      summary: "Recebe os dados do usuárior"
+      summary: "Recebe os dados do usuário"
       parameters: 
         - 
           name: "client_id"
@@ -767,6 +767,11 @@ paths:
           description: "client_id"
           required: true
           type: "string"
+        - in: body
+          name: RegisterSchema
+          description: "Parametros de login"
+          schema:
+            $ref: '#/definitions/RegisterSchema'
       responses: 
         200: 
           description: "CPF cadastrado com sucesso"
