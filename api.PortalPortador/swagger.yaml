@@ -97,7 +97,7 @@ paths:
             description: "Usuário não encontrado!"  
 
   #TRANSACTION            
-  /accounts/{accountId}/transaction/p2p:
+  /accounts/{accountId}/transactions/p2p:
     post:   
       tags:
         - "Transaction"        
@@ -138,7 +138,7 @@ paths:
         400:
           description: "Token inválido"
       
-  /accounts/{accountId}/transaction/transfer:
+  /accounts/{accountId}/transactions/transfer:
     post:   
       tags:
         - "Transaction"        
@@ -179,7 +179,7 @@ paths:
         400:
           description: "Token inválido" 
       
-  /accounts/{accountId}/transaction/recharge-cell:
+  /accounts/{accountId}/transactions/recharge-cell:
     post:   
       tags:
         - "Transaction"        
@@ -220,7 +220,7 @@ paths:
         400:
           description: "Token inválido"
     
-  /accounts/{accountId}/transaction/bill-payment:
+  /accounts/{accountId}/transactions/bill-payment:
     post:   
       tags:
         - "Transaction"        
