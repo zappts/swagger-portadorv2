@@ -1,592 +1,623 @@
 swagger: "2.0"
 info: 
   description: "Pré-Pago API"
-  version: "1.0.0"
+  version: "2.0.0"
   title: "Pré-Pago Portador"
 host: api-cateno.sensedia.com/dev/prepaid-holder
-basePath: "/v1"
+basePath: "/v2"
 schemes:
   - https
 tags:
 - name: "OAuth"
   description: "Operaçoes com a autenticação"
-- name: "User"
-  description: "Operações com usuarios"
+# - name: "User"
+#   description: "Operações com usuarios"
 - name: "CEP"
   description: "Operações com cep"
-- name: "Accounts"
-  description: "Operações com contas"
-- name: "Cards"
-  description: "Operações com cartões"
-- name: "Transaction"
-  description: "Operações com transações"  
-- name: "Boleto"
-  description: "Operações com boletos"
-- name: "Extrato"
-  description: "Operações com extratos"
-- name: "Two factor authentication"
-  description: "Operações com dupla validação"
+# - name: "Accounts"
+#   description: "Operações com contas"
+# - name: "Cards"
+#   description: "Operações com cartões"
+# - name: "Transaction"
+#   description: "Operações com transações"  
+# - name: "Boleto"
+#   description: "Operações com boletos"
+# - name: "Extrato"
+#   description: "Operações com extratos"
+# - name: "Two factor authentication"
+#   description: "Operações com dupla validação"
 - name: "Keys"
   description: "Operações com chaves"
+- name: "Autocadastro"
+  description: "Operações de autocadastro relacionadas a boletos"
 
 
 paths: 
   #USER
-  /user/{cpf}: 
-    get: 
-      tags: 
-        - "User"
-      summary: "Recebe os dados do usuário"
-      parameters: 
-        - 
-          name: "client_id"
-          in: "header"
-          description: "client_id"
-          required: true
-          type: "string"
-        - 
-          name: "productId"
-          in: "query"
-          description: "productId"
-          required: false
-          type: "string"
-        - 
-          name: "cpf"
-          in: "path"
-          description: "cpf"
-          required: true
-          type: "Number"
-      responses: 
-          200: 
-            description: "Dados do usuario {cpf}"  
-            schema:
-              $ref: '#/definitions/UserSchema'
-          400: 
-            description: "Nenhuma conta ativa para o usuário encontrada neste domínio."  
-            schema:
-              $ref: '#/definitions/ErrorSchema'
+  # /user/{cpf}: 
+  #   get: 
+  #     tags: 
+  #       - "User"
+  #     summary: "Recebe os dados do usuário"
+  #     parameters: 
+  #       - 
+  #         name: "client_id"
+  #         in: "header"
+  #         description: "client_id"
+  #         required: true
+  #         type: "string"
+  #       - 
+  #         name: "productId"
+  #         in: "query"
+  #         description: "productId"
+  #         required: false
+  #         type: "string"
+  #       - 
+  #         name: "cpf"
+  #         in: "path"
+  #         description: "cpf"
+  #         required: true
+  #         type: "Number"
+  #     responses: 
+  #         200: 
+  #           description: "Dados do usuario {cpf}"  
+  #           schema:
+  #             $ref: '#/definitions/UserSchema'
+  #         400: 
+  #           description: "Nenhuma conta ativa para o usuário encontrada neste domínio."  
+  #           schema:
+  #             $ref: '#/definitions/ErrorSchema'
 
-  /cpf/{cpf}: 
-    get: 
-      tags: 
-        - "User"
-      summary: "Valida se o CPF já existe na Conductor"
-      parameters: 
-        - 
-          name: "client_id"
-          in: "header"
-          description: "client_id"
-          required: true
-          type: "string"
-        - 
-          name: "productId"
-          in: "query"
-          description: "productId"
-          required: false
-          type: "string"
-        - 
-          name: "cpf"
-          in: "path"
-          description: "cpf"
-          required: true
-          type: "Number"
-      responses: 
-          200: 
-            description: "Usuário encontrado!"  
-          400: 
-            description: "Usuário não encontrado!"  
+  # /cpf/{cpf}: 
+  #   get: 
+  #     tags: 
+  #       - "User"
+  #     summary: "Valida se o CPF já existe na Conductor"
+  #     parameters: 
+  #       - 
+  #         name: "client_id"
+  #         in: "header"
+  #         description: "client_id"
+  #         required: true
+  #         type: "string"
+  #       - 
+  #         name: "productId"
+  #         in: "query"
+  #         description: "productId"
+  #         required: false
+  #         type: "string"
+  #       - 
+  #         name: "cpf"
+  #         in: "path"
+  #         description: "cpf"
+  #         required: true
+  #         type: "Number"
+  #     responses: 
+  #         200: 
+  #           description: "Usuário encontrado!"  
+  #         400: 
+  #           description: "Usuário não encontrado!"  
 
   #TRANSACTION            
-  /accounts/{accountId}/transactions/p2p:
-    post:   
-      tags:
-        - "Transaction"        
-      summary: "Realiza transação entre constas de portador"
-      parameters:
-        - 
-          name: "accountId"
-          in: "path"
-          description: "accountId"
-          required: true
-          type: "string"
-        - 
-          name: "Authorization"
-          in: "header"
-          description: "access_token capturado no login"
-          required: true
-          type: "string"
-        - 
-          name: "client_id"
-          in: "header"
-          description: "client_id"
-          required: true
-          type: "string"
-        - 
-          name: "tokentransaction"
-          in: "header"
-          description: "Token de transação valido capturado na função 'Valida a senha do cartão'"
-          required: true
-          type: "string"
-        - in: body
-          name: p2pSchema
-          description: "Parametros para transação P2P"
-          schema:
-            $ref: '#/definitions/p2pSchema'
-      responses: 
-        200: 
-          description: "Operaçao realizada com sucesso. Gerando comprovantes"
-        400:
-          description: "Token inválido"
+  # /accounts/{accountId}/transactions/p2p:
+  #   post:   
+  #     tags:
+  #       - "Transaction"        
+  #     summary: "Realiza transação entre constas de portador"
+  #     parameters:
+  #       - 
+  #         name: "accountId"
+  #         in: "path"
+  #         description: "accountId"
+  #         required: true
+  #         type: "string"
+  #       - 
+  #         name: "Authorization"
+  #         in: "header"
+  #         description: "access_token capturado no login"
+  #         required: true
+  #         type: "string"
+  #       - 
+  #         name: "client_id"
+  #         in: "header"
+  #         description: "client_id"
+  #         required: true
+  #         type: "string"
+  #       - 
+  #         name: "tokentransaction"
+  #         in: "header"
+  #         description: "Token de transação valido capturado na função 'Valida a senha do cartão'"
+  #         required: true
+  #         type: "string"
+  #       - in: body
+  #         name: p2pSchema
+  #         description: "Parametros para transação P2P"
+  #         schema:
+  #           $ref: '#/definitions/p2pSchema'
+  #     responses: 
+  #       200: 
+  #         description: "Operaçao realizada com sucesso. Gerando comprovantes"
+  #       400:
+  #         description: "Token inválido"
       
-  /accounts/{accountId}/transactions/transfer:
-    post:   
-      tags:
-        - "Transaction"        
-      summary: "Realiza transação entre consta portador e outro banco"
-      parameters:
-        - 
-          name: "accountId"
-          in: "path"
-          description: "accountId"
-          required: true
-          type: "string"
-        - 
-          name: "Authorization"
-          in: "header"
-          description: "access_token capturado no login"
-          required: true
-          type: "string"
-        - 
-          name: "client_id"
-          in: "header"
-          description: "client_id"
-          required: true
-          type: "string"
-        - 
-          name: "tokentransaction"
-          in: "header"
-          description: "Token de transação valido capturado na função 'Valida a senha do cartão'"
-          required: true
-          type: "string"
-        - in: body
-          name: transferSchema
-          description: "Parametros para transação entre bancos"
-          schema:
-            $ref: '#/definitions/transferSchema'
-      responses: 
-        200: 
-          description: "Operaçao realizada com sucesso. Gerando comprovantes"
-        400:
-          description: "Token inválido" 
+  # /accounts/{accountId}/transactions/transfer:
+  #   post:   
+  #     tags:
+  #       - "Transaction"        
+  #     summary: "Realiza transação entre consta portador e outro banco"
+  #     parameters:
+  #       - 
+  #         name: "accountId"
+  #         in: "path"
+  #         description: "accountId"
+  #         required: true
+  #         type: "string"
+  #       - 
+  #         name: "Authorization"
+  #         in: "header"
+  #         description: "access_token capturado no login"
+  #         required: true
+  #         type: "string"
+  #       - 
+  #         name: "client_id"
+  #         in: "header"
+  #         description: "client_id"
+  #         required: true
+  #         type: "string"
+  #       - 
+  #         name: "tokentransaction"
+  #         in: "header"
+  #         description: "Token de transação valido capturado na função 'Valida a senha do cartão'"
+  #         required: true
+  #         type: "string"
+  #       - in: body
+  #         name: transferSchema
+  #         description: "Parametros para transação entre bancos"
+  #         schema:
+  #           $ref: '#/definitions/transferSchema'
+  #     responses: 
+  #       200: 
+  #         description: "Operaçao realizada com sucesso. Gerando comprovantes"
+  #       400:
+  #         description: "Token inválido" 
       
-  /accounts/{accountId}/transactions/recharge-cell:
-    post:   
-      tags:
-        - "Transaction"        
-      summary: "Realiza recarga de celular"
-      parameters: 
-        - 
-          name: "accountId"
-          in: "path"
-          description: "accountId"
-          required: true
-          type: "string"
-        - 
-          name: "Authorization"
-          in: "header"
-          description: "access_token capturado no login"
-          required: true
-          type: "string"
-        - 
-          name: "client_id"
-          in: "header"
-          description: "client_id"
-          required: true
-          type: "string"
-        - 
-          name: "tokentransaction"
-          in: "header"
-          description: "Token de transação valido capturado na função 'Valida a senha do cartão'"
-          required: true
-          type: "string"
-        - in: body
-          name: rechargeCellSchema
-          description: "Parametros para recarga de celular"
-          schema:
-            $ref: '#/definitions/rechargeCellSchema'
-      responses: 
-        200: 
-          description: "Operaçao realizada com sucesso. Gerando comprovantes"
-        400:
-          description: "Token inválido"
+  # /accounts/{accountId}/transactions/recharge-cell:
+  #   post:   
+  #     tags:
+  #       - "Transaction"        
+  #     summary: "Realiza recarga de celular"
+  #     parameters: 
+  #       - 
+  #         name: "accountId"
+  #         in: "path"
+  #         description: "accountId"
+  #         required: true
+  #         type: "string"
+  #       - 
+  #         name: "Authorization"
+  #         in: "header"
+  #         description: "access_token capturado no login"
+  #         required: true
+  #         type: "string"
+  #       - 
+  #         name: "client_id"
+  #         in: "header"
+  #         description: "client_id"
+  #         required: true
+  #         type: "string"
+  #       - 
+  #         name: "tokentransaction"
+  #         in: "header"
+  #         description: "Token de transação valido capturado na função 'Valida a senha do cartão'"
+  #         required: true
+  #         type: "string"
+  #       - in: body
+  #         name: rechargeCellSchema
+  #         description: "Parametros para recarga de celular"
+  #         schema:
+  #           $ref: '#/definitions/rechargeCellSchema'
+  #     responses: 
+  #       200: 
+  #         description: "Operaçao realizada com sucesso. Gerando comprovantes"
+  #       400:
+  #         description: "Token inválido"
     
-  /accounts/{accountId}/transactions/bill-payment:
-    post:   
-      tags:
-        - "Transaction"        
-      summary: "Realiza pagamento de boleto"
-      parameters:
-        - 
-          name: "accountId"
-          in: "path"
-          description: "accountId"
-          required: true
-          type: "string"
-        - 
-          name: "Authorization"
-          in: "header"
-          description: "access_token capturado no login"
-          required: true
-          type: "string"
-        - 
-          name: "client_id"
-          in: "header"
-          description: "client_id"
-          required: true
-          type: "string"
-        - 
-          name: "tokentransaction"
-          in: "header"
-          description: "Token de transação valido capturado na função 'Valida a senha do cartão'"
-          required: true
-          type: "string"
-        - in: body
-          name: billPaymentSchema
-          description: "Parametros para pagamento de boleto"
-          schema:
-            $ref: '#/definitions/billPaymentSchema'
-      responses: 
-        200: 
-          description: "Operaçao realizada com sucesso. Gerando comprovantes"
-        400:
-          description: "Token inválido"
+  # /accounts/{accountId}/transactions/bill-payment:
+  #   post:   
+  #     tags:
+  #       - "Transaction"        
+  #     summary: "Realiza pagamento de boleto"
+  #     parameters:
+  #       - 
+  #         name: "accountId"
+  #         in: "path"
+  #         description: "accountId"
+  #         required: true
+  #         type: "string"
+  #       - 
+  #         name: "Authorization"
+  #         in: "header"
+  #         description: "access_token capturado no login"
+  #         required: true
+  #         type: "string"
+  #       - 
+  #         name: "client_id"
+  #         in: "header"
+  #         description: "client_id"
+  #         required: true
+  #         type: "string"
+  #       - 
+  #         name: "tokentransaction"
+  #         in: "header"
+  #         description: "Token de transação valido capturado na função 'Valida a senha do cartão'"
+  #         required: true
+  #         type: "string"
+  #       - in: body
+  #         name: billPaymentSchema
+  #         description: "Parametros para pagamento de boleto"
+  #         schema:
+  #           $ref: '#/definitions/billPaymentSchema'
+  #     responses: 
+  #       200: 
+  #         description: "Operaçao realizada com sucesso. Gerando comprovantes"
+  #       400:
+  #         description: "Token inválido"
     
-  /recharge-bankslip-pdf/{ourNumber}:
-    get:   
-        tags:
-          - "Transaction"        
-        summary: "Gera o PDF do boleto registrado"
-        parameters:
-          - 
-            name: "ourNumber"
-            in: "path"
-            description: "codigo ourNUmber"
-            required: true
-            type: "integer"
-          - 
-            name: "Authorization"
-            in: "header"
-            description: "access_token capturado no login"
-            required: true
-            type: "string"
-          - 
-            name: "client_id"
-            in: "header"
-            description: "client_id"
-            required: true
-            type: "string"
-        responses: 
-          200: 
-            description: "pdf gerado como Base64"
-            schema:
-              $ref: '#/definitions/bankslippdfSchema'
-          400:
-            description: "Número do boleto não encontrado"
-          401:
-            description: "Unauthorized"
+  # /recharge-bankslip-pdf/{ourNumber}:
+  #   get:   
+  #       tags:
+  #         - "Transaction"        
+  #       summary: "Gera o PDF do boleto registrado"
+  #       parameters:
+  #         - 
+  #           name: "ourNumber"
+  #           in: "path"
+  #           description: "codigo ourNUmber"
+  #           required: true
+  #           type: "integer"
+  #         - 
+  #           name: "Authorization"
+  #           in: "header"
+  #           description: "access_token capturado no login"
+  #           required: true
+  #           type: "string"
+  #         - 
+  #           name: "client_id"
+  #           in: "header"
+  #           description: "client_id"
+  #           required: true
+  #           type: "string"
+  #       responses: 
+  #         200: 
+  #           description: "pdf gerado como Base64"
+  #           schema:
+  #             $ref: '#/definitions/bankslippdfSchema'
+  #         400:
+  #           description: "Número do boleto não encontrado"
+  #         401:
+  #           description: "Unauthorized"
 
-  /recharge/bankslip/pdf:
-    post:
-      tags:
-        - "Transaction"        
-      summary: "Envia o pdf de recarga de boleto por e-mail"
-      parameters:
-        - 
-          name: "accountId"
-          in: "path"
-          description: "accountId"
-          required: true
-          type: "string"
-        - 
-          name: "Authorization"
-          in: "header"
-          description: "access_token capturado no login"
-          required: true
-          type: "string"
-        - 
-          name: "client_id"
-          in: "header"
-          description: "client_id"
-          required: true
-          type: "string"
-        - 
-          name: "tokentransaction"
-          in: "header"
-          description: "Token de transação valido capturado na função 'Valida a senha do cartão'"
-          required: true
-          type: "string"
-        - in: body
-          name: bankslippdfbyemailSchema
-          description: "Parametros para enviar recarga de boleto por email"
-          schema:
-            $ref: '#/definitions/bankslippdfbyemailSchema'
-      responses: 
-        200: 
-          description: “The email was successfully sent”
-        400:
-          description: “Número do boleto não encontrado.”
-          schema:
-            $ref: '#/definitions/MessageSchema'
+  # /recharge/bankslip/pdf:
+  #   post:
+  #     tags:
+  #       - "Transaction"        
+  #     summary: "Envia o pdf de recarga de boleto por e-mail"
+  #     parameters:
+  #       - 
+  #         name: "accountId"
+  #         in: "path"
+  #         description: "accountId"
+  #         required: true
+  #         type: "string"
+  #       - 
+  #         name: "Authorization"
+  #         in: "header"
+  #         description: "access_token capturado no login"
+  #         required: true
+  #         type: "string"
+  #       - 
+  #         name: "client_id"
+  #         in: "header"
+  #         description: "client_id"
+  #         required: true
+  #         type: "string"
+  #       - 
+  #         name: "tokentransaction"
+  #         in: "header"
+  #         description: "Token de transação valido capturado na função 'Valida a senha do cartão'"
+  #         required: true
+  #         type: "string"
+  #       - in: body
+  #         name: bankslippdfbyemailSchema
+  #         description: "Parametros para enviar recarga de boleto por email"
+  #         schema:
+  #           $ref: '#/definitions/bankslippdfbyemailSchema'
+  #     responses: 
+  #       200: 
+  #         description: “The email was successfully sent”
+  #       400:
+  #         description: “Número do boleto não encontrado.”
+  #         schema:
+  #           $ref: '#/definitions/MessageSchema'
 
-  /recharge/bankslip/register:
-    post:
-      tags:
-        - "Transaction"        
-      summary: "Registra um boleto no Banco do Brasil"
-      parameters:
-        - 
-          name: "accountId"
-          in: "path"
-          description: "accountId"
-          required: true
-          type: "string"
-        - 
-          name: "Authorization"
-          in: "header"
-          description: "access_token capturado no login"
-          required: true
-          type: "string"
-        - 
-          name: "client_id"
-          in: "header"
-          description: "client_id"
-          required: true
-          type: "string"
-        - 
-          name: "tokentransaction"
-          in: "header"
-          description: "Token de transação valido capturado na função 'Valida a senha do cartão'"
-          required: true
-          type: "string"
-        - in: body
-          name: banksliregisterSchema
-          description: "Parametros para enviar recarga de boleto por email"
-          schema:
-            $ref: '#/definitions/banksliregisterSchema'
-      responses: 
-        200: 
-          description: “The email was successfully sent”
-        400:
-          description: “Número do boleto não encontrado.”
-          schema:
-            $ref: '#/definitions/MessageSchema'
+  # /recharge/bankslip/register:
+  #   post:
+  #     tags:
+  #       - "Transaction"        
+  #     summary: "Registra um boleto no Banco do Brasil"
+  #     parameters:
+  #       - 
+  #         name: "accountId"
+  #         in: "path"
+  #         description: "accountId"
+  #         required: true
+  #         type: "string"
+  #       - 
+  #         name: "Authorization"
+  #         in: "header"
+  #         description: "access_token capturado no login"
+  #         required: true
+  #         type: "string"
+  #       - 
+  #         name: "client_id"
+  #         in: "header"
+  #         description: "client_id"
+  #         required: true
+  #         type: "string"
+  #       - 
+  #         name: "tokentransaction"
+  #         in: "header"
+  #         description: "Token de transação valido capturado na função 'Valida a senha do cartão'"
+  #         required: true
+  #         type: "string"
+  #       - in: body
+  #         name: banksliregisterSchema
+  #         description: "Parametros para enviar recarga de boleto por email"
+  #         schema:
+  #           $ref: '#/definitions/banksliregisterSchema'
+  #     responses: 
+  #       200: 
+  #         description: “The email was successfully sent”
+  #       400:
+  #         description: “Número do boleto não encontrado.”
+  #         schema:
+  #           $ref: '#/definitions/MessageSchema'
   
 
 
   #BOLETO      
-  /voucher/{accountId}:
-    get:   
-      tags:
-        - "Boleto"        
-      summary: "Retorna boletos do portador"
-      parameters: 
-        - 
-          name: "accountId"
-          in: "path"
-          description: "accountId"
-          required: true
-          type: "string"
-        - 
-          name: "Authorization"
-          in: "header"
-          description: "access_token capturado no login"
-          required: true
-          type: "string"
-        - 
-          name: "client_id"
-          in: "header"
-          description: "client_id"
-          required: true
-          type: "string"
-        - 
-          name: "startdate"
-          in: "query"
-          description: "startdate (YYYY-MM-DD)"
-          required: false
-          type: "string"
-        - 
-          name: "enddate"
-          in: "query"
-          description: "enddate (YYYY-MM-DD)"
-          required: false
-          type: "string"
-        - 
-          name: "tipo"
-          in: "query"
-          description: "tipo"
-          required: false
-          type: "number"
-      responses: 
-        200: 
-          description: "retorna lista de boletos do usuário"
-          schema:
-            $ref: '#/definitions/boletoSchema'
-  /accounts/{accountId}/voucher/{idVoucher}:
-    get:   
-      tags:
-        - "Boleto"        
-      summary: "Retorna boleto específico do portador"
-      parameters: 
-        - 
-          name: "accountId"
-          in: "path"
-          description: "accountId"
-          required: true
-          type: "string"
-        - 
-          name: "idVoucher"
-          in: "path"
-          description: "id do comprovante (idVoucher)"
-          required: true
-          type: "string"
-        - 
-          name: "Authorization"
-          in: "header"
-          description: "access_token capturado no login"
-          required: true
-          type: "string"
-        - 
-          name: "client_id"
-          in: "header"
-          description: "client_id"
-          required: true
-          type: "string"
-      responses: 
-        200: 
-          description: "retorna boleto específico do usuário"
-          schema:
-            $ref: '#/definitions/boletoSchema'
-  #ACCOUNTS
-  /accounts/{accountId}/extract: 
-    get: 
-      tags: 
-        - "Accounts"
-      summary: "Extrato da conta"
-      parameters: 
-        - 
-          name: "accountId"
-          in: "path"
-          description: "accountId"
-          required: true
-          type: "string" 
-        - 
-          name: "Authorization"
-          in: "header"
-          description: "access_token capturado no login"
-          required: true
-          type: "string"
-        - 
-          name: "client_id"
-          in: "header"
-          description: "client_id"
-          required: true
-          type: "string"
-        - name: "initialDate"
-          in: "query"
-          type: "string"
-        - name: "finalDate"
-          in: "query"
-          type: "string"
-      responses: 
-        200: 
-          description: "Conta encontrada"
-          schema:
-            $ref: "#/definitions/ExtractSchema"
-        400:
-          description: "Nenhum registro encontrado para essa solicitação."
-          schema:
-            $ref: "#/definitions/MessageSchema"
+  # /voucher/{accountId}:
+  #   get:   
+  #     tags:
+  #       - "Boleto"        
+  #     summary: "Retorna boletos do portador"
+  #     parameters: 
+  #       - 
+  #         name: "accountId"
+  #         in: "path"
+  #         description: "accountId"
+  #         required: true
+  #         type: "string"
+  #       - 
+  #         name: "Authorization"
+  #         in: "header"
+  #         description: "access_token capturado no login"
+  #         required: true
+  #         type: "string"
+  #       - 
+  #         name: "client_id"
+  #         in: "header"
+  #         description: "client_id"
+  #         required: true
+  #         type: "string"
+  #       - 
+  #         name: "startdate"
+  #         in: "query"
+  #         description: "startdate (YYYY-MM-DD)"
+  #         required: false
+  #         type: "string"
+  #       - 
+  #         name: "enddate"
+  #         in: "query"
+  #         description: "enddate (YYYY-MM-DD)"
+  #         required: false
+  #         type: "string"
+  #       - 
+  #         name: "tipo"
+  #         in: "query"
+  #         description: "tipo"
+  #         required: false
+  #         type: "number"
+  #     responses: 
+  #       200: 
+  #         description: "retorna lista de boletos do usuário"
+  #         schema:
+  #           $ref: '#/definitions/boletoSchema'
 
-  /accounts/{accountId}/cards: 
-    get: 
-      tags: 
-        - "Accounts"
-      summary: "Lista cartões da conta do portador"
-      parameters:
-        - 
-          name: "accountId"
-          in: "path"
-          description: "accountId"
-          required: true
-          type: "string"
-        - 
-          name: "Authorization"
-          in: "header"
-          description: "access_token capturado no login"
-          required: true
-          type: "string"
-        - 
-          name: "client_id"
-          in: "header"
-          description: "client_id"
-          required: true
-          type: "string"
-      responses: 
-        200: 
-          description: "Cartões encontrados"
-          schema:
-            $ref: '#/definitions/CardsSchema'
-        400:
-          description: "Nenhum registro encontrado para essa solicitação"
-          schema:
-            $ref: '#/definitions/MessageSchema'
+  # /accounts/{accountId}/voucher/{idVoucher}:
+  #   get:   
+  #     tags:
+  #       - "Boleto"        
+  #     summary: "Retorna boleto específico do portador"
+  #     parameters: 
+  #       - 
+  #         name: "accountId"
+  #         in: "path"
+  #         description: "accountId"
+  #         required: true
+  #         type: "string"
+  #       - 
+  #         name: "idVoucher"
+  #         in: "path"
+  #         description: "id do comprovante (idVoucher)"
+  #         required: true
+  #         type: "string"
+  #       - 
+  #         name: "Authorization"
+  #         in: "header"
+  #         description: "access_token capturado no login"
+  #         required: true
+  #         type: "string"
+  #       - 
+  #         name: "client_id"
+  #         in: "header"
+  #         description: "client_id"
+  #         required: true
+  #         type: "string"
+  #     responses: 
+  #       200: 
+  #         description: "retorna boleto específico do usuário"
+  #         schema:
+  #           $ref: '#/definitions/boletoSchema'
+
+  #ACCOUNTS
+  # /accounts/{accountId}/extract: 
+  #   get: 
+  #     tags: 
+  #       - "Accounts"
+  #     summary: "Extrato da conta"
+  #     parameters: 
+  #       - 
+  #         name: "accountId"
+  #         in: "path"
+  #         description: "accountId"
+  #         required: true
+  #         type: "string" 
+  #       - 
+  #         name: "Authorization"
+  #         in: "header"
+  #         description: "access_token capturado no login"
+  #         required: true
+  #         type: "string"
+  #       - 
+  #         name: "client_id"
+  #         in: "header"
+  #         description: "client_id"
+  #         required: true
+  #         type: "string"
+  #       - name: "initialDate"
+  #         in: "query"
+  #         type: "string"
+  #       - name: "finalDate"
+  #         in: "query"
+  #         type: "string"
+  #     responses: 
+  #       200: 
+  #         description: "Conta encontrada"
+  #         schema:
+  #           $ref: "#/definitions/ExtractSchema"
+  #       400:
+  #         description: "Nenhum registro encontrado para essa solicitação."
+  #         schema:
+  #           $ref: "#/definitions/MessageSchema"
+
+  # /accounts/{accountId}/cards: 
+  #   get: 
+  #     tags: 
+  #       - "Accounts"
+  #     summary: "Lista cartões da conta do portador"
+  #     parameters:
+  #       - 
+  #         name: "accountId"
+  #         in: "path"
+  #         description: "accountId"
+  #         required: true
+  #         type: "string"
+  #       - 
+  #         name: "Authorization"
+  #         in: "header"
+  #         description: "access_token capturado no login"
+  #         required: true
+  #         type: "string"
+  #       - 
+  #         name: "client_id"
+  #         in: "header"
+  #         description: "client_id"
+  #         required: true
+  #         type: "string"
+  #     responses: 
+  #       200: 
+  #         description: "Cartões encontrados"
+  #         schema:
+  #           $ref: '#/definitions/CardsSchema'
+  #       400:
+  #         description: "Nenhum registro encontrado para essa solicitação"
+  #         schema:
+  #           $ref: '#/definitions/MessageSchema'
   
-  /accountdetail:
-    get:
-      tags:
-        - "Accounts"
-      summary: "Lista os detalhes da conta pelo ID"
-      parameters: 
-        - 
-          name: "accountId"
-          in: "query"
-          description: "accountId"
-          required: true
-          type: "string"
-        - 
-          name: "Authorization"
-          in: "header"
-          description: "access_token capturado no login"
-          required: true
-          type: "string"
-        - 
-          name: "client_id"
-          in: "header"
-          description: "client_id"
-          required: true
-          type: "string"
-      responses: 
-        200: 
-          description: "Conta encontrada"
-          schema:
-            $ref: '#/definitions/accountDetailSchema'
-        404:
-          description: "Nenhum registro encontrado para essa solicitação"
-          schema:
-            $ref: '#/definitions/MessageSchema'
+  # /accountdetail:
+  #   get:
+  #     tags:
+  #       - "Accounts"
+  #     summary: "Lista os detalhes da conta pelo ID"
+  #     parameters: 
+  #       - 
+  #         name: "accountId"
+  #         in: "query"
+  #         description: "accountId"
+  #         required: true
+  #         type: "string"
+  #       - 
+  #         name: "Authorization"
+  #         in: "header"
+  #         description: "access_token capturado no login"
+  #         required: true
+  #         type: "string"
+  #       - 
+  #         name: "client_id"
+  #         in: "header"
+  #         description: "client_id"
+  #         required: true
+  #         type: "string"
+  #     responses: 
+  #       200: 
+  #         description: "Conta encontrada"
+  #         schema:
+  #           $ref: '#/definitions/accountDetailSchema'
+  #       404:
+  #         description: "Nenhum registro encontrado para essa solicitação"
+  #         schema:
+  #           $ref: '#/definitions/MessageSchema'
   
-  /account:
+  # /account:
+  #   post:
+  #     tags:
+  #       - "Accounts"
+  #     summary: "Retorna o id da conta através do número do cartão para fazer transferência"
+  #     parameters: 
+  #       - 
+  #         name: "Authorization"
+  #         in: "header"
+  #         description: "access_token capturado no login"
+  #         required: true
+  #         type: "string"
+  #       - 
+  #         name: "client_id"
+  #         in: "header"
+  #         description: "client_id"
+  #         required: true
+  #         type: "string"
+  #       - in: body
+  #         name: billPaymentSchema
+  #         schema:
+  #           $ref: '#/definitions/accounttSchema'
+  #     responses: 
+  #       200: 
+  #         description: "Conta encontrada"
+  #         schema:
+  #           $ref: '#/definitions/accountSchema'
+  #       404:
+  #         description: "Nenhum registro encontrado para essa solicitação"
+  #         schema:
+  #           $ref: '#/definitions/MessageSchema'
+
+  #OAUTH 
+  /confirmation: 
     post:
-      tags:
-        - "Accounts"
-      summary: "Retorna o id da conta através do número do cartão para fazer transferência"
-      parameters: 
-        - 
-          name: "Authorization"
-          in: "header"
-          description: "access_token capturado no login"
-          required: true
-          type: "string"
+      tags: 
+      - "OAuth"
+      summary: "Confirma a nova senha do Portal através do código validador"
+      parameters:
         - 
           name: "client_id"
           in: "header"
@@ -594,20 +625,20 @@ paths:
           required: true
           type: "string"
         - in: body
-          name: billPaymentSchema
+          name: body
+          description: "Parametros de alteração de senha esquecida com código validador"
           schema:
-            $ref: '#/definitions/accounttSchema'
-      responses: 
-        200: 
-          description: "Conta encontrada"
-          schema:
-            $ref: '#/definitions/accountSchema'
-        404:
-          description: "Nenhum registro encontrado para essa solicitação"
+            $ref: '#/definitions/forgotSchema'
+      responses:
+        201: 
+          description: "Senha alterada com sucesso"
           schema:
             $ref: '#/definitions/MessageSchema'
-  #OAUTH 
-  /password/forgot: 
+        400:
+          description: "Código inválido / A senha não atende aos requisitos mínimos. Ela deve possuir ao menos 1 letra minúscula, 1 letra maiúscula, 1 número e 1 caracter especial."
+
+  
+  /oauth/password:
     get: 
       tags: 
       - "OAuth"
@@ -626,7 +657,7 @@ paths:
           in: "query"
           type: "string"
       responses: 
-        201: 
+        200: 
           description: "Uma nova senha foi enviada para xxx"
           schema:
             $ref: '#/definitions/MessageSchema'
@@ -636,7 +667,7 @@ paths:
     post:
       tags: 
       - "OAuth"
-      summary: "Altera a senha do portal esquecida"
+      summary: "Cadastra senha definitiva no primeiro acesso"
       parameters:
         - 
           name: "client_id"
@@ -646,53 +677,24 @@ paths:
           type: "string"
         - in: body
           name: body
-          description: "Parametros de alteração de senha"
+          required: true
+          description: "Parametros de alteração de senha temporária"
           schema:
-            $ref: '#/definitions/forgotSchema'
+            $ref: '#/definitions/firstAccessChangePasswordSchema'
       responses:
         201: 
-          description: "senha alterada com sucesso"
+          description: "Senha alterada com sucesso"
           schema:
-            $ref: '#/definitions/MessageSchema'
+            $ref: '#/definitions/LoginResponseSchema'
         400:
-          description: " A senha não atende aos requisitos mínimos. Ela deve possuir ao menos 1 letra minúscula, 1 letra maiúscula, 1 número e 1 caracter especial."
-
-  
-  /oauth/password: 
-    put:  
-      tags: 
-      - "OAuth"
-      summary: "Altera a senha do Portal entrando com a senha anterior"
-      parameters: 
-        - 
-          name: "client_id"
-          in: "header"
-          description: "client_id"
-          required: true
-          type: "string"
-        - in: body
-          name: body
-          description: "Parametros de alteração de senha"
-          schema:
-            $ref: '#/definitions/AlterPasswordSchema'
-      responses: 
-        200: 
-          description: "Você alterou a senha do Portal Cateno em 23/03/2018 às 13:50. Caso tenha alguma dúvida, entrar em contato com a Central de Atendimento"
-          schema:
-            $ref: '#/definitions/MessageSchema'
-        400:
-          description: "Falha ao alterar senha do usuário, verifique se a senha atual está correta e a nova senha atende aos requisitos mínimos."
-    post:
+          description: "A senha não atende aos requisitos mínimos. Ela deve possuir ao menos 1 letra minúscula, 1 letra maiúscula, 1 número e 1 caracter especial."
+        401:
+          description: "Senha incorreta."
+    put:
         tags:
         - "OAuth"	
-        summary: "Altera a senha do portal esquecida"
+        summary: "Altera a senha do portal com a senha atual"
         parameters:
-          - 
-            name: "accountId"
-            in: "path"
-            description: "accountId"
-            required: true
-            type: "string" 
           - 
             name: "Authorization"
             in: "header"
@@ -708,11 +710,11 @@ paths:
           - 
             in: body
             name: body
-            description: "parametros de confirmação de senha"
+            description: "Parâmetros de alteração de senha"
             schema:
-              $ref: '#/definitions/ConfirmPasswordSchema'
+              $ref: '#/definitions/AlterPasswordSchema'
         responses:
-          200:
+          204:
             description: "Senha alterada com sucesso"
             schema:
               $ref: '#/definitions/MessageSchema'
@@ -737,7 +739,7 @@ paths:
           schema:
             $ref: '#/definitions/LoginSchema'
       responses: 
-        200: 
+        201: 
           description: "Sucesso no login"
           headers:
             access_token:
@@ -773,287 +775,291 @@ paths:
           schema:
             $ref: '#/definitions/RegisterSchema'
       responses: 
-        200: 
+        201: 
           description: "CPF cadastrado com sucesso"
           schema:
-            $ref: '#/definitions/MessageSchema'               
+            $ref: '#/definitions/MessageSchema'
+        401:
+          description: 'Usuário já cadastrado'
+          schema:
+            $ref: '#/definitions/MessageSchema'           
   
   #CARDS
-  /cards/{cardId}/password: 
-    get: 
-      tags: 
-      - "Cards"
-      summary: "Valida a senha do cartão"
-      parameters:
-        - 
-          name: "Authorization"
-          in: "header"
-          description: "access_token capturado no login"
-          required: true
-          type: "string"
-        - 
-          name: "client_id"
-          in: "header"
-          description: "client_id"
-          required: true
-          type: "string"
-        - 
-          name: "cardId"
-          in: "path"
-          description: "cardId"
-          required: true
-          type: "string"
-        - 
-          name: "password"
-          in: "header"
-          description: "senha criptografada"
-          required: true
-          type: "string"
-      responses: 
-        200: 
-          description: "Senha correta"
-          schema:
-            $ref: '#/definitions/MessageCardVerifySchema'
+  # /cards/{cardId}/password: 
+  #   get: 
+  #     tags: 
+  #     - "Cards"
+  #     summary: "Valida a senha do cartão"
+  #     parameters:
+  #       - 
+  #         name: "Authorization"
+  #         in: "header"
+  #         description: "access_token capturado no login"
+  #         required: true
+  #         type: "string"
+  #       - 
+  #         name: "client_id"
+  #         in: "header"
+  #         description: "client_id"
+  #         required: true
+  #         type: "string"
+  #       - 
+  #         name: "cardId"
+  #         in: "path"
+  #         description: "cardId"
+  #         required: true
+  #         type: "string"
+  #       - 
+  #         name: "password"
+  #         in: "header"
+  #         description: "senha criptografada"
+  #         required: true
+  #         type: "string"
+  #     responses: 
+  #       200: 
+  #         description: "Senha correta"
+  #         schema:
+  #           $ref: '#/definitions/MessageCardVerifySchema'
 
-    put: 
-      tags: 
-      - "Cards"
-      summary: "Altera a senha do cartão"
-      parameters:
-        - 
-          name: "Authorization"
-          in: "header"
-          description: "access_token capturado no login"
-          required: true
-          type: "string"
-        - 
-          name: "client_id"
-          in: "header"
-          description: "client_id"
-          required: true
-          type: "string"
-        - 
-          name: "cardId"
-          in: "path"
-          description: "cardId"
-          required: true
-          type: "string"
-        - in: body
-          name: alterpassSchema
-          description: "Alterar senha esquecida"
-          schema:
-            $ref: '#/definitions/alterpasswithSchema'
-        - in: body
-          name: alterpasswithSchema
-          description: "Alterar senha com senha atual"
-          schema:
-            $ref: '#/definitions/alterpassSchema'
-      responses: 
-        200: 
-          description: "Senha alterada com sucesso"
-          schema:
-            $ref: '#/definitions/ResponseAlterpassSchema'
+  #   put: 
+  #     tags: 
+  #     - "Cards"
+  #     summary: "Altera a senha do cartão"
+  #     parameters:
+  #       - 
+  #         name: "Authorization"
+  #         in: "header"
+  #         description: "access_token capturado no login"
+  #         required: true
+  #         type: "string"
+  #       - 
+  #         name: "client_id"
+  #         in: "header"
+  #         description: "client_id"
+  #         required: true
+  #         type: "string"
+  #       - 
+  #         name: "cardId"
+  #         in: "path"
+  #         description: "cardId"
+  #         required: true
+  #         type: "string"
+  #       - in: body
+  #         name: alterpassSchema
+  #         description: "Alterar senha esquecida"
+  #         schema:
+  #           $ref: '#/definitions/alterpasswithSchema'
+  #       - in: body
+  #         name: alterpasswithSchema
+  #         description: "Alterar senha com senha atual"
+  #         schema:
+  #           $ref: '#/definitions/alterpassSchema'
+  #     responses: 
+  #       200: 
+  #         description: "Senha alterada com sucesso"
+  #         schema:
+  #           $ref: '#/definitions/ResponseAlterpassSchema'
   
-  /cards/{cardId}: 
-    post: 
-      tags: 
-      - "Cards"
-      summary: "Altera o status do cartão"
-      parameters:
-        - 
-          name: "Authorization"
-          in: "header"
-          description: "access_token capturado no login"
-          required: true
-          type: "string"
-        - 
-          name: "client_id"
-          in: "header"
-          description: "client_id"
-          required: true
-          type: "string"
-        - 
-          name: "cardId"
-          in: "path"
-          description: "cardId"
-          required: true
-          type: "string"
-      responses: 
-        200: 
-          description: "cartão desbloqueado"
-          schema:
-            $ref: '#/definitions/statusCartaoSchema'
-        404: 
-          description: "Estágio cartão não permite desbloqueio. Cartão não impresso"
-          schema:
-            $ref: '#/definitions/MessageSchema'
+  # /cards/{cardId}: 
+  #   post: 
+  #     tags: 
+  #     - "Cards"
+  #     summary: "Altera o status do cartão"
+  #     parameters:
+  #       - 
+  #         name: "Authorization"
+  #         in: "header"
+  #         description: "access_token capturado no login"
+  #         required: true
+  #         type: "string"
+  #       - 
+  #         name: "client_id"
+  #         in: "header"
+  #         description: "client_id"
+  #         required: true
+  #         type: "string"
+  #       - 
+  #         name: "cardId"
+  #         in: "path"
+  #         description: "cardId"
+  #         required: true
+  #         type: "string"
+  #     responses: 
+  #       200: 
+  #         description: "cartão desbloqueado"
+  #         schema:
+  #           $ref: '#/definitions/statusCartaoSchema'
+  #       404: 
+  #         description: "Estágio cartão não permite desbloqueio. Cartão não impresso"
+  #         schema:
+  #           $ref: '#/definitions/MessageSchema'
 
     
 
   
   #EXTRATO
-  /carriers/{carrierId}/products/{productId}/pdf: 
-    get: 
-      tags: 
-      - "Extrato"
-      summary: "Lista os extratos de uma conta quando extrato normal, e lista os extratos de todas as contas desse usuário quando consolidado"
-      parameters:
-        - 
-          name: "Authorization"
-          in: "header"
-          description: "access_token capturado no login"
-          required: true
-          type: "string"
-        - 
-          name: "client_id"
-          in: "header"
-          description: "client_id"
-          required: true
-          type: "string"
-        - 
-          name: "carrierId"
-          in: "path"
-          description: "idPessoa"
-          required: true
-          type: "integer"
-        - 
-          name: "type"
-          in: "query"
-          description: "'C' (consolidado) ou idConta (extrato normal)"
-          required: true
-          type: "string"
-      responses: 
-        200: 
-          description: "Extrato encontrado"
-          schema:
-            $ref: '#/definitions/ExtratoSchema'
-        401: 
-          description: "Não autorizado"
-        404: 
-          description: "Nenhum registro encontrado para essa solicitação."
+  # /carriers/{carrierId}/products/{productId}/pdf: 
+  #   get: 
+  #     tags: 
+  #     - "Extrato"
+  #     summary: "Lista os extratos de uma conta quando extrato normal, e lista os extratos de todas as contas desse usuário quando consolidado"
+  #     parameters:
+  #       - 
+  #         name: "Authorization"
+  #         in: "header"
+  #         description: "access_token capturado no login"
+  #         required: true
+  #         type: "string"
+  #       - 
+  #         name: "client_id"
+  #         in: "header"
+  #         description: "client_id"
+  #         required: true
+  #         type: "string"
+  #       - 
+  #         name: "carrierId"
+  #         in: "path"
+  #         description: "idPessoa"
+  #         required: true
+  #         type: "integer"
+  #       - 
+  #         name: "type"
+  #         in: "query"
+  #         description: "'C' (consolidado) ou idConta (extrato normal)"
+  #         required: true
+  #         type: "string"
+  #     responses: 
+  #       200: 
+  #         description: "Extrato encontrado"
+  #         schema:
+  #           $ref: '#/definitions/ExtratoSchema'
+  #       401: 
+  #         description: "Não autorizado"
+  #       404: 
+  #         description: "Nenhum registro encontrado para essa solicitação."
 
-  /carriers/{personId}/products/{productId}/accounts: 
-    get: 
-      tags: 
-      - "Extrato"
-      summary: "Lista as contas do usuário no produto"
-      parameters:
-        - 
-          name: "Authorization"
-          in: "header"
-          description: "access_token capturado no login"
-          required: true
-          type: "string"
-        - 
-          name: "client_id"
-          in: "header"
-          description: "client_id"
-          required: true
-          type: "string"
-        - 
-          name: "personId"
-          in: "path"
-          description: "idPessoa"
-          required: true
-          type: "integer"
-        - 
-          name: "productId"
-          in: "path"
-          description: "idProduto"
-          required: true
-          type: "string"
-      responses: 
-        200: 
-          description: "Extrato encontrado"
-          schema:
-            $ref: '#/definitions/ExtratoContasProdutoSchema'
-        401: 
-          description: "Unauthorized"
-        404: 
-          description: "Nenhum registro encontrado para essa solicitação" 
+  # /carriers/{personId}/products/{productId}/accounts: 
+  #   get: 
+  #     tags: 
+  #     - "Extrato"
+  #     summary: "Lista as contas do usuário no produto"
+  #     parameters:
+  #       - 
+  #         name: "Authorization"
+  #         in: "header"
+  #         description: "access_token capturado no login"
+  #         required: true
+  #         type: "string"
+  #       - 
+  #         name: "client_id"
+  #         in: "header"
+  #         description: "client_id"
+  #         required: true
+  #         type: "string"
+  #       - 
+  #         name: "personId"
+  #         in: "path"
+  #         description: "idPessoa"
+  #         required: true
+  #         type: "integer"
+  #       - 
+  #         name: "productId"
+  #         in: "path"
+  #         description: "idProduto"
+  #         required: true
+  #         type: "string"
+  #     responses: 
+  #       200: 
+  #         description: "Extrato encontrado"
+  #         schema:
+  #           $ref: '#/definitions/ExtratoContasProdutoSchema'
+  #       401: 
+  #         description: "Unauthorized"
+  #       404: 
+  #         description: "Nenhum registro encontrado para essa solicitação" 
   
   #2fa
-  /2fa/{username}: 
-    get: 
-      tags: 
-      - "Two factor authentication"
-      summary: "Valida se o codigo esta correto"
-      parameters:
-        - 
-          name: "Authorization"
-          in: "header"
-          description: "access_token capturado no login"
-          required: true
-          type: "string"
-        - 
-          name: "client_id"
-          in: "header"
-          description: "client_id"
-          required: true
-          type: "string"
-        -
-           name: "username"
-           in: "path"
-           description: "CPF do usuário"
-           required: true
-           type: "integer"
-        - 
-           name: "randomCode"
-           in: "query"
-           description: "Código enviado"
-           required: true
-           type: "string"
-      responses: 
-        200: 
-          description: "Codigo correto!"
-        401: 
-          description: "Não autorizado"
-        404: 
-          description: "Codigo incorreto!"
+  # /2fa/{username}: 
+  #   get: 
+  #     tags: 
+  #     - "Two factor authentication"
+  #     summary: "Valida se o codigo esta correto"
+  #     parameters:
+  #       - 
+  #         name: "Authorization"
+  #         in: "header"
+  #         description: "access_token capturado no login"
+  #         required: true
+  #         type: "string"
+  #       - 
+  #         name: "client_id"
+  #         in: "header"
+  #         description: "client_id"
+  #         required: true
+  #         type: "string"
+  #       -
+  #          name: "username"
+  #          in: "path"
+  #          description: "CPF do usuário"
+  #          required: true
+  #          type: "integer"
+  #       - 
+  #          name: "randomCode"
+  #          in: "query"
+  #          description: "Código enviado"
+  #          required: true
+  #          type: "string"
+  #     responses: 
+  #       200: 
+  #         description: "Codigo correto!"
+  #       401: 
+  #         description: "Não autorizado"
+  #       404: 
+  #         description: "Codigo incorreto!"
 
-    post: 
-      tags: 
-      - "Two factor authentication"
-      summary: "Cadastra Codigo no banco e envia codigo para o celular"
-      parameters:
-        - 
-          name: "Authorization"
-          in: "header"
-          description: "access_token capturado no login"
-          required: true
-          type: "string"
-        - 
-          name: "client_id"
-          in: "header"
-          description: "client_id"
-          required: true
-          type: "string"
-        - 
-           name: "username"
-           in: "path"
-           description: "CPF do usuário"
-           required: true
-           type: "string"
-        - 
-           name: "cardId"
-           in: "body"
-           description: "ID do cartão"
-           required: true
-           schema:
-            $ref: '#/definitions/2faCardIdSchema'
-      responses: 
-        201: 
-          description: "Código de validação enviado com sucesso."
-        401: 
-          description: "Não autorizado"
-        404: 
-          description: "Falha no envio do código de validação."
+  #   post: 
+  #     tags: 
+  #     - "Two factor authentication"
+  #     summary: "Cadastra Codigo no banco e envia codigo para o celular"
+  #     parameters:
+  #       - 
+  #         name: "Authorization"
+  #         in: "header"
+  #         description: "access_token capturado no login"
+  #         required: true
+  #         type: "string"
+  #       - 
+  #         name: "client_id"
+  #         in: "header"
+  #         description: "client_id"
+  #         required: true
+  #         type: "string"
+  #       - 
+  #          name: "username"
+  #          in: "path"
+  #          description: "CPF do usuário"
+  #          required: true
+  #          type: "string"
+  #       - 
+  #          name: "cardId"
+  #          in: "body"
+  #          description: "ID do cartão"
+  #          required: true
+  #          schema:
+  #           $ref: '#/definitions/2faCardIdSchema'
+  #     responses: 
+  #       201: 
+  #         description: "Código de validação enviado com sucesso."
+  #       401: 
+  #         description: "Não autorizado"
+  #       404: 
+  #         description: "Falha no envio do código de validação."
   #PUBLIC KEY
   /publickey:
     get:
       tags:
         - "Keys"
-      summary: "chave pública para criptografar senhas através da criptografia RSA"
+      summary: "Chave pública para criptografar senhas e número do cartão do usuário quando completo através da criptografia RSA"
       parameters: 
         - 
           name: "client_id"
@@ -1066,7 +1072,7 @@ paths:
           description: "Retorna a chave pública"
   
   #CEP
-  /cep:
+  /adresses{cep}:
     get:
       tags:
         - "CEP"
@@ -1080,8 +1086,8 @@ paths:
           type: "string"
         - 
           name: "cep"
-          in: "query"
-          description: "cep"
+          in: "path"
+          description: "CEP do endereço"
           required: true
           type: "string"
       responses:
@@ -1089,10 +1095,116 @@ paths:
           description: "Endereço encontrado"
           schema:
             $ref: '#/definitions/CEPSchema'
+        400:
+          description: "CEP inválido"
         404:
           description: "Endereço não encontrado"
 
+  #Autocadastro
+  /bankslips/{ourNumber}/pdf:
+    get:
+      tags:
+        - "Autocadastro"
+      summary: "Gera pdf do boleto de autocadastro para o usuário e retorna o PDF ou envia por e-mail"
+      parameters: 
+        - 
+          name: "client_id"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
+        - 
+          name: "ourNumber"
+          in: "path"
+          description: "Número do boleto"
+          required: true
+          type: "string"
+        - 
+          name: "email"
+          in: "query"
+          description: "(se enviar true ele envia o PDF por e-mail). Se quiser que o base64 retorne no response, não enviar queryStringParameter"
+          required: false
+          type: "boolean"
+      responses:
+        200:
+          description: "PDF gerado em base64 ou enviado por e-mail"
+          schema:
+            $ref: '#/definitions/bankslipPDFSchema'
+        404:
+          description: "Número do boleto não encontrado"
 
+  /users/{cpf}/bankslip:
+    get:
+      tags:
+        - "Autocadastro"
+      summary: "Verifica se o usuário possui boleto de autocadastro"
+      parameters:
+        - 
+          name: "client_id"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
+        - 
+          name: "cpf"
+          in: "path"
+          description: "CPF do usuário"
+          required: true
+          type: "string"
+        - 
+          name: "productId"
+          in: "query"
+          description: "ID do produto"
+          required: true
+          type: "string"
+      responses:
+        200:
+          description: "PDF gerado em base64 ou enviado por e-mail"
+          schema:
+            $ref: '#/definitions/userHasBankslipSchema'
+        404:
+          description: "Número do boleto não encontrado"
+    post:
+      tags:
+        - "Autocadastro"
+      summary: "Registra o boleto de auto cadastro do usuário e retorna o número"
+      parameters: 
+        - 
+          name: "client_id"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
+        - 
+          name: "cpf"
+          in: "path"
+          description: "CPF do usuário"
+          required: true
+          type: "string"
+        - 
+          name: "idCompany"
+          in: "query"
+          description: "ID do intermediário"
+          required: true
+          type: "string"
+        - 
+          name: "idProduto"
+          in: "query"
+          description: "ID do produto"
+          required: true
+          type: "string"
+        - in: body
+          name: RegisterBankslip
+          description: "Parametros de registro de boleto"
+          schema:
+            $ref: '#/definitions/registerBankslipSchema'
+      responses:
+        201:
+          description: "Boleto gerado com sucesso"
+          schema:
+            $ref: '#/definitions/responseRegisterBankslipSchema'
+        400:
+          description:  "Titulo ja incluido anteriormente. / Verifique se o CPF está correto. Se sim, naõ foi possível atender a sua solicitação. Para maiores informações, contate a nossa Central de Atendimento."
       
 definitions:
   UnlockCardRequestSchema:
@@ -2148,12 +2260,6 @@ definitions:
           type: "string"
         cpf:
           type: "string"
-  
-  bankslippdfSchema:
-    type: "object"
-    properties:
-        pdf:
-          type: "string"
           
   banksliregisterSchema:
     type: "object"
@@ -2554,6 +2660,50 @@ definitions:
         type: "string"
       password: 
         type: "string"
+
+  firstAccessChangePasswordSchema:
+    type: "object"
+    properties:
+      username: 
+        type: "string"
+      idCompany: 
+        type: "string"
+      password: 
+        type: "string"
+      newPassword: 
+        type: "string"
+
+  #Autocadastro
+  bankslipPDFSchema:
+    type: "object"
+    properties:
+      pdf:
+        type: "string"
+      message:
+        type: "string"
+
+  userHasBankslipSchema:
+    type: "object"
+    properties:
+      message:
+        type: "string"
+      ourNumber:
+        type: "string"
+
+  registerBankslipSchema:
+    type: "object"
+    properties:
+      rechargeValue:
+        type: "number"
+      feeValue:
+        type: "number"
+
+  responseRegisterBankslipSchema:
+    type: "object"
+    properties:
+      nossoNumero:
+        type: "string"
+
 
   #Error
   ErrorSchema:
