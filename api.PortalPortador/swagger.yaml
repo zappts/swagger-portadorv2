@@ -10,22 +10,22 @@ schemes:
 tags:
 - name: "OAuth"
   description: "Operaçoes com a autenticação"
-# - name: "User"
-#   description: "Operações com usuarios"
+- name: "User"
+  description: "Operações com usuarios"
 - name: "CEP"
   description: "Operações com cep"
-# - name: "Accounts"
-#   description: "Operações com contas"
-# - name: "Cards"
-#   description: "Operações com cartões"
+- name: "Accounts"
+  description: "Operações com contas"
+- name: "Cards"
+  description: "Operações com cartões"
 # - name: "Transaction"
 #   description: "Operações com transações"  
 # - name: "Boleto"
 #   description: "Operações com boletos"
-# - name: "Extrato"
-#   description: "Operações com extratos"
-# - name: "Two factor authentication"
-#   description: "Operações com dupla validação"
+- name: "Extrato"
+  description: "Operações com extratos"
+- name: "Two Factor Authentication"
+  description: "Operações com dupla validação"
 - name: "Keys"
   description: "Operações com chaves"
 - name: "Autocadastro"
@@ -34,69 +34,75 @@ tags:
 
 paths: 
   #USER
-  # /user/{cpf}: 
-  #   get: 
-  #     tags: 
-  #       - "User"
-  #     summary: "Recebe os dados do usuário"
-  #     parameters: 
-  #       - 
-  #         name: "client_id"
-  #         in: "header"
-  #         description: "client_id"
-  #         required: true
-  #         type: "string"
-  #       - 
-  #         name: "productId"
-  #         in: "query"
-  #         description: "productId"
-  #         required: false
-  #         type: "string"
-  #       - 
-  #         name: "cpf"
-  #         in: "path"
-  #         description: "cpf"
-  #         required: true
-  #         type: "Number"
-  #     responses: 
-  #         200: 
-  #           description: "Dados do usuario {cpf}"  
-  #           schema:
-  #             $ref: '#/definitions/UserSchema'
-  #         400: 
-  #           description: "Nenhuma conta ativa para o usuário encontrada neste domínio."  
-  #           schema:
-  #             $ref: '#/definitions/ErrorSchema'
+  /user/{cpf}: 
+    get: 
+      tags: 
+        - "User"
+      summary: "Recebe os dados do usuário"
+      parameters: 
+        - 
+          name: "client_id"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
+        - 
+          name: "access_token"
+          in: "header"
+          description: "access_token capturado no login"
+          required: true
+          type: "string"
+        - 
+          name: "productId"
+          in: "query"
+          description: "productId"
+          required: true
+          type: "string"
+        - 
+          name: "cpf"
+          in: "path"
+          description: "cpf"
+          required: true
+          type: "Number"
+      responses: 
+          200: 
+            description: "Dados do usuario {cpf}"  
+            schema:
+              $ref: '#/definitions/UserSchema'
+          400: 
+            description: "Nenhuma conta ativa para o usuário encontrada neste domínio."  
+            schema:
+              $ref: '#/definitions/ErrorSchema'
 
-  # /cpf/{cpf}: 
-  #   get: 
-  #     tags: 
-  #       - "User"
-  #     summary: "Valida se o CPF já existe na Conductor"
-  #     parameters: 
-  #       - 
-  #         name: "client_id"
-  #         in: "header"
-  #         description: "client_id"
-  #         required: true
-  #         type: "string"
-  #       - 
-  #         name: "productId"
-  #         in: "query"
-  #         description: "productId"
-  #         required: false
-  #         type: "string"
-  #       - 
-  #         name: "cpf"
-  #         in: "path"
-  #         description: "cpf"
-  #         required: true
-  #         type: "Number"
-  #     responses: 
-  #         200: 
-  #           description: "Usuário encontrado!"  
-  #         400: 
-  #           description: "Usuário não encontrado!"  
+  /users/{cpf}/active: 
+    get: 
+      tags: 
+        - "User"
+      summary: "Retorna se o usuário possui conta ativa nos produtos parametrizados"
+      parameters: 
+        - 
+          name: "client_id"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
+        - 
+          name: "productId"
+          in: "query"
+          description: "ID dos produtos separados por vírgula"
+          required: false
+          type: "string"
+        - 
+          name: "cpf"
+          in: "path"
+          description: "CPF do usuário"
+          required: true
+          type: "string"
+      responses: 
+          200: 
+            description: "Usuário possui cartão pré-pago ativo"  
+          400: 
+            description: "Usuário não possui cartão pré-pago ativo"  
 
   #TRANSACTION            
   # /accounts/{accountId}/transactions/p2p:
@@ -471,45 +477,6 @@ paths:
   #           $ref: '#/definitions/boletoSchema'
 
   #ACCOUNTS
-  # /accounts/{accountId}/extract: 
-  #   get: 
-  #     tags: 
-  #       - "Accounts"
-  #     summary: "Extrato da conta"
-  #     parameters: 
-  #       - 
-  #         name: "accountId"
-  #         in: "path"
-  #         description: "accountId"
-  #         required: true
-  #         type: "string" 
-  #       - 
-  #         name: "Authorization"
-  #         in: "header"
-  #         description: "access_token capturado no login"
-  #         required: true
-  #         type: "string"
-  #       - 
-  #         name: "client_id"
-  #         in: "header"
-  #         description: "client_id"
-  #         required: true
-  #         type: "string"
-  #       - name: "initialDate"
-  #         in: "query"
-  #         type: "string"
-  #       - name: "finalDate"
-  #         in: "query"
-  #         type: "string"
-  #     responses: 
-  #       200: 
-  #         description: "Conta encontrada"
-  #         schema:
-  #           $ref: "#/definitions/ExtractSchema"
-  #       400:
-  #         description: "Nenhum registro encontrado para essa solicitação."
-  #         schema:
-  #           $ref: "#/definitions/MessageSchema"
 
   # /accounts/{accountId}/cards: 
   #   get: 
@@ -579,37 +546,49 @@ paths:
   #         schema:
   #           $ref: '#/definitions/MessageSchema'
   
-  # /account:
-  #   post:
-  #     tags:
-  #       - "Accounts"
-  #     summary: "Retorna o id da conta através do número do cartão para fazer transferência"
-  #     parameters: 
-  #       - 
-  #         name: "Authorization"
-  #         in: "header"
-  #         description: "access_token capturado no login"
-  #         required: true
-  #         type: "string"
-  #       - 
-  #         name: "client_id"
-  #         in: "header"
-  #         description: "client_id"
-  #         required: true
-  #         type: "string"
-  #       - in: body
-  #         name: billPaymentSchema
-  #         schema:
-  #           $ref: '#/definitions/accounttSchema'
-  #     responses: 
-  #       200: 
-  #         description: "Conta encontrada"
-  #         schema:
-  #           $ref: '#/definitions/accountSchema'
-  #       404:
-  #         description: "Nenhum registro encontrado para essa solicitação"
-  #         schema:
-  #           $ref: '#/definitions/MessageSchema'
+  /users/{cpf}/account:
+    get:
+      tags:
+        - "Accounts"
+      summary: "Retorna os dados da conta através do número do cartão encryptado"
+      parameters: 
+        - 
+          name: "access_token"
+          in: "header"
+          description: "access_token capturado no login"
+          required: true
+          type: "string"
+        - 
+          name: "client_id"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
+        - 
+          name: "cpf"
+          in: "path"
+          description: "CPF do usuário"
+          required: true
+          type: "string"
+        - 
+          name: "encryptedParam"
+          in: "header"
+          description: "Número do cartão encryptado com RSA através da chave pública"
+          required: true
+          type: "string"
+      responses: 
+        200: 
+          description: "Conta encontrada"
+          schema:
+            $ref: '#/definitions/accountSchema'
+        400:
+          description: "CPF não corresponde à conta de destino do cartão."
+          schema:
+            $ref: '#/definitions/MessageSchema'
+        404:
+          description: "Nenhum registro encontrado para essa solicitação"
+          schema:
+            $ref: '#/definitions/MessageSchema'
 
   #OAUTH 
   /confirmation: 
@@ -785,200 +764,271 @@ paths:
             $ref: '#/definitions/MessageSchema'           
   
   #CARDS
-  # /cards/{cardId}/password: 
-  #   get: 
-  #     tags: 
-  #     - "Cards"
-  #     summary: "Valida a senha do cartão"
-  #     parameters:
-  #       - 
-  #         name: "Authorization"
-  #         in: "header"
-  #         description: "access_token capturado no login"
-  #         required: true
-  #         type: "string"
-  #       - 
-  #         name: "client_id"
-  #         in: "header"
-  #         description: "client_id"
-  #         required: true
-  #         type: "string"
-  #       - 
-  #         name: "cardId"
-  #         in: "path"
-  #         description: "cardId"
-  #         required: true
-  #         type: "string"
-  #       - 
-  #         name: "password"
-  #         in: "header"
-  #         description: "senha criptografada"
-  #         required: true
-  #         type: "string"
-  #     responses: 
-  #       200: 
-  #         description: "Senha correta"
-  #         schema:
-  #           $ref: '#/definitions/MessageCardVerifySchema'
-
-  #   put: 
-  #     tags: 
-  #     - "Cards"
-  #     summary: "Altera a senha do cartão"
-  #     parameters:
-  #       - 
-  #         name: "Authorization"
-  #         in: "header"
-  #         description: "access_token capturado no login"
-  #         required: true
-  #         type: "string"
-  #       - 
-  #         name: "client_id"
-  #         in: "header"
-  #         description: "client_id"
-  #         required: true
-  #         type: "string"
-  #       - 
-  #         name: "cardId"
-  #         in: "path"
-  #         description: "cardId"
-  #         required: true
-  #         type: "string"
-  #       - in: body
-  #         name: alterpassSchema
-  #         description: "Alterar senha esquecida"
-  #         schema:
-  #           $ref: '#/definitions/alterpasswithSchema'
-  #       - in: body
-  #         name: alterpasswithSchema
-  #         description: "Alterar senha com senha atual"
-  #         schema:
-  #           $ref: '#/definitions/alterpassSchema'
-  #     responses: 
-  #       200: 
-  #         description: "Senha alterada com sucesso"
-  #         schema:
-  #           $ref: '#/definitions/ResponseAlterpassSchema'
+  /cards/{cardId}/password: 
+    put: 
+      tags: 
+      - "Cards"
+      summary: "Altera a senha do cartão com a senha atual ou com o código validador quando se esqueceu a senha"
+      parameters:
+        - 
+          name: "access_token"
+          in: "header"
+          description: "access_token capturado no login"
+          required: true
+          type: "string"
+        - 
+          name: "client_id"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
+        - 
+          name: "cardId"
+          in: "path"
+          description: "cardId"
+          required: true
+          type: "string"
+        - in: body
+          name: alterpassSchema
+          description: "Alterar senha esquecida"
+          schema:
+            $ref: '#/definitions/alterpasswithSchema'
+        - in: body
+          name: alterpasswithSchema
+          description: "Alterar senha com senha atual"
+          schema:
+            $ref: '#/definitions/alterpassSchema'
+      responses: 
+        201: 
+          description: "Senha alterada com sucesso"
+          schema:
+            $ref: '#/definitions/ResponseAlterpassSchema'
+        400:
+          description: "Senha incorreta! Você já errou a senha 1 vez(es). / CPF ou código inválidos"
   
-  # /cards/{cardId}: 
-  #   post: 
-  #     tags: 
-  #     - "Cards"
-  #     summary: "Altera o status do cartão"
-  #     parameters:
-  #       - 
-  #         name: "Authorization"
-  #         in: "header"
-  #         description: "access_token capturado no login"
-  #         required: true
-  #         type: "string"
-  #       - 
-  #         name: "client_id"
-  #         in: "header"
-  #         description: "client_id"
-  #         required: true
-  #         type: "string"
-  #       - 
-  #         name: "cardId"
-  #         in: "path"
-  #         description: "cardId"
-  #         required: true
-  #         type: "string"
-  #     responses: 
-  #       200: 
-  #         description: "cartão desbloqueado"
-  #         schema:
-  #           $ref: '#/definitions/statusCartaoSchema'
-  #       404: 
-  #         description: "Estágio cartão não permite desbloqueio. Cartão não impresso"
-  #         schema:
-  #           $ref: '#/definitions/MessageSchema'
+  /accounts/{accountId}/cards/{cardId}/token:
+    get:
+      tags:
+        - "Cards"
+      summary: "Verifica se a senha do cartão está correta e gera o token para realizar uma transação"
+      parameters:
+        - 
+          name: "access_token"
+          in: "header"
+          description: "access_token capturado no login"
+          required: true
+          type: "string"
+        - 
+          name: "client_id"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
+        - 
+          name: "accountId"
+          in: "path"
+          description: "ID da conta"
+          required: true
+          type: "string"
+        - 
+          name: "cardId"
+          in: "path"
+          description: "ID do cartão"
+          required: true
+          type: "string"
+      responses: 
+        200: 
+          description: "A senha está correta."
+          schema:
+            $ref: '#/definitions/MessageCardVerifySchema'
+        401: 
+          description: "Não autorizado"
+        404: 
+          description: "Falha no envio do código de validação."
+
+  /accounts/{accountId}/cards/{cardId}/status: 
+    post: 
+      tags: 
+      - "Cards"
+      summary: "Altera o status do cartão"
+      parameters:
+        - 
+          name: "access_token"
+          in: "header"
+          description: "access_token capturado no login"
+          required: true
+          type: "string"
+        - 
+          name: "client_id"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
+        - 
+          name: "accountId"
+          in: "path"
+          description: "ID da conta"
+          required: true
+          type: "string"
+        - 
+          name: "cardId"
+          in: "path"
+          description: "ID do cartão"
+          required: true
+          type: "string"
+      responses: 
+        200: 
+          description: "Cartão desbloqueado"
+          schema:
+            $ref: '#/definitions/statusCartaoSchema'
+        404: 
+          description: "Estágio cartão não permite desbloqueio. Cartão não impresso"
+          schema:
+            $ref: '#/definitions/MessageSchema'
+
 
     
 
   
   #EXTRATO
-  # /carriers/{carrierId}/products/{productId}/pdf: 
-  #   get: 
-  #     tags: 
-  #     - "Extrato"
-  #     summary: "Lista os extratos de uma conta quando extrato normal, e lista os extratos de todas as contas desse usuário quando consolidado"
-  #     parameters:
-  #       - 
-  #         name: "Authorization"
-  #         in: "header"
-  #         description: "access_token capturado no login"
-  #         required: true
-  #         type: "string"
-  #       - 
-  #         name: "client_id"
-  #         in: "header"
-  #         description: "client_id"
-  #         required: true
-  #         type: "string"
-  #       - 
-  #         name: "carrierId"
-  #         in: "path"
-  #         description: "idPessoa"
-  #         required: true
-  #         type: "integer"
-  #       - 
-  #         name: "type"
-  #         in: "query"
-  #         description: "'C' (consolidado) ou idConta (extrato normal)"
-  #         required: true
-  #         type: "string"
-  #     responses: 
-  #       200: 
-  #         description: "Extrato encontrado"
-  #         schema:
-  #           $ref: '#/definitions/ExtratoSchema'
-  #       401: 
-  #         description: "Não autorizado"
-  #       404: 
-  #         description: "Nenhum registro encontrado para essa solicitação."
+  /accounts/{accountId}/extracts:
+    get: 
+      tags: 
+      - "Extrato"
+      summary: "Lista os extratos de uma conta por período"
+      parameters:
+        - 
+          name: "access_token"
+          in: "header"
+          description: "access_token capturado no login"
+          required: true
+          type: "string"
+        - 
+          name: "client_id"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
+        - 
+          name: "accountId"
+          in: "path"
+          description: "ID da conta"
+          required: true
+          type: "integer"
+        - 
+          name: "initialDate"
+          in: "query"
+          description: "Data inicial do período no formato YYYY-MM-DD"
+          required: true
+          type: "string"
+        - 
+          name: "finalDate"
+          in: "query"
+          description: "Data final do período no formato YYYY-MM-DD"
+          required: true
+          type: "string"
+      responses: 
+        200: 
+          description: "Extrato encontrado"
+          schema:
+            $ref: '#/definitions/ExtratoSchema'
+        401: 
+          description: "Não autorizado"
+        404: 
+          description: "Nenhum registro encontrado para essa solicitação."
 
-  # /carriers/{personId}/products/{productId}/accounts: 
-  #   get: 
-  #     tags: 
-  #     - "Extrato"
-  #     summary: "Lista as contas do usuário no produto"
-  #     parameters:
-  #       - 
-  #         name: "Authorization"
-  #         in: "header"
-  #         description: "access_token capturado no login"
-  #         required: true
-  #         type: "string"
-  #       - 
-  #         name: "client_id"
-  #         in: "header"
-  #         description: "client_id"
-  #         required: true
-  #         type: "string"
-  #       - 
-  #         name: "personId"
-  #         in: "path"
-  #         description: "idPessoa"
-  #         required: true
-  #         type: "integer"
-  #       - 
-  #         name: "productId"
-  #         in: "path"
-  #         description: "idProduto"
-  #         required: true
-  #         type: "string"
-  #     responses: 
-  #       200: 
-  #         description: "Extrato encontrado"
-  #         schema:
-  #           $ref: '#/definitions/ExtratoContasProdutoSchema'
-  #       401: 
-  #         description: "Unauthorized"
-  #       404: 
-  #         description: "Nenhum registro encontrado para essa solicitação" 
+  /users/{cpf}/extracts: 
+    get: 
+      tags: 
+      - "Extrato"
+      summary: "Lista o extrato de todas as contas do usuário nos produtos enviados"
+      parameters:
+        - 
+          name: "access_token"
+          in: "header"
+          description: "access_token capturado no login"
+          required: true
+          type: "string"
+        - 
+          name: "client_id"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
+        - 
+          name: "cpf"
+          in: "path"
+          description: "CPF do usuário"
+          required: true
+          type: "string"
+        - 
+          name: "initialDate"
+          in: "query"
+          description: "Data inicial do período no formato YYYY-MM-DD"
+          required: true
+          type: "string"
+        - 
+          name: "finalDate"
+          in: "query"
+          description: "Data final do período no formato YYYY-MM-DD"
+          required: true
+          type: "string"
+        - 
+          name: "productId"
+          in: "query"
+          description: "IDs dos produtos enviados em formato de array"
+          required: true
+          type: "string"
+      responses: 
+        200: 
+          description: "Extrato encontrado"
+          schema:
+            $ref: '#/definitions/ExtratoContasProdutoSchema'
+        401: 
+          description: "Unauthorized"
+        404: 
+          description: "Nenhum registro encontrado para essa solicitação" 
   
   #2fa
+  /users/{cpf}/cards/{cardId}/code:
+    get:
+      tags:
+        - "Two Factor Authentication"
+      summary: "Cadastra código no banco e envia-o para o celular"
+      parameters:
+        - 
+          name: "access_token"
+          in: "header"
+          description: "access_token capturado no login"
+          required: true
+          type: "string"
+        - 
+          name: "client_id"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
+        - 
+          name: "cpf"
+          in: "path"
+          description: "CPF do usuário"
+          required: true
+          type: "string"
+        - 
+          name: "cardId"
+          in: "body"
+          description: "ID do cartão"
+          required: true
+          schema:
+            $ref: '#/definitions/2faCardIdSchema'
+      responses: 
+        201: 
+          description: "Código validador enviado com sucesso para o telefone (XXX) XXXXX-XXXX."
+        401: 
+          description: "Não autorizado"
+        404: 
+          description: "Falha no envio do código de validação." 
+
   # /2fa/{username}: 
   #   get: 
   #     tags: 
@@ -1054,6 +1104,7 @@ paths:
   #         description: "Não autorizado"
   #       404: 
   #         description: "Falha no envio do código de validação."
+
   #PUBLIC KEY
   /publickey:
     get:
@@ -1438,6 +1489,8 @@ definitions:
       flagImpressaoOrigemComercial: 
         type: "string"
       arquivoImpressao: 
+        type: "string"
+      portador:
         type: "string"
   
   CardAlterPasswordSchema:
