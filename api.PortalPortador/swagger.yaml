@@ -269,40 +269,79 @@ paths:
   #       400:
   #         description: "Token inválido"
     
-  # /recharge-bankslip-pdf/{ourNumber}:
-  #   get:   
-  #       tags:
-  #         - "Transaction"        
-  #       summary: "Gera o PDF do boleto registrado"
-  #       parameters:
-  #         - 
-  #           name: "ourNumber"
-  #           in: "path"
-  #           description: "codigo ourNUmber"
-  #           required: true
-  #           type: "integer"
-  #         - 
-  #           name: "Authorization"
-  #           in: "header"
-  #           description: "access_token capturado no login"
-  #           required: true
-  #           type: "string"
-  #         - 
-  #           name: "client_id"
-  #           in: "header"
-  #           description: "client_id"
-  #           required: true
-  #           type: "string"
-  #       responses: 
-  #         200: 
-  #           description: "pdf gerado como Base64"
-  #           schema:
-  #             $ref: '#/definitions/bankslippdfSchema'
-  #         400:
-  #           description: "Número do boleto não encontrado"
-  #         401:
-  #           description: "Unauthorized"
+  /bankslip/{ourNumber}/pdf:
+    get:   
+        tags:
+          - "Transaction"        
+        summary: "Gera o PDF de um boleto já registrado"
+        parameters:
+          - 
+            name: "access_token"
+            in: "header"
+            description: "access_token capturado no login"
+            required: true
+            type: "string"
+          - 
+            name: "client_id"
+            in: "header"
+            description: "client_id"
+            required: true
+            type: "string"
+          - 
+            name: "ourNumber"
+            in: "path"
+            description: "Código nosso número do boleto"
+            required: true
+            type: "integer"
+        responses: 
+          200: 
+            description: "PDF gerado em Base64"
+            schema:
+              $ref: '#/definitions/bankslippdfSchema'
+          400:
+            description: "Número do boleto não encontrado"
+          401:
+            description: "Unauthorized"
 
+  /bankslips/{ourNumber}:
+    get:   
+      tags:
+        - "Transaction"        
+      summary: "Gera o PDF de um boleto já registrado e envia por e-mail"
+      parameters:
+        - 
+          name: "access_token"
+          in: "header"
+          description: "access_token capturado no login"
+          required: true
+          type: "string"
+        - 
+          name: "client_id"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
+        - 
+          name: "ourNumber"
+          in: "path"
+          description: "Código nosso número do boleto"
+          required: true
+          type: "string"
+        - 
+          name: "email"
+          in: "query"
+          description: "E-mail a ser enviado o boleto"
+          required: true
+          type: "string"
+      responses: 
+        200: 
+          description: "PDF enviado com sucesso para o e-mail xxxxxxxxxxxxx@xxxx.com."
+          schema:
+            $ref: '#/definitions/bankslippdfSchema'
+        400:
+          description: "Número do boleto não encontrado"
+        401:
+          description: "Unauthorized"
   # /recharge/bankslip/pdf:
   #   post:
   #     tags:
@@ -346,48 +385,50 @@ paths:
   #         schema:
   #           $ref: '#/definitions/MessageSchema'
 
-  # /recharge/bankslip/register:
-  #   post:
-  #     tags:
-  #       - "Transaction"        
-  #     summary: "Registra um boleto no Banco do Brasil"
-  #     parameters:
-  #       - 
-  #         name: "accountId"
-  #         in: "path"
-  #         description: "accountId"
-  #         required: true
-  #         type: "string"
-  #       - 
-  #         name: "Authorization"
-  #         in: "header"
-  #         description: "access_token capturado no login"
-  #         required: true
-  #         type: "string"
-  #       - 
-  #         name: "client_id"
-  #         in: "header"
-  #         description: "client_id"
-  #         required: true
-  #         type: "string"
-  #       - 
-  #         name: "tokentransaction"
-  #         in: "header"
-  #         description: "Token de transação valido capturado na função 'Valida a senha do cartão'"
-  #         required: true
-  #         type: "string"
-  #       - in: body
-  #         name: banksliregisterSchema
-  #         description: "Parametros para enviar recarga de boleto por email"
-  #         schema:
-  #           $ref: '#/definitions/banksliregisterSchema'
-  #     responses: 
-  #       200: 
-  #         description: “The email was successfully sent”
-  #       400:
-  #         description: “Número do boleto não encontrado.”
-  #         schema:
-  #           $ref: '#/definitions/MessageSchema'
+  /accounts/{accountId}/bankslip:
+    post:
+      tags:
+        - "Transaction"        
+      summary: "Registra um boleto de recarga no Banco do Brasil"
+      parameters:
+        - 
+          name: "accountId"
+          in: "path"
+          description: "accountId"
+          required: true
+          type: "string"
+        - 
+          name: "access_token"
+          in: "header"
+          description: "access_token capturado no login"
+          required: true
+          type: "string"
+        - 
+          name: "client_id"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
+        - 
+          name: "tokentransaction"
+          in: "header"
+          description: "Token de transação valido capturado na função 'Valida a senha do cartão'"
+          required: true
+          type: "string"
+        - in: body
+          name: banksliregisterSchema
+          description: "Parametros para enviar recarga de boleto por email"
+          schema:
+            $ref: '#/definitions/banksliregisterSchema'
+      responses: 
+        201: 
+          description: “OK”
+          schema:
+            $ref: '#/definitions/bankslipRegisterResponseSchema'
+        400:
+          description: “Falha ao gerar boleto de recarga.”
+          schema:
+            $ref: '#/definitions/MessageSchema'
   
 
 
@@ -2317,12 +2358,39 @@ definitions:
   banksliregisterSchema:
     type: "object"
     properties:
-        productId:
-          type: "integer"
-        account:
-          type: "integer"
-        value:
-          type: "integer"
+      productId:
+        type: "integer"
+      cpf:
+        type: "string"
+      value:
+        type: "integer"
+
+  bankslipRegisterResponseSchema:
+    type: "object"
+    properties:
+      titleNumberBb:
+        type: "string"
+      digitableLine:
+        type: "string"
+      numericBarcode:
+        type: "string"
+      codigoCliente:
+        type: "string"
+      numeroContratoCobranca:
+        type: "string"
+      digitableLineFormatted:
+        type: "string"
+      info:
+        type: "object"
+        properties:
+          product:
+            type: "string"
+          cpf:
+            type: "string"
+          account:
+            type: "string"
+          date:
+            type: "string"
 
   #BOLETO
   boletoSchema:
