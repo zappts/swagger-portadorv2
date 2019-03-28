@@ -32,6 +32,8 @@ tags:
   description: "Operações de autocadastro relacionadas a boletos"
 - name: "Comprovantes"
   description: "Serviços relacionados à comprovantes"
+- name: "General"
+  description: "Endpoints de finalidade geral"
 
 paths: 
   #USER
@@ -564,7 +566,15 @@ paths:
             $ref: '#/definitions/MessageSchema'
 
   #ACCOUNTS
-
+  /user/{cpf}/carrossel:
+    get:
+      tags:
+        - "Accounts"
+      summary: "Lista as contas, cartões e transações permitidas ao portador"
+      parameters:
+        -
+          name: "client_id"
+          in: "header"
   # /accounts/{accountId}/cards: 
   #   get: 
   #     tags: 
@@ -1237,6 +1247,40 @@ paths:
           description: "CEP inválido"
         404:
           description: "Endereço não encontrado"
+
+  #FEES
+  /companies/{uri}/fees:
+    get:
+      tags:
+        - "General"
+      summary: "Lista o ID do intermediário, os seus produtos e as transações que podem ocorrer para cada produto e o valor de sua recarga mínima"
+      parameters: 
+        - 
+          name: "client_id"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
+        - 
+          name: "uri"
+          in: "path"
+          description: "Domínio cadastrado para o intermediário"
+          required: true
+          type: "string"
+        - 
+          name: "feeId"
+          in: "query"
+          description: "(ID da tarifa, se enviar o feeId, ele traz somente os produtos que contenham essa tarifa. Se não enviar, ele traz todos os produtos. Tarifas=> 1: PGTO_BOLETO, 2: TED, 3: DOC, 4: RECARGA DE CARTÃO, 5: AUTO CADASTRO, 6: P2P, 7: RECARGA DE CELULAR"
+          required: false
+          type: "integer"
+      responses:
+        200:
+          description: "Produtos listados com sucesso"
+          schema:
+            $ref: '#/definitions/companiesSchema'
+        404:
+          description: "Domínio não encontrado"
+
 
   #Autocadastro
   /bankslips/{ourNumber}/pdf:
@@ -2915,6 +2959,23 @@ definitions:
         type: "string"
       tipoTransferencia:
         type: "string"
+
+  #Fees
+  companiesSchema:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+      taxId:
+        type: "integer"
+      name:
+        type: "string"
+      email:
+        type: "string"
+      phone:
+        type: "integer"
+      products:
+        type: "object"      
 
   #Error
   ErrorSchema:
