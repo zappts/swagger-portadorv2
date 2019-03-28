@@ -30,7 +30,8 @@ tags:
   description: "Operações com chaves"
 - name: "Autocadastro"
   description: "Operações de autocadastro relacionadas a boletos"
-
+- name: "Comprovantes"
+  description: "Serviços relacionados à comprovantes"
 
 paths: 
   #USER
@@ -297,7 +298,7 @@ paths:
           200: 
             description: "PDF gerado em Base64"
             schema:
-              $ref: '#/definitions/bankslippdfSchema'
+              $ref: '#/definitions/bankslipPDFSchema'
           400:
             description: "Número do boleto não encontrado"
           401:
@@ -337,7 +338,7 @@ paths:
         200: 
           description: "PDF enviado com sucesso para o e-mail xxxxxxxxxxxxx@xxxx.com."
           schema:
-            $ref: '#/definitions/bankslippdfSchema'
+            $ref: '#/definitions/bankslipPDFSchema'
         400:
           description: "Número do boleto não encontrado"
         401:
@@ -432,90 +433,135 @@ paths:
   
 
 
-  #BOLETO      
-  # /voucher/{accountId}:
-  #   get:   
-  #     tags:
-  #       - "Boleto"        
-  #     summary: "Retorna boletos do portador"
-  #     parameters: 
-  #       - 
-  #         name: "accountId"
-  #         in: "path"
-  #         description: "accountId"
-  #         required: true
-  #         type: "string"
-  #       - 
-  #         name: "Authorization"
-  #         in: "header"
-  #         description: "access_token capturado no login"
-  #         required: true
-  #         type: "string"
-  #       - 
-  #         name: "client_id"
-  #         in: "header"
-  #         description: "client_id"
-  #         required: true
-  #         type: "string"
-  #       - 
-  #         name: "startdate"
-  #         in: "query"
-  #         description: "startdate (YYYY-MM-DD)"
-  #         required: false
-  #         type: "string"
-  #       - 
-  #         name: "enddate"
-  #         in: "query"
-  #         description: "enddate (YYYY-MM-DD)"
-  #         required: false
-  #         type: "string"
-  #       - 
-  #         name: "tipo"
-  #         in: "query"
-  #         description: "tipo"
-  #         required: false
-  #         type: "number"
-  #     responses: 
-  #       200: 
-  #         description: "retorna lista de boletos do usuário"
-  #         schema:
-  #           $ref: '#/definitions/boletoSchema'
+  #COMPROVANTES      
+  /accounts/{accountId}/vouchers:
+    get:   
+      tags:
+        - "Comprovantes"        
+      summary: "Retorna os comprovantes do portador"
+      parameters: 
+        - 
+          name: "accountId"
+          in: "path"
+          description: "ID da conta"
+          required: true
+          type: "string"
+        - 
+          name: "access_token"
+          in: "header"
+          description: "access_token capturado no login"
+          required: true
+          type: "string"
+        - 
+          name: "client_id"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
+        - 
+          name: "startdate"
+          in: "query"
+          description: "startdate (YYYY-MM-DD)"
+          required: false
+          type: "string"
+        - 
+          name: "enddate"
+          in: "query"
+          description: "enddate (YYYY-MM-DD)"
+          required: false
+          type: "string"
+        - 
+          name: "tipo"
+          in: "query"
+          description: "tipo"
+          required: false
+          type: "number"
+      responses: 
+        200: 
+          description: "Retorna lista de comprovantes do Portador"
+          schema:
+            $ref: '#/definitions/VoucherResponseSchema'
+        404:
+          description: "Nenhum comprovante encontrado."
+          schema:
+            $ref: '#/definitions/MessageSchema'
+    post:   
+      tags:
+        - "Comprovantes"        
+      summary: "Salva um comprovante"
+      parameters: 
+        - 
+          name: "accountId"
+          in: "path"
+          description: "ID da conta"
+          required: true
+          type: "string"
+        - 
+          name: "access_token"
+          in: "header"
+          description: "access_token capturado no login"
+          required: true
+          type: "string"
+        - 
+          name: "client_id"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
+        - in: body
+          name: body
+          description: "Parâmetros de cadastro de comprovante"
+          schema:
+            $ref: '#/definitions/VoucherResponseSchema'
+      responses: 
+        201: 
+          description: "Comprovante cadastrado com sucesso"
+          schema:
+            $ref: '#/definitions/VoucherResponseSchema'
+        404:
+          description: "Nenhum comprovante encontrado."
+          schema:
+            $ref: '#/definitions/MessageSchema'
 
-  # /accounts/{accountId}/voucher/{idVoucher}:
-  #   get:   
-  #     tags:
-  #       - "Boleto"        
-  #     summary: "Retorna boleto específico do portador"
-  #     parameters: 
-  #       - 
-  #         name: "accountId"
-  #         in: "path"
-  #         description: "accountId"
-  #         required: true
-  #         type: "string"
-  #       - 
-  #         name: "idVoucher"
-  #         in: "path"
-  #         description: "id do comprovante (idVoucher)"
-  #         required: true
-  #         type: "string"
-  #       - 
-  #         name: "Authorization"
-  #         in: "header"
-  #         description: "access_token capturado no login"
-  #         required: true
-  #         type: "string"
-  #       - 
-  #         name: "client_id"
-  #         in: "header"
-  #         description: "client_id"
-  #         required: true
-  #         type: "string"
-  #     responses: 
-  #       200: 
-  #         description: "retorna boleto específico do usuário"
-  #         schema:
-  #           $ref: '#/definitions/boletoSchema'
+  /accounts/{accountId}/vouchers/{idVoucher}:
+    get:   
+      tags:
+        - "Comprovantes"        
+      summary: "Retorna o comprovante por ID"
+      parameters: 
+        - 
+          name: "accountId"
+          in: "path"
+          description: "ID da conta"
+          required: true
+          type: "string"
+        - 
+          name: "idVoucher"
+          in: "path"
+          description: "ID do comprovante"
+          required: true
+          type: "string"
+        - 
+          name: "access_token"
+          in: "header"
+          description: "access_token capturado no login"
+          required: true
+          type: "string"
+        - 
+          name: "client_id"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
+      responses: 
+        200: 
+          description: "Retorna o comprovante"
+          schema:
+            $ref: '#/definitions/VoucherResponseSchema'
+        404:
+          description: "Nenhum comprovante encontrado."
+          schema:
+            $ref: '#/definitions/MessageSchema'
 
   #ACCOUNTS
 
@@ -2825,6 +2871,50 @@ definitions:
       nossoNumero:
         type: "string"
 
+  #Comprovantes
+  VoucherResponseSchema:
+    type: "object"
+    properties:
+      id_user:
+        type: "string"
+      idVoucher:
+        type: "string"
+      clienteNome_origem:
+        type: "string"
+      conta_cartao_origem:
+        type: "string"
+      data_hora:
+        type: "string"
+      descricao:
+        type: "string"
+      statusComprovante:
+        type: "string"
+      tipoAcao:
+        type: "string"
+      valorTotal:
+        type: "string"
+      agencia_destinatario:
+        type: "string"
+      autenticacao:
+        type: "string"
+      banco_destinatario:
+        type: "string"
+      conta_destinatario:
+        type: "string"
+      cpf_cnpj_destinatario:
+        type: "string"
+      digitoConta_destinatario:
+        type: "string"
+      favorecido:
+        type: "string"
+      finalidade:
+        type: "string"
+      protocoloId:
+        type: "string"
+      tipoConta_destinatario:
+        type: "string"
+      tipoTransferencia:
+        type: "string"
 
   #Error
   ErrorSchema:
