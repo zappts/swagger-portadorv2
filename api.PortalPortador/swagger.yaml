@@ -833,7 +833,7 @@ paths:
         - 
           name: "Authorization"
           in: "header"
-          description: "client_id"
+          description: "Authorization code para aplicação"
           required: true
           type: "string"
         - 
@@ -842,26 +842,29 @@ paths:
           description: "client_id"
           required: true
           type: "string"
-        - 
+        -
+          name: "grant_type"
+          in: "header"
+          description: "tipo de permissão requirida"
+          required: true
+          type: "string"
+        -
           in: body
           name: LoginSchema
           description: "Parametros de login"
           schema:
             $ref: '#/definitions/LoginSchema'
+      # requestBody:
+      #   description: "Parametros de login"
+      #   content:
+      #     application/json:
+      #       schema:
+      #         $ref: '#/definitions/LoginSchema'
       responses: 
         201: 
           description: "Sucesso no login"
-          headers:
-            access_token:
-              schema:
-                type: string
-              description: access_token.
-            refresh_token:
-              schema:
-                type: string
-              description: refresh_token.
           schema:
-            $ref: '#/definitions/LoginResponseSchema' 
+            $ref: '#/definitions/TokenResponseSchema' 
         401:
           description: "Falha na autenticação. Verifique se os dados foram informados corretamente. / Usuário ou senha incorretos. Você possui mais x tentativas antes do bloqueio de acesso"
         423:
@@ -922,11 +925,6 @@ paths:
         - in: body
           name: alterpassSchema
           description: "Alterar senha esquecida"
-          schema:
-            $ref: '#/definitions/alterpasswithSchema'
-        - in: body
-          name: alterpasswithSchema
-          description: "Alterar senha com senha atual"
           schema:
             $ref: '#/definitions/alterpassSchema'
       responses: 
@@ -1147,11 +1145,10 @@ paths:
           type: "string"
         - 
           name: "cardId"
-          in: "body"
+          in: "path"
           description: "ID do cartão"
           required: true
-          schema:
-            $ref: '#/definitions/2faCardIdSchema'
+          type: "string"
       responses: 
         201: 
           description: "Código validador enviado com sucesso para o telefone (XXX) XXXXX-XXXX."
@@ -1592,6 +1589,10 @@ definitions:
       new_password: 
         type: "string"
       password: 
+        type: "string"
+      randomCode: 
+        type: "string"
+      username: 
         type: "string"
   
   alterpasswithSchema:
@@ -2098,6 +2099,19 @@ definitions:
         type: "string"
       password:
         type: "string"
+  TokenResponseSchema:
+    type: "object"
+    properties:
+      first_access:
+        type: "string"
+      access_token:
+        type: "string"
+      expires_in:
+        type: "integer"
+      refresh_token:
+        type: "string"
+      token_type:
+        type: "string"
   LoginResponseSchema:
     type: "object"
     properties:
@@ -2544,7 +2558,7 @@ definitions:
 
   #BOLETO
   boletoSchema:
-    type: "objetc"
+    type: "object"
     properties:
       valorTotal:
         type: "string"
@@ -2604,17 +2618,17 @@ definitions:
       formaEnvioFatura:
         type: "string"
       titular:
-        type: "bolean"
+        type: "boolean"
       limiteGlobal: 
         type: "integer"
       limiteSaqueGlobal:
         type: "integer"
       saldoDisponivelGlobal:
-        type: "float"
+        type: "number"
       saldoDisponivelSaque:
-        type: "float"
+        type: "number"
       impedidoFinanciamento:
-        type: "bolean"
+        type: "boolean"
       diasAtraso:
         type: "integer"
       proximoVencimentoPadrao: 
@@ -2733,7 +2747,7 @@ definitions:
       nomeFantasiaBasica: 
         type: "string"
       idStatusConta: 
-        type: integer
+        type: "integer"
       statusConta: 
         type: "string"
       diaVencimento: 
@@ -2753,21 +2767,21 @@ definitions:
       numeroContaCorrente: 
         type: "string"
       valorRenda: 
-        type: "float"
+        type: "number"
       formaEnvioFatura: 
         type: "string"
       titular: 
-        type: "bolean"
+        type: "boolean"
       limiteGlobal: 
         type: "integer"
       limiteSaqueGlobal: 
         type: "integer"
       saldoDisponivelGlobal: 
-        type: "float"
+        type: "number"
       saldoDisponivelSaque: 
         type: "integer"
       impedidoFinanciamento: 
-        type: "Bolean"
+        type: "boolean"
       diasAtraso: 
         type: "integer"
       proximoVencimentoPadrao: 
@@ -2781,13 +2795,13 @@ definitions:
       dataInicioAtraso: 
         type: "string"
       rotativoPagaJuros: 
-        type: "float"
+        type: "number"
       totalPosProx: 
-        type: "float"
+        type: "number"
       saldoAtualFinal: 
-        type: "float"
+        type: "number"
       saldoExtratoAnterior: 
-        type: "float"
+        type: "number"
       aceitaNovaContaPorGrupoProduto: 
         type: "string"
       funcaoAtiva: 
