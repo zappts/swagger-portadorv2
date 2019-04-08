@@ -52,7 +52,7 @@ paths:
         - 
           name: "access_token"
           in: "header"
-          description: "access_token capturado no login"
+          description: "access_token capturado no oauth/token"
           required: true
           type: "string"
         - 
@@ -123,7 +123,7 @@ paths:
         - 
           name: "Authorization"
           in: "header"
-          description: "access_token capturado no login"
+          description: "access_token capturado no oauth/token"
           required: true
           type: "string"
         - 
@@ -164,7 +164,7 @@ paths:
         - 
           name: "Authorization"
           in: "header"
-          description: "access_token capturado no login"
+          description: "access_token capturado no oauth/token"
           required: true
           type: "string"
         - 
@@ -205,7 +205,7 @@ paths:
         - 
           name: "Authorization"
           in: "header"
-          description: "access_token capturado no login"
+          description: "access_token capturado no oauth/token"
           required: true
           type: "string"
         - 
@@ -246,7 +246,7 @@ paths:
         - 
           name: "Authorization"
           in: "header"
-          description: "access_token capturado no login"
+          description: "access_token capturado no oauth/token"
           required: true
           type: "string"
         - 
@@ -281,7 +281,7 @@ paths:
           - 
             name: "access_token"
             in: "header"
-            description: "access_token capturado no login"
+            description: "access_token capturado no oauth/token"
             required: true
             type: "string"
           - 
@@ -315,7 +315,7 @@ paths:
         - 
           name: "access_token"
           in: "header"
-          description: "access_token capturado no login"
+          description: "access_token capturado no oauth/token"
           required: true
           type: "string"
         - 
@@ -360,7 +360,7 @@ paths:
   #       - 
   #         name: "Authorization"
   #         in: "header"
-  #         description: "access_token capturado no login"
+  #         description: "access_token capturado no oauth/token"
   #         required: true
   #         type: "string"
   #       - 
@@ -403,7 +403,7 @@ paths:
         - 
           name: "access_token"
           in: "header"
-          description: "access_token capturado no login"
+          description: "access_token capturado no oauth/token"
           required: true
           type: "string"
         - 
@@ -451,7 +451,7 @@ paths:
         - 
           name: "access_token"
           in: "header"
-          description: "access_token capturado no login"
+          description: "access_token capturado no oauth/token"
           required: true
           type: "string"
         - 
@@ -501,7 +501,7 @@ paths:
         - 
           name: "access_token"
           in: "header"
-          description: "access_token capturado no login"
+          description: "access_token capturado no oauth/token"
           required: true
           type: "string"
         - 
@@ -546,7 +546,7 @@ paths:
         - 
           name: "access_token"
           in: "header"
-          description: "access_token capturado no login"
+          description: "access_token capturado no oauth/token"
           required: true
           type: "string"
         - 
@@ -575,20 +575,33 @@ paths:
         -
           name: "client_id"
           in: "header"
+          description: "client_id"
           type: "string"
           required: true
+        - 
+          name: "Authorization"
+          in: "header"
+          description: "access_token capturado no oauth/token"
+          required: true
+          type: "string"
         -
           name: "cpf"
           in: "path"
+          description: "cpf do portador"
           type: "string"
+          required: true
         -
           name: "idProdutos"
           in: "query"
-          required: true
+          description: "array com ids dos produtos desejados"
+          type: "array"
+          items:
+            type: "integer"
       responses:
         200:
           description: "Lista dados encontrados"
           schema: 
+            $ref: '#/definitions/carrosselSchema'
   # /accounts/{accountId}/cards: 
   #   get: 
   #     tags: 
@@ -604,7 +617,7 @@ paths:
   #       - 
   #         name: "Authorization"
   #         in: "header"
-  #         description: "access_token capturado no login"
+  #         description: "access_token capturado no oauth/token"
   #         required: true
   #         type: "string"
   #       - 
@@ -638,7 +651,7 @@ paths:
   #       - 
   #         name: "Authorization"
   #         in: "header"
-  #         description: "access_token capturado no login"
+  #         description: "access_token capturado no oauth/token"
   #         required: true
   #         type: "string"
   #       - 
@@ -666,7 +679,7 @@ paths:
         - 
           name: "access_token"
           in: "header"
-          description: "access_token capturado no login"
+          description: "access_token capturado no oauth/token"
           required: true
           type: "string"
         - 
@@ -788,7 +801,7 @@ paths:
           - 
             name: "Authorization"
             in: "header"
-            description: "access_token capturado no login"
+            description: "access_token capturado no oauth/token"
             required: true
             type: "string"
           - 
@@ -811,19 +824,26 @@ paths:
           400:
             description: "Código de verificação inválido / Falha ao resetar a senha / A senha não atende aos requisitos mínimos. Ela deve possuir ao menos 1 letra minúscula, 1 letra maiúscula, 1 número e 1 caracter especial."
 
-  /oauth/login: 
+  /oauth/token: 
     post: 
       tags: 
       - "OAuth"
       summary: "Login do portador"
       parameters: 
         - 
+          name: "Authorization"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
+        - 
           name: "client_id"
           in: "header"
           description: "client_id"
           required: true
           type: "string"
-        - in: body
+        - 
+          in: body
           name: LoginSchema
           description: "Parametros de login"
           schema:
@@ -884,7 +904,7 @@ paths:
         - 
           name: "access_token"
           in: "header"
-          description: "access_token capturado no login"
+          description: "access_token capturado no oauth/token"
           required: true
           type: "string"
         - 
@@ -926,7 +946,7 @@ paths:
         - 
           name: "access_token"
           in: "header"
-          description: "access_token capturado no login"
+          description: "access_token capturado no oauth/token"
           required: true
           type: "string"
         - 
@@ -966,7 +986,7 @@ paths:
         - 
           name: "access_token"
           in: "header"
-          description: "access_token capturado no login"
+          description: "access_token capturado no oauth/token"
           required: true
           type: "string"
         - 
@@ -1011,7 +1031,7 @@ paths:
         - 
           name: "access_token"
           in: "header"
-          description: "access_token capturado no login"
+          description: "access_token capturado no oauth/token"
           required: true
           type: "string"
         - 
@@ -1057,7 +1077,7 @@ paths:
         - 
           name: "access_token"
           in: "header"
-          description: "access_token capturado no login"
+          description: "access_token capturado no oauth/token"
           required: true
           type: "string"
         - 
@@ -1110,7 +1130,7 @@ paths:
         - 
           name: "access_token"
           in: "header"
-          description: "access_token capturado no login"
+          description: "access_token capturado no oauth/token"
           required: true
           type: "string"
         - 
@@ -1149,7 +1169,7 @@ paths:
   #       - 
   #         name: "Authorization"
   #         in: "header"
-  #         description: "access_token capturado no login"
+  #         description: "access_token capturado no oauth/token"
   #         required: true
   #         type: "string"
   #       - 
@@ -1186,7 +1206,7 @@ paths:
   #       - 
   #         name: "Authorization"
   #         in: "header"
-  #         description: "access_token capturado no login"
+  #         description: "access_token capturado no oauth/token"
   #         required: true
   #         type: "string"
   #       - 
@@ -2999,6 +3019,52 @@ definitions:
         type: "string"
       tipoTransferencia:
         type: "string"
+
+#Carrossel
+  carrosselSchema:
+    type: "array"
+    items:
+      type: "object"
+      properties:
+        idConta: 
+          type: "integer"
+        idPessoa:
+          type: "integer"
+        idProduto:
+          type: "integer"
+        saldoDisponivelGlobal:
+          type: "number"
+        taxas:
+          type: "array"
+          items:
+            type: "object"
+            properties:
+              id:      
+                type: "integer"
+              description:
+                type: "string"
+              value:
+                type: "number"
+                format: "float"
+              isBanking:
+                type: "boolean"
+        cartoes:
+          type: "array"
+          items:
+            type: "object"
+            properties:
+              dataValidade:
+                type: "string"
+              nomeImpresso:
+                type: "string"
+              numeroCartao:
+                type: "string"
+              idStatus:      
+                type: "integer"
+              idCartao:      
+                type: "integer"
+              idStatusCartao:      
+                type: "integer"
 
 #Companies
   companiesSchema:
