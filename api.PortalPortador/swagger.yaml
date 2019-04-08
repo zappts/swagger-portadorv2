@@ -3,8 +3,8 @@ info:
   description: "Pré-Pago API"
   version: "2.0.0"
   title: "Pré-Pago Portador"
-host: api-cateno.sensedia.com/dev/prepaid-holder
-basePath: "/v2"
+host: "api-cateno.sensedia.com"
+basePath: "/dev/prepaid-holder/v2"
 schemes:
   - https
 tags:
@@ -66,7 +66,7 @@ paths:
           in: "path"
           description: "cpf"
           required: true
-          type: "Number"
+          type: "number"
       responses: 
           200: 
             description: "Dados do usuario {cpf}"  
@@ -575,6 +575,20 @@ paths:
         -
           name: "client_id"
           in: "header"
+          type: "string"
+          required: true
+        -
+          name: "cpf"
+          in: "path"
+          type: "string"
+        -
+          name: "idProdutos"
+          in: "query"
+          required: true
+      responses:
+        200:
+          description: "Lista dados encontrados"
+          schema: 
   # /accounts/{accountId}/cards: 
   #   get: 
   #     tags: 
@@ -2985,6 +2999,24 @@ definitions:
         type: "string"
       tipoTransferencia:
         type: "string"
+
+#Companies
+  companiesSchema:
+    type: "object"
+    properties:
+      idCompany: 
+        type: "integer"
+      template:
+        type: "string"
+      products:
+        type: "array"
+        items:
+          type: "object"
+          properties:
+            idProduct:      
+              type: "integer"
+            name:
+              type: "string"
 
   #Fees
   companiesFeesSchema:
