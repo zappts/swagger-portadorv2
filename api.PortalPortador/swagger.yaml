@@ -37,7 +37,7 @@ tags:
 
 paths: 
   #USER
-  /user/{cpf}: 
+  /users/{cpf}: 
     get: 
       tags: 
         - "User"
@@ -56,11 +56,17 @@ paths:
           required: true
           type: "string"
         - 
-          name: "productId"
+          name: "productIds"
           in: "query"
-          description: "productId"
+          description: "array de productIds"
           required: true
-          type: "string"
+          type: "array"
+        - 
+          name: "productIds"
+          in: "query"
+          description: "array de productIds"
+          required: true
+          type: "array"
         - 
           name: "cpf"
           in: "path"
@@ -763,9 +769,7 @@ paths:
         200: 
           description: "Uma nova senha foi enviada para xxx"
           schema:
-            $ref: '#/definitions/MessageSchema'
-        400:
-          description: "Você ainda está com senha temporária, para continuar você precisará de uma nova. Favor voltar ao início do portal e solicitar um novo cadastro de acesso para receber uma nova senha."   
+            $ref: '#/definitions/GetPasswordSchema' 
 
     post:
       tags: 
@@ -3121,3 +3125,12 @@ definitions:
     properties:
       message:
         type: "string"
+
+  #Password
+  GetPasswordSchema:
+    type: "object"
+    properties:
+      message:
+        type: "string"
+      isTemporaryPassword:
+        type: "boolean"
