@@ -3,8 +3,8 @@ info:
   description: "Pré-Pago API"
   version: "2.0.0"
   title: "Pré-Pago Portador"
-host: api-cateno.sensedia.com/dev/prepaid-holder
-basePath: "/v2"
+host: "api-cateno.sensedia.com"
+basePath: "/dev/prepaid-holder/v2"
 schemes:
   - https
 tags:
@@ -37,7 +37,7 @@ tags:
 
 paths: 
   #USER
-  /user/{cpf}: 
+  /users/{cpf}: 
     get: 
       tags: 
         - "User"
@@ -52,21 +52,27 @@ paths:
         - 
           name: "access_token"
           in: "header"
-          description: "access_token capturado no login"
+          description: "access_token capturado no oauth/token"
           required: true
           type: "string"
         - 
-          name: "productId"
+          name: "productIds"
           in: "query"
-          description: "productId"
+          description: "array de productIds"
           required: true
-          type: "string"
+          type: "array"
+        - 
+          name: "productIds"
+          in: "query"
+          description: "array de productIds"
+          required: true
+          type: "array"
         - 
           name: "cpf"
           in: "path"
           description: "cpf"
           required: true
-          type: "Number"
+          type: "number"
       responses: 
           200: 
             description: "Dados do usuario {cpf}"  
@@ -108,169 +114,169 @@ paths:
             description: "Usuário não possui cartão pré-pago ativo"  
 
   #TRANSACTION            
-  # /accounts/{accountId}/transactions/p2p:
-  #   post:   
-  #     tags:
-  #       - "Transaction"        
-  #     summary: "Realiza transação entre constas de portador"
-  #     parameters:
-  #       - 
-  #         name: "accountId"
-  #         in: "path"
-  #         description: "accountId"
-  #         required: true
-  #         type: "string"
-  #       - 
-  #         name: "Authorization"
-  #         in: "header"
-  #         description: "access_token capturado no login"
-  #         required: true
-  #         type: "string"
-  #       - 
-  #         name: "client_id"
-  #         in: "header"
-  #         description: "client_id"
-  #         required: true
-  #         type: "string"
-  #       - 
-  #         name: "tokentransaction"
-  #         in: "header"
-  #         description: "Token de transação valido capturado na função 'Valida a senha do cartão'"
-  #         required: true
-  #         type: "string"
-  #       - in: body
-  #         name: p2pSchema
-  #         description: "Parametros para transação P2P"
-  #         schema:
-  #           $ref: '#/definitions/p2pSchema'
-  #     responses: 
-  #       200: 
-  #         description: "Operaçao realizada com sucesso. Gerando comprovantes"
-  #       400:
-  #         description: "Token inválido"
+  /accounts/{accountId}/p2p:
+    post:   
+      tags:
+        - "Transaction"        
+      summary: "Realiza transação entre constas de portador"
+      parameters:
+        - 
+          name: "accountId"
+          in: "path"
+          description: "accountId"
+          required: true
+          type: "string"
+        - 
+          name: "Authorization"
+          in: "header"
+          description: "access_token capturado no oauth/token"
+          required: true
+          type: "string"
+        - 
+          name: "client_id"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
+        - 
+          name: "tokentransaction"
+          in: "header"
+          description: "Token de transação valido capturado na função 'Valida a senha do cartão'"
+          required: true
+          type: "string"
+        - in: body
+          name: p2pSchema
+          description: "Parametros para transação P2P"
+          schema:
+            $ref: '#/definitions/p2pSchema'
+      responses: 
+        200: 
+          description: "Operaçao realizada com sucesso. Gerando comprovantes"
+        400:
+          description: "Token inválido"
       
-  # /accounts/{accountId}/transactions/transfer:
-  #   post:   
-  #     tags:
-  #       - "Transaction"        
-  #     summary: "Realiza transação entre consta portador e outro banco"
-  #     parameters:
-  #       - 
-  #         name: "accountId"
-  #         in: "path"
-  #         description: "accountId"
-  #         required: true
-  #         type: "string"
-  #       - 
-  #         name: "Authorization"
-  #         in: "header"
-  #         description: "access_token capturado no login"
-  #         required: true
-  #         type: "string"
-  #       - 
-  #         name: "client_id"
-  #         in: "header"
-  #         description: "client_id"
-  #         required: true
-  #         type: "string"
-  #       - 
-  #         name: "tokentransaction"
-  #         in: "header"
-  #         description: "Token de transação valido capturado na função 'Valida a senha do cartão'"
-  #         required: true
-  #         type: "string"
-  #       - in: body
-  #         name: transferSchema
-  #         description: "Parametros para transação entre bancos"
-  #         schema:
-  #           $ref: '#/definitions/transferSchema'
-  #     responses: 
-  #       200: 
-  #         description: "Operaçao realizada com sucesso. Gerando comprovantes"
-  #       400:
-  #         description: "Token inválido" 
+  /accounts/{accountId}/transfer:
+    post:   
+      tags:
+        - "Transaction"        
+      summary: "Realiza transação entre consta portador e outro banco"
+      parameters:
+        - 
+          name: "accountId"
+          in: "path"
+          description: "accountId"
+          required: true
+          type: "string"
+        - 
+          name: "Authorization"
+          in: "header"
+          description: "access_token capturado no oauth/token"
+          required: true
+          type: "string"
+        - 
+          name: "client_id"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
+        - 
+          name: "tokentransaction"
+          in: "header"
+          description: "Token de transação valido capturado na função 'Valida a senha do cartão'"
+          required: true
+          type: "string"
+        - in: body
+          name: transferSchema
+          description: "Parametros para transação entre bancos"
+          schema:
+            $ref: '#/definitions/transferSchema'
+      responses: 
+        200: 
+          description: "Operaçao realizada com sucesso. Gerando comprovantes"
+        400:
+          description: "Token inválido" 
       
-  # /accounts/{accountId}/transactions/recharge-cell:
-  #   post:   
-  #     tags:
-  #       - "Transaction"        
-  #     summary: "Realiza recarga de celular"
-  #     parameters: 
-  #       - 
-  #         name: "accountId"
-  #         in: "path"
-  #         description: "accountId"
-  #         required: true
-  #         type: "string"
-  #       - 
-  #         name: "Authorization"
-  #         in: "header"
-  #         description: "access_token capturado no login"
-  #         required: true
-  #         type: "string"
-  #       - 
-  #         name: "client_id"
-  #         in: "header"
-  #         description: "client_id"
-  #         required: true
-  #         type: "string"
-  #       - 
-  #         name: "tokentransaction"
-  #         in: "header"
-  #         description: "Token de transação valido capturado na função 'Valida a senha do cartão'"
-  #         required: true
-  #         type: "string"
-  #       - in: body
-  #         name: rechargeCellSchema
-  #         description: "Parametros para recarga de celular"
-  #         schema:
-  #           $ref: '#/definitions/rechargeCellSchema'
-  #     responses: 
-  #       200: 
-  #         description: "Operaçao realizada com sucesso. Gerando comprovantes"
-  #       400:
-  #         description: "Token inválido"
+  /accounts/{accountId}/recharge-cell:
+    post:   
+      tags:
+        - "Transaction"        
+      summary: "Realiza recarga de celular"
+      parameters: 
+        - 
+          name: "accountId"
+          in: "path"
+          description: "accountId"
+          required: true
+          type: "string"
+        - 
+          name: "Authorization"
+          in: "header"
+          description: "access_token capturado no oauth/token"
+          required: true
+          type: "string"
+        - 
+          name: "client_id"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
+        - 
+          name: "tokentransaction"
+          in: "header"
+          description: "Token de transação valido capturado na função 'Valida a senha do cartão'"
+          required: true
+          type: "string"
+        - in: body
+          name: rechargeCellSchema
+          description: "Parametros para recarga de celular"
+          schema:
+            $ref: '#/definitions/rechargeCellSchema'
+      responses: 
+        200: 
+          description: "Operaçao realizada com sucesso. Gerando comprovantes"
+        400:
+          description: "Token inválido"
     
-  # /accounts/{accountId}/transactions/bill-payment:
-  #   post:   
-  #     tags:
-  #       - "Transaction"        
-  #     summary: "Realiza pagamento de boleto"
-  #     parameters:
-  #       - 
-  #         name: "accountId"
-  #         in: "path"
-  #         description: "accountId"
-  #         required: true
-  #         type: "string"
-  #       - 
-  #         name: "Authorization"
-  #         in: "header"
-  #         description: "access_token capturado no login"
-  #         required: true
-  #         type: "string"
-  #       - 
-  #         name: "client_id"
-  #         in: "header"
-  #         description: "client_id"
-  #         required: true
-  #         type: "string"
-  #       - 
-  #         name: "tokentransaction"
-  #         in: "header"
-  #         description: "Token de transação valido capturado na função 'Valida a senha do cartão'"
-  #         required: true
-  #         type: "string"
-  #       - in: body
-  #         name: billPaymentSchema
-  #         description: "Parametros para pagamento de boleto"
-  #         schema:
-  #           $ref: '#/definitions/billPaymentSchema'
-  #     responses: 
-  #       200: 
-  #         description: "Operaçao realizada com sucesso. Gerando comprovantes"
-  #       400:
-  #         description: "Token inválido"
+  /accounts/{accountId}/bankslip-payment:
+    post:   
+      tags:
+        - "Transaction"        
+      summary: "Realiza pagamento de boleto"
+      parameters:
+        - 
+          name: "accountId"
+          in: "path"
+          description: "accountId"
+          required: true
+          type: "string"
+        - 
+          name: "Authorization"
+          in: "header"
+          description: "access_token capturado no oauth/token"
+          required: true
+          type: "string"
+        - 
+          name: "client_id"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
+        - 
+          name: "tokentransaction"
+          in: "header"
+          description: "Token de transação valido capturado na função 'Valida a senha do cartão'"
+          required: true
+          type: "string"
+        - in: body
+          name: billPaymentSchema
+          description: "Parametros para pagamento de boleto"
+          schema:
+            $ref: '#/definitions/billPaymentSchema'
+      responses: 
+        200: 
+          description: "Operaçao realizada com sucesso. Gerando comprovantes"
+        400:
+          description: "Token inválido"
     
   /bankslip/{ourNumber}/pdf:
     get:   
@@ -281,7 +287,7 @@ paths:
           - 
             name: "access_token"
             in: "header"
-            description: "access_token capturado no login"
+            description: "access_token capturado no oauth/token"
             required: true
             type: "string"
           - 
@@ -306,7 +312,7 @@ paths:
           401:
             description: "Unauthorized"
 
-  /bankslips/{ourNumber}:
+  /bankslips/{ourNumber}/recharge:
     get:   
       tags:
         - "Transaction"        
@@ -315,7 +321,7 @@ paths:
         - 
           name: "access_token"
           in: "header"
-          description: "access_token capturado no login"
+          description: "access_token capturado no oauth/token"
           required: true
           type: "string"
         - 
@@ -360,7 +366,7 @@ paths:
   #       - 
   #         name: "Authorization"
   #         in: "header"
-  #         description: "access_token capturado no login"
+  #         description: "access_token capturado no oauth/token"
   #         required: true
   #         type: "string"
   #       - 
@@ -403,7 +409,7 @@ paths:
         - 
           name: "access_token"
           in: "header"
-          description: "access_token capturado no login"
+          description: "access_token capturado no oauth/token"
           required: true
           type: "string"
         - 
@@ -451,7 +457,7 @@ paths:
         - 
           name: "access_token"
           in: "header"
-          description: "access_token capturado no login"
+          description: "access_token capturado no oauth/token"
           required: true
           type: "string"
         - 
@@ -501,7 +507,7 @@ paths:
         - 
           name: "access_token"
           in: "header"
-          description: "access_token capturado no login"
+          description: "access_token capturado no oauth/token"
           required: true
           type: "string"
         - 
@@ -546,7 +552,7 @@ paths:
         - 
           name: "access_token"
           in: "header"
-          description: "access_token capturado no login"
+          description: "access_token capturado no oauth/token"
           required: true
           type: "string"
         - 
@@ -566,7 +572,7 @@ paths:
             $ref: '#/definitions/MessageSchema'
 
   #ACCOUNTS
-  /user/{cpf}/carrossel:
+  /users/{cpf}/carrossel:
     get:
       tags:
         - "Accounts"
@@ -575,6 +581,33 @@ paths:
         -
           name: "client_id"
           in: "header"
+          description: "client_id"
+          type: "string"
+          required: true
+        - 
+          name: "Authorization"
+          in: "header"
+          description: "access_token capturado no oauth/token"
+          required: true
+          type: "string"
+        -
+          name: "cpf"
+          in: "path"
+          description: "cpf do portador"
+          type: "string"
+          required: true
+        -
+          name: "idProdutos"
+          in: "query"
+          description: "array com ids dos produtos desejados"
+          type: "array"
+          items:
+            type: "integer"
+      responses:
+        200:
+          description: "Lista dados encontrados"
+          schema: 
+            $ref: '#/definitions/carrosselSchema'
   # /accounts/{accountId}/cards: 
   #   get: 
   #     tags: 
@@ -590,7 +623,7 @@ paths:
   #       - 
   #         name: "Authorization"
   #         in: "header"
-  #         description: "access_token capturado no login"
+  #         description: "access_token capturado no oauth/token"
   #         required: true
   #         type: "string"
   #       - 
@@ -624,7 +657,7 @@ paths:
   #       - 
   #         name: "Authorization"
   #         in: "header"
-  #         description: "access_token capturado no login"
+  #         description: "access_token capturado no oauth/token"
   #         required: true
   #         type: "string"
   #       - 
@@ -652,7 +685,7 @@ paths:
         - 
           name: "access_token"
           in: "header"
-          description: "access_token capturado no login"
+          description: "access_token capturado no oauth/token"
           required: true
           type: "string"
         - 
@@ -736,9 +769,7 @@ paths:
         200: 
           description: "Uma nova senha foi enviada para xxx"
           schema:
-            $ref: '#/definitions/MessageSchema'
-        400:
-          description: "Você ainda está com senha temporária, para continuar você precisará de uma nova. Favor voltar ao início do portal e solicitar um novo cadastro de acesso para receber uma nova senha."   
+            $ref: '#/definitions/GetPasswordSchema' 
 
     post:
       tags: 
@@ -774,7 +805,7 @@ paths:
           - 
             name: "Authorization"
             in: "header"
-            description: "access_token capturado no login"
+            description: "access_token capturado no oauth/token"
             required: true
             type: "string"
           - 
@@ -797,37 +828,47 @@ paths:
           400:
             description: "Código de verificação inválido / Falha ao resetar a senha / A senha não atende aos requisitos mínimos. Ela deve possuir ao menos 1 letra minúscula, 1 letra maiúscula, 1 número e 1 caracter especial."
 
-  /oauth/login: 
+  /oauth/token: 
     post: 
       tags: 
       - "OAuth"
       summary: "Login do portador"
       parameters: 
         - 
+          name: "Authorization"
+          in: "header"
+          description: "Authorization code para aplicação"
+          required: true
+          type: "string"
+        - 
           name: "client_id"
           in: "header"
           description: "client_id"
           required: true
           type: "string"
-        - in: body
+        -
+          name: "grant_type"
+          in: "header"
+          description: "tipo de permissão requirida"
+          required: true
+          type: "string"
+        -
+          in: body
           name: LoginSchema
           description: "Parametros de login"
           schema:
             $ref: '#/definitions/LoginSchema'
+      # requestBody:
+      #   description: "Parametros de login"
+      #   content:
+      #     application/json:
+      #       schema:
+      #         $ref: '#/definitions/LoginSchema'
       responses: 
         201: 
           description: "Sucesso no login"
-          headers:
-            access_token:
-              schema:
-                type: string
-              description: access_token.
-            refresh_token:
-              schema:
-                type: string
-              description: refresh_token.
           schema:
-            $ref: '#/definitions/LoginResponseSchema' 
+            $ref: '#/definitions/TokenResponseSchema' 
         401:
           description: "Falha na autenticação. Verifique se os dados foram informados corretamente. / Usuário ou senha incorretos. Você possui mais x tentativas antes do bloqueio de acesso"
         423:
@@ -870,7 +911,7 @@ paths:
         - 
           name: "access_token"
           in: "header"
-          description: "access_token capturado no login"
+          description: "access_token capturado no oauth/token"
           required: true
           type: "string"
         - 
@@ -888,11 +929,6 @@ paths:
         - in: body
           name: alterpassSchema
           description: "Alterar senha esquecida"
-          schema:
-            $ref: '#/definitions/alterpasswithSchema'
-        - in: body
-          name: alterpasswithSchema
-          description: "Alterar senha com senha atual"
           schema:
             $ref: '#/definitions/alterpassSchema'
       responses: 
@@ -912,7 +948,7 @@ paths:
         - 
           name: "access_token"
           in: "header"
-          description: "access_token capturado no login"
+          description: "access_token capturado no oauth/token"
           required: true
           type: "string"
         - 
@@ -950,7 +986,7 @@ paths:
           description: "Falha no envio do código de validação."
 
   /accounts/{accountId}/cards/{cardId}/status: 
-    post: 
+    put: 
       tags: 
       - "Cards"
       summary: "Altera o status do cartão"
@@ -958,7 +994,7 @@ paths:
         - 
           name: "access_token"
           in: "header"
-          description: "access_token capturado no login"
+          description: "access_token capturado no oauth/token"
           required: true
           type: "string"
         - 
@@ -1003,7 +1039,7 @@ paths:
         - 
           name: "access_token"
           in: "header"
-          description: "access_token capturado no login"
+          description: "access_token capturado no oauth/token"
           required: true
           type: "string"
         - 
@@ -1049,7 +1085,7 @@ paths:
         - 
           name: "access_token"
           in: "header"
-          description: "access_token capturado no login"
+          description: "access_token capturado no oauth/token"
           required: true
           type: "string"
         - 
@@ -1102,7 +1138,7 @@ paths:
         - 
           name: "access_token"
           in: "header"
-          description: "access_token capturado no login"
+          description: "access_token capturado no oauth/token"
           required: true
           type: "string"
         - 
@@ -1119,11 +1155,10 @@ paths:
           type: "string"
         - 
           name: "cardId"
-          in: "body"
+          in: "path"
           description: "ID do cartão"
           required: true
-          schema:
-            $ref: '#/definitions/2faCardIdSchema'
+          type: "string"
       responses: 
         201: 
           description: "Código validador enviado com sucesso para o telefone (XXX) XXXXX-XXXX."
@@ -1141,7 +1176,7 @@ paths:
   #       - 
   #         name: "Authorization"
   #         in: "header"
-  #         description: "access_token capturado no login"
+  #         description: "access_token capturado no oauth/token"
   #         required: true
   #         type: "string"
   #       - 
@@ -1178,7 +1213,7 @@ paths:
   #       - 
   #         name: "Authorization"
   #         in: "header"
-  #         description: "access_token capturado no login"
+  #         description: "access_token capturado no oauth/token"
   #         required: true
   #         type: "string"
   #       - 
@@ -1209,7 +1244,7 @@ paths:
   #         description: "Falha no envio do código de validação."
 
   #PUBLIC KEY
-  /publickey:
+  /key:
     get:
       tags:
         - "Keys"
@@ -1226,7 +1261,7 @@ paths:
           description: "Retorna a chave pública"
   
   #CEP
-  /adresses{cep}:
+  /adresses/{cep}:
     get:
       tags:
         - "CEP"
@@ -1253,6 +1288,33 @@ paths:
           description: "CEP inválido"
         404:
           description: "Endereço não encontrado"
+
+  #COMPANIES
+  /companies/{uri}:
+    get:
+      tags:
+        - "General"
+      summary: "Lista template e detalhes do intermediário"
+      parameters: 
+        - 
+          name: "client_id"
+          in: "header"
+          description: "client_id"
+          required: true
+          type: "string"
+        - 
+          name: "uri"
+          in: "path"
+          description: "Domínio cadastrado para o intermediário"
+          required: true
+          type: "string"
+      responses:
+        200:
+          description: "Produtos listados com sucesso"
+          schema:
+            $ref: '#/definitions/companiesSchema'
+        404:
+          description: "Domínio não encontrado"
 
   #FEES
   /companies/{uri}/fees:
@@ -1283,13 +1345,12 @@ paths:
         200:
           description: "Produtos listados com sucesso"
           schema:
-            $ref: '#/definitions/companiesSchema'
+            $ref: '#/definitions/companiesFeesSchema'
         404:
           description: "Domínio não encontrado"
 
-
   #Autocadastro
-  /bankslips/{ourNumber}/pdf:
+  /bankslips/{ourNumber}/register:
     get:
       tags:
         - "Autocadastro"
@@ -1538,6 +1599,10 @@ definitions:
       new_password: 
         type: "string"
       password: 
+        type: "string"
+      randomCode: 
+        type: "string"
+      username: 
         type: "string"
   
   alterpasswithSchema:
@@ -2044,6 +2109,19 @@ definitions:
         type: "string"
       password:
         type: "string"
+  TokenResponseSchema:
+    type: "object"
+    properties:
+      first_access:
+        type: "string"
+      access_token:
+        type: "string"
+      expires_in:
+        type: "integer"
+      refresh_token:
+        type: "string"
+      token_type:
+        type: "string"
   LoginResponseSchema:
     type: "object"
     properties:
@@ -2490,7 +2568,7 @@ definitions:
 
   #BOLETO
   boletoSchema:
-    type: "objetc"
+    type: "object"
     properties:
       valorTotal:
         type: "string"
@@ -2550,17 +2628,17 @@ definitions:
       formaEnvioFatura:
         type: "string"
       titular:
-        type: "bolean"
+        type: "boolean"
       limiteGlobal: 
         type: "integer"
       limiteSaqueGlobal:
         type: "integer"
       saldoDisponivelGlobal:
-        type: "float"
+        type: "number"
       saldoDisponivelSaque:
-        type: "float"
+        type: "number"
       impedidoFinanciamento:
-        type: "bolean"
+        type: "boolean"
       diasAtraso:
         type: "integer"
       proximoVencimentoPadrao: 
@@ -2679,7 +2757,7 @@ definitions:
       nomeFantasiaBasica: 
         type: "string"
       idStatusConta: 
-        type: integer
+        type: "integer"
       statusConta: 
         type: "string"
       diaVencimento: 
@@ -2699,21 +2777,21 @@ definitions:
       numeroContaCorrente: 
         type: "string"
       valorRenda: 
-        type: "float"
+        type: "number"
       formaEnvioFatura: 
         type: "string"
       titular: 
-        type: "bolean"
+        type: "boolean"
       limiteGlobal: 
         type: "integer"
       limiteSaqueGlobal: 
         type: "integer"
       saldoDisponivelGlobal: 
-        type: "float"
+        type: "number"
       saldoDisponivelSaque: 
         type: "integer"
       impedidoFinanciamento: 
-        type: "Bolean"
+        type: "boolean"
       diasAtraso: 
         type: "integer"
       proximoVencimentoPadrao: 
@@ -2727,13 +2805,13 @@ definitions:
       dataInicioAtraso: 
         type: "string"
       rotativoPagaJuros: 
-        type: "float"
+        type: "number"
       totalPosProx: 
-        type: "float"
+        type: "number"
       saldoAtualFinal: 
-        type: "float"
+        type: "number"
       saldoExtratoAnterior: 
-        type: "float"
+        type: "number"
       aceitaNovaContaPorGrupoProduto: 
         type: "string"
       funcaoAtiva: 
@@ -2966,8 +3044,72 @@ definitions:
       tipoTransferencia:
         type: "string"
 
-  #Fees
+#Carrossel
+  carrosselSchema:
+    type: "array"
+    items:
+      type: "object"
+      properties:
+        idConta: 
+          type: "integer"
+        idPessoa:
+          type: "integer"
+        idProduto:
+          type: "integer"
+        saldoDisponivelGlobal:
+          type: "number"
+        taxas:
+          type: "array"
+          items:
+            type: "object"
+            properties:
+              id:      
+                type: "integer"
+              description:
+                type: "string"
+              value:
+                type: "number"
+                format: "float"
+              isBanking:
+                type: "boolean"
+        cartoes:
+          type: "array"
+          items:
+            type: "object"
+            properties:
+              dataValidade:
+                type: "string"
+              nomeImpresso:
+                type: "string"
+              numeroCartao:
+                type: "string"
+              idStatus:      
+                type: "integer"
+              idCartao:      
+                type: "integer"
+              idStatusCartao:      
+                type: "integer"
+
+#Companies
   companiesSchema:
+    type: "object"
+    properties:
+      idCompany: 
+        type: "integer"
+      template:
+        type: "string"
+      products:
+        type: "array"
+        items:
+          type: "object"
+          properties:
+            idProduct:      
+              type: "integer"
+            name:
+              type: "string"
+
+  #Fees
+  companiesFeesSchema:
     type: "object"
     properties:
       id:
@@ -2989,3 +3131,12 @@ definitions:
     properties:
       message:
         type: "string"
+
+  #Password
+  GetPasswordSchema:
+    type: "object"
+    properties:
+      message:
+        type: "string"
+      isTemporaryPassword:
+        type: "boolean"
