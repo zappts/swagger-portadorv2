@@ -922,6 +922,12 @@ paths:
           required: true
           type: "string"
         - 
+          name: "password"
+          in: "header"
+          description: "Senha do cartão encriptada"
+          required: true
+          type: "string"
+        - 
           name: "accountId"
           in: "path"
           description: "ID da conta"
